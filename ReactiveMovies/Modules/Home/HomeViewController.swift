@@ -42,23 +42,21 @@ final class HomeViewController: UIViewController {
         configureView()
         configureSearchController()
         layoutCollection()
-                
-//        let genres = viewModel.genres
-//            .receive(on: DispatchQueue.main)
-//            .share()
-//
+
         let collectionData = viewModel
             .collectionData
             .receive(on: DispatchQueue.main)
             .share()
         
         searchText
+            .filter { $0 != "" }
+            .prepend("")
             .combineLatest(collectionData)
             .map { [unowned self] tuple in
                 self.viewModel.filteredItems(items: tuple.1, searchText: tuple.0)
             }
-            .sink(receiveValue: { [unowned self] genres in
-                self.applySnapshot(dataContainer: genres)
+            .sink(receiveValue: { [unowned self] collectionData in
+                self.applySnapshot(dataContainer: collectionData)
             })
             .store(in: &subscriptions)
     }
@@ -130,32 +128,18 @@ private extension HomeViewController {
             }
             return false
         }
-     
-        if let genresSectionIndex = snapshot.indexOfSection(.genres) {
-            snapshot.appendItems(genres, toSection: .genres)
-            dataSource.apply(snapshot, animatingDifferences: true)
-        } else {
-            snapshot.appendSections([.genres])
-            snapshot.appendItems(genres, toSection: .genres)
-        }
-        
-        if let moviesSectionIndex = snapshot.indexOfSection(.movies) {
-            snapshot.appendItems(movies, toSection: .movies)
-            dataSource.apply(snapshot, animatingDifferences: true)
-        } else {
-            snapshot.appendSections([.movies])
-            snapshot.appendItems(movies, toSection: .movies)
-        }
-        
-        dataSource.apply(snapshot)
-        
+
+        snapshot.indexOfSection(.genres) == nil ? snapshot.appendSections([.genres]) : ()
+        snapshot.indexOfSection(.movies) == nil ? snapshot.appendSections([.movies]) : ()
+        snapshot.appendItems(genres, toSection: .genres)
+        snapshot.appendItems(movies, toSection: .movies)
+        dataSource.apply(snapshot, animatingDifferences: true)
     }
     
     func buildDataSource() -> DataSource {
         DataSource(collectionView: collectionView,
                    cellProvider: { (collectionView, indexPath, dataContainer) -> UICollectionViewCell? in
                     var cell: UICollectionViewCell?
-                    print(dataContainer)
                     switch dataContainer {
                     case .genre(let genre) where indexPath.section == Section.genres.rawValue:
                         cell = collectionView.dequeueReusableCell(withReuseIdentifier: "GenreCell",
