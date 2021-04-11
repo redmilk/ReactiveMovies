@@ -12,17 +12,17 @@ class HomeViewModel {
     
     public var errors: AnyPublisher<Error, Never> { _errors.eraseToAnyPublisher() }
     public var genres: AnyPublisher<Genres, Never> { _genres.eraseToAnyPublisher() }
+    public var moviesQuery: AnyPublisher<MovieQuery, Never> { _moviesQuery.eraseToAnyPublisher() }
     
-    public func requestGenres() {
-        moviesApi
-            .requestMoviesGenres()
+    public func queryMovies(page: Int, genres: String) {
+        moviesApi.requestMoviesWithQuery(page: page, genres: genres)
             .sink(receiveCompletion: { [weak self] completion in
                 if case .failure(let error) = completion {
                     self?._errors.send(error)
                 }
             },
-            receiveValue: { [weak self] genres in
-                self?._genres.send(genres)
+            receiveValue: { [weak self] queryResult in
+                self?._moviesQuery.send(queryResult)
             })
             .store(in: &subscriptions)
     }
@@ -47,6 +47,8 @@ class HomeViewModel {
             }
             .sink(receiveValue: { _ in })
             .store(in: &subscriptions)
+        
+        requestGenres()
     }
     
     /// Dependencies
@@ -56,11 +58,26 @@ class HomeViewModel {
     private var subscriptions = Set<AnyCancellable>()
     private let _errors = PassthroughSubject<Error, Never>()
     private let _genres = PassthroughSubject<Genres, Never>()
+    private let _moviesQuery = PassthroughSubject<MovieQuery, Never>()
 }
 
-// MARK: - Helper methods
+// MARK: - Private methods
 
 private extension HomeViewModel {
+    func requestGenres() {
+        moviesApi
+            .requestMoviesGenres()
+            .sink(receiveCompletion: { [weak self] completion in
+                if case .failure(let error) = completion {
+                    self?._errors.send(error)
+                }
+            },
+            receiveValue: { [weak self] genres in
+                self?._genres.send(genres)
+            })
+            .store(in: &subscriptions)
+    }
+    
     func showAlert(with title: String, message: String) -> AnyPublisher<Void, Never> {
         return coordinator.showAlert(title: title, message: message)
     }

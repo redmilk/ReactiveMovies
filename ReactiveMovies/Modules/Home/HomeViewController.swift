@@ -9,7 +9,8 @@ import UIKit
 import Combine
 
 enum Section {
-    case main
+    case genre
+    case query
 }
 
 typealias DataSource = UICollectionViewDiffableDataSource<Section, Genre>
@@ -36,9 +37,7 @@ final class HomeViewController: UIViewController {
         configureView()
         configureSearchController()
         layoutCollection()
-        
-        viewModel.requestGenres()
-        
+                
         let genres = viewModel.genres
             .receive(on: DispatchQueue.main)
             .share()
@@ -88,7 +87,7 @@ private extension HomeViewController {
     
     func applySnapshot(genres: [Genre]) {
         var snapshot = Snapshot()
-        snapshot.appendSections([.main])
+        snapshot.appendSections([.genre, .query])
         snapshot.appendItems(genres)
         dataSource.apply(snapshot, animatingDifferences: true)
     }

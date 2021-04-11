@@ -7,7 +7,7 @@
 
 import Foundation
 
-typealias RequestParameter = (title: String, value: String)
+typealias RequestParameter = (title: String, value: String?)
 
 struct RequestParametersAdapter: URLRequestAdaptable {
     
@@ -21,11 +21,11 @@ struct RequestParametersAdapter: URLRequestAdaptable {
     
     func adapt(_ urlRequest: inout URLRequest) {
         if !withBody {
-            guard
-                let url = urlRequest.url,
-                var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: true)
-            else { return }
-            let queryItems = parameters.map { URLQueryItem(name: $0.title, value: $0.value) }
+            guard let url = urlRequest.url,
+                  var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: true) else { return }
+            let queryItems = parameters
+                .filter { $0.value != nil }
+                .map { URLQueryItem(name: $0.title, value: $0.value) }
             urlComponents.queryItems = urlComponents.queryItems ?? [] + queryItems
             urlRequest.url = urlComponents.url
         } else {

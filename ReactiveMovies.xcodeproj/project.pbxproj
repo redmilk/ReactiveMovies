@@ -30,6 +30,9 @@
 		79FEB93626228738001A1DD2 /* GenresViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79FEB93426228738001A1DD2 /* GenresViewController.swift */; };
 		79FEB93726228738001A1DD2 /* GenresViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 79FEB93526228738001A1DD2 /* GenresViewController.xib */; };
 		79FEB93F262289A3001A1DD2 /* GenreCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79FEB93D262289A3001A1DD2 /* GenreCell.swift */; };
+		79FEB9522622F21F001A1DD2 /* PublishTimeLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79FEB9512622F21F001A1DD2 /* PublishTimeLogger.swift */; };
+		79FEB9562622FBD3001A1DD2 /* MovieQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79FEB9552622FBD3001A1DD2 /* MovieQuery.swift */; };
+		79FEB959262302AF001A1DD2 /* MovieQueryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79FEB958262302AF001A1DD2 /* MovieQueryCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -58,6 +61,9 @@
 		79FEB93426228738001A1DD2 /* GenresViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenresViewController.swift; sourceTree = "<group>"; };
 		79FEB93526228738001A1DD2 /* GenresViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = GenresViewController.xib; sourceTree = "<group>"; };
 		79FEB93D262289A3001A1DD2 /* GenreCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenreCell.swift; sourceTree = "<group>"; };
+		79FEB9512622F21F001A1DD2 /* PublishTimeLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublishTimeLogger.swift; sourceTree = "<group>"; };
+		79FEB9552622FBD3001A1DD2 /* MovieQuery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieQuery.swift; sourceTree = "<group>"; };
+		79FEB958262302AF001A1DD2 /* MovieQueryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieQueryCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -130,6 +136,7 @@
 			children = (
 				7976AC2F262274D4008C3DA8 /* Movie.swift */,
 				7976AC4226227756008C3DA8 /* Genres.swift */,
+				79FEB9552622FBD3001A1DD2 /* MovieQuery.swift */,
 			);
 			path = DTO;
 			sourceTree = "<group>";
@@ -137,6 +144,7 @@
 		7976AC33262274F9008C3DA8 /* CoreAdditions */ = {
 			isa = PBXGroup;
 			children = (
+				79FEB9502622F203001A1DD2 /* Debug */,
 				79FEB92D26228269001A1DD2 /* BaseClasses */,
 				79FEB925262281D3001A1DD2 /* Extensions */,
 				7976AC4026227619008C3DA8 /* Networking */,
@@ -202,8 +210,17 @@
 			isa = PBXGroup;
 			children = (
 				79FEB93D262289A3001A1DD2 /* GenreCell.swift */,
+				79FEB958262302AF001A1DD2 /* MovieQueryCell.swift */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		79FEB9502622F203001A1DD2 /* Debug */ = {
+			isa = PBXGroup;
+			children = (
+				79FEB9512622F21F001A1DD2 /* PublishTimeLogger.swift */,
+			);
+			path = Debug;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -277,13 +294,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				79FEB9522622F21F001A1DD2 /* PublishTimeLogger.swift in Sources */,
 				79FEB93626228738001A1DD2 /* GenresViewController.swift in Sources */,
 				7976AC2C26226DD7008C3DA8 /* ParametersAdapter.swift in Sources */,
 				7976AC3E262275DE008C3DA8 /* MoviesApi.swift in Sources */,
 				79FEB932262283C3001A1DD2 /* BaseViewModel.swift in Sources */,
+				79FEB959262302AF001A1DD2 /* MovieQueryCell.swift in Sources */,
 				79FEB92B26228259001A1DD2 /* HomeCoordinator.swift in Sources */,
 				7976AC2126226341008C3DA8 /* BaseRequest.swift in Sources */,
 				7976AC4326227756008C3DA8 /* Genres.swift in Sources */,
+				79FEB9562622FBD3001A1DD2 /* MovieQuery.swift in Sources */,
 				7976AC0E262262E5008C3DA8 /* HomeViewController.swift in Sources */,
 				7976AC2626226D6D008C3DA8 /* HeaderAdapter.swift in Sources */,
 				795DA93226227CA000C10373 /* HomeViewModel.swift in Sources */,
