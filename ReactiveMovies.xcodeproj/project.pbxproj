@@ -33,6 +33,7 @@
 		79FEB9522622F21F001A1DD2 /* PublishTimeLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79FEB9512622F21F001A1DD2 /* PublishTimeLogger.swift */; };
 		79FEB9562622FBD3001A1DD2 /* MovieQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79FEB9552622FBD3001A1DD2 /* MovieQuery.swift */; };
 		79FEB959262302AF001A1DD2 /* MovieQueryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79FEB958262302AF001A1DD2 /* MovieQueryCell.swift */; };
+		79FEB96226231039001A1DD2 /* Collection+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79FEB96126231039001A1DD2 /* Collection+Extensions.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -64,6 +65,7 @@
 		79FEB9512622F21F001A1DD2 /* PublishTimeLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublishTimeLogger.swift; sourceTree = "<group>"; };
 		79FEB9552622FBD3001A1DD2 /* MovieQuery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieQuery.swift; sourceTree = "<group>"; };
 		79FEB958262302AF001A1DD2 /* MovieQueryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieQueryCell.swift; sourceTree = "<group>"; };
+		79FEB96126231039001A1DD2 /* Collection+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Collection+Extensions.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -184,6 +186,7 @@
 			isa = PBXGroup;
 			children = (
 				79FEB926262281EA001A1DD2 /* UIViewController+Extensions.swift */,
+				79FEB96126231039001A1DD2 /* Collection+Extensions.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -299,6 +302,7 @@
 				7976AC2C26226DD7008C3DA8 /* ParametersAdapter.swift in Sources */,
 				7976AC3E262275DE008C3DA8 /* MoviesApi.swift in Sources */,
 				79FEB932262283C3001A1DD2 /* BaseViewModel.swift in Sources */,
+				79FEB96226231039001A1DD2 /* Collection+Extensions.swift in Sources */,
 				79FEB959262302AF001A1DD2 /* MovieQueryCell.swift in Sources */,
 				79FEB92B26228259001A1DD2 /* HomeCoordinator.swift in Sources */,
 				7976AC2126226341008C3DA8 /* BaseRequest.swift in Sources */,

@@ -7,11 +7,6 @@
 
 import UIKit
 
-struct GenreCellModel {
-    let title: String
-    let id: String
-}
-
 final class GenreCell: UICollectionViewCell {
     
     @IBOutlet private weak var oneLabel: UILabel!
@@ -24,9 +19,9 @@ final class GenreCell: UICollectionViewCell {
         contentView.layer.cornerRadius = contentView.bounds.height / 2
     }
  
-    public func configure(with model: GenreCellModel) {
-        oneLabel.text = model.id
-        twoLabel.text = model.title
+    public func configure(with model: Genre) {
+        oneLabel.text = model.id.description
+        twoLabel.text = model.name
     }
 
 }

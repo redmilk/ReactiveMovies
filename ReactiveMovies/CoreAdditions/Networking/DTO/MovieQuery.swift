@@ -13,6 +13,10 @@ struct MovieQuery: Codable {
     let results: [MovieQueryElement]?
     let totalPages: Int?
     let totalResults: Int?
+    
+    var dataSourceWrapper: [HomeCollectionDataType] {
+        return results?.map { HomeCollectionDataType.movie($0) } ?? []
+    }
 
     enum CodingKeys: String, CodingKey {
         case page = "page"
@@ -23,7 +27,7 @@ struct MovieQuery: Codable {
 }
 
 // MARK: - Result
-struct MovieQueryElement: Codable {
+struct MovieQueryElement: Codable, Hashable {
     let adult: Bool?
     let backdropPath: String?
     let genreIDS: [Int]?
@@ -54,5 +58,24 @@ struct MovieQueryElement: Codable {
         case video = "video"
         case voteAverage = "vote_average"
         case voteCount = "vote_count"
+    }
+    
+    func hash(into hasher: inout Hasher) {
+      hasher.combine(id)
+        hasher.combine(popularity)
+        hasher.combine(posterPath)
+        hasher.combine(releaseDate)
+        hasher.combine(title)
+        hasher.combine(voteAverage)
+
+    }
+    
+    static func == (lhs: MovieQueryElement, rhs: MovieQueryElement) -> Bool {
+        return (lhs.id == rhs.id) &&
+            (lhs.genreIDS == rhs.genreIDS) &&
+            (lhs.posterPath == rhs.posterPath) &&
+            (lhs.releaseDate == rhs.releaseDate) &&
+            (lhs.popularity == rhs.popularity) &&
+            (lhs.title == rhs.title)
     }
 }

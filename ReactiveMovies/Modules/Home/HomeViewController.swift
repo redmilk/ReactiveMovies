@@ -8,13 +8,18 @@
 import UIKit
 import Combine
 
-enum Section {
-    case genre
-    case query
+enum Section: Int {
+    case genres
+    case movies
 }
 
-typealias DataSource = UICollectionViewDiffableDataSource<Section, Genre>
-typealias Snapshot = NSDiffableDataSourceSnapshot<Section, Genre>
+enum HomeCollectionDataType: Hashable {
+    case genre(Genre)
+    case movie(MovieQueryElement)
+}
+
+typealias DataSource = UICollectionViewDiffableDataSource<Section, HomeCollectionDataType>
+typealias Snapshot = NSDiffableDataSourceSnapshot<Section, HomeCollectionDataType>
 
 final class HomeViewController: UIViewController {
     
@@ -38,17 +43,22 @@ final class HomeViewController: UIViewController {
         configureSearchController()
         layoutCollection()
                 
-        let genres = viewModel.genres
+//        let genres = viewModel.genres
+//            .receive(on: DispatchQueue.main)
+//            .share()
+//
+        let collectionData = viewModel
+            .collectionData
             .receive(on: DispatchQueue.main)
             .share()
         
         searchText
-            .combineLatest(genres)
+            .combineLatest(collectionData)
             .map { [unowned self] tuple in
-                self.viewModel.filteredItems(genres: tuple.1.genres, searchText: tuple.0)
+                self.viewModel.filteredItems(items: tuple.1, searchText: tuple.0)
             }
             .sink(receiveValue: { [unowned self] genres in
-                self.applySnapshot(genres: genres)
+                self.applySnapshot(dataContainer: genres)
             })
             .store(in: &subscriptions)
     }
@@ -85,20 +95,60 @@ private extension HomeViewController {
         collectionView.collectionViewLayout = layout
     }
     
-    func applySnapshot(genres: [Genre]) {
-        var snapshot = Snapshot()
-        snapshot.appendSections([.genre, .query])
-        snapshot.appendItems(genres)
-        dataSource.apply(snapshot, animatingDifferences: true)
+    func applySnapshot(dataContainer: [HomeCollectionDataType]) {
+        var snapshot = dataSource.snapshot()
+        let genres = dataContainer.filter { (dataType) -> Bool in
+            switch dataType {
+            case .genre: return true
+            case _: break
+            }
+            return false
+        }
+        
+        let movies = dataContainer.filter { (dataType) -> Bool in
+            switch dataType {
+            case .movie: return true
+            case _: break
+            }
+            return false
+        }
+     
+        if let genresSectionIndex = snapshot.indexOfSection(.genres) {
+            snapshot.appendItems(genres, toSection: .genres)
+            dataSource.apply(snapshot, animatingDifferences: true)
+        } else {
+            snapshot.appendSections([.genres])
+            snapshot.appendItems(genres, toSection: .genres)
+        }
+        
+        if let moviesSectionIndex = snapshot.indexOfSection(.movies) {
+            snapshot.appendItems(movies, toSection: .movies)
+            dataSource.apply(snapshot, animatingDifferences: true)
+        } else {
+            snapshot.appendSections([.movies])
+            snapshot.appendItems(movies, toSection: .movies)
+        }
+        
+        dataSource.apply(snapshot)
+        
     }
     
     func buildDataSource() -> DataSource {
         DataSource(collectionView: collectionView,
-                   cellProvider: { (collectionView, indexPath, genre) -> UICollectionViewCell? in
-                    let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "GenreCell",
+                   cellProvider: { (collectionView, indexPath, dataContainer) -> UICollectionViewCell? in
+                    var cell: UICollectionViewCell?
+                    print(dataContainer)
+                    switch dataContainer {
+                    case .genre(let genre) where indexPath.section == Section.genres.rawValue:
+                        cell = collectionView.dequeueReusableCell(withReuseIdentifier: "GenreCell",
                                                                   for: indexPath) as? GenreCell
-                    let genreModel: GenreCellModel = GenreCellModel(title: genre.name, id: genre.id.description)
-                    cell?.configure(with: genreModel)
+                        (cell as? GenreCell)?.configure(with: genre)
+                    case .movie(let movie) where indexPath.section == Section.movies.rawValue:
+                        cell = collectionView.dequeueReusableCell(withReuseIdentifier: "MovieQueryCell",
+                                                                  for: indexPath) as? MovieQueryCell
+                        (cell as? MovieQueryCell)?.configure(with: movie)
+                    case _: fatalError()
+                    }
                     return cell
                    })
     }

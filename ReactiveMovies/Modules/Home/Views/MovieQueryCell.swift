@@ -13,4 +13,8 @@ final class MovieQueryCell: UICollectionViewCell {
     @IBOutlet private weak var titleLabel: UILabel!
     @IBOutlet private weak var descriptionLabel: UILabel!
     
+    func configure(with model: MovieQueryElement) {
+        titleLabel.text = model.title
+        descriptionLabel.text = model.posterPath
+    }
 }

@@ -13,7 +13,7 @@ class BaseRequest {
         return URLSession.shared
             .dataTaskPublisher(for: request)
             .map(\.data)
-            .handleEvents(receiveOutput: { print(String(data: $0, encoding: .utf8)!) })
+            //.handleEvents(receiveOutput: { print(String(data: $0, encoding: .utf8)!) })
             .decode(type: type.self, decoder: JSONDecoder())
             .eraseToAnyPublisher()
     }
