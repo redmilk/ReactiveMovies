@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Kingfisher
 
 final class MovieQueryCell: UICollectionViewCell {
     
@@ -14,7 +15,9 @@ final class MovieQueryCell: UICollectionViewCell {
     @IBOutlet private weak var descriptionLabel: UILabel!
     
     func configure(with model: MovieQueryElement) {
+        movieImageView.kf.setImage(with: URL(string: Endpoints.images + (model.posterPath ?? "")))
         titleLabel.text = model.title
-        descriptionLabel.text = model.posterPath
+        descriptionLabel.text = (model.originalTitle ?? "") + ": " + (model.voteAverage?.description ?? "")
+        contentView.layer.cornerRadius = 12.0
     }
 }

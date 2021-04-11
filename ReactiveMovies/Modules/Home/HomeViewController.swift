@@ -79,18 +79,36 @@ private extension HomeViewController {
     func layoutCollection() {
         let layout = UICollectionViewCompositionalLayout(sectionProvider: { (sectionIndex, layoutEnvironment) -> NSCollectionLayoutSection? in
             let isPhone = layoutEnvironment.traitCollection.userInterfaceIdiom == UIUserInterfaceIdiom.phone
-            let size = NSCollectionLayoutSize(
-                widthDimension: NSCollectionLayoutDimension.fractionalWidth(1),
-                heightDimension: NSCollectionLayoutDimension.absolute(isPhone ? 50 : 80)
-            )
-            let itemCount = isPhone ? 3 : 6
-            let item = NSCollectionLayoutItem(layoutSize: size)
-            item.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 10)
-            let group = NSCollectionLayoutGroup.horizontal(layoutSize: size, subitem: item, count: itemCount)
-            let section = NSCollectionLayoutSection(group: group)
-            section.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10)
-            section.interGroupSpacing = 20
-            return section
+
+            switch Section(rawValue: sectionIndex)! {
+            case .genres:
+                let size = NSCollectionLayoutSize(
+                    widthDimension: NSCollectionLayoutDimension.fractionalWidth(1),
+                    heightDimension: NSCollectionLayoutDimension.absolute(isPhone ? 50 : 80)
+                )
+                let itemCount = isPhone ? 3 : 6
+                let item = NSCollectionLayoutItem(layoutSize: size)
+                item.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 10)
+                let group = NSCollectionLayoutGroup.horizontal(layoutSize: size, subitem: item, count: itemCount)
+                let section = NSCollectionLayoutSection(group: group)
+                section.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10)
+                section.interGroupSpacing = 20
+                return section
+            case .movies:
+                let size = NSCollectionLayoutSize(
+                    widthDimension: NSCollectionLayoutDimension.fractionalWidth(1),
+                    heightDimension: NSCollectionLayoutDimension.absolute(isPhone ? 300 : 500)
+                )
+                let itemCount = isPhone ? 1 : 2
+                let item = NSCollectionLayoutItem(layoutSize: size)
+                let group = NSCollectionLayoutGroup.horizontal(layoutSize: size, subitem: item, count: itemCount)
+                let section = NSCollectionLayoutSection(group: group)
+                section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 10, bottom: 30, trailing: 10)
+                section.interGroupSpacing = 10
+                return section
+            }
+            
+            
         })
         collectionView.collectionViewLayout = layout
     }

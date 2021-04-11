@@ -9,10 +9,11 @@ import Foundation
 import Combine
 
 
-fileprivate struct Endpoints {
+struct Endpoints {
     static let baseUrlString = "https://api.themoviedb.org/3"
     static let genres = "/genre/movie/list"
     static let discover = "/discover/movie"
+    static let images = "https://image.tmdb.org/t/p/w500/"
 }
 
 fileprivate struct Parameters {
@@ -23,7 +24,7 @@ fileprivate struct Parameters {
     static let sortBy = "sort_by"
 }
 
-fileprivate let languageSetting = "en-US"
+fileprivate let languageSetting = "ru-RU"
 
 final class MoviesApi: BaseRequest {
     
