@@ -18,10 +18,10 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="azz-vW-ydz">
-                                <rect key="frame" x="0.0" y="88" width="414" height="774"/>
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="862"/>
                                 <subviews>
                                     <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="i9D-ta-uvk">
-                                        <rect key="frame" x="0.0" y="0.0" width="414" height="774"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="414" height="862"/>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                         <collectionViewFlowLayout key="collectionViewLayout" automaticEstimatedItemSize="YES" minimumLineSpacing="10" minimumInteritemSpacing="10" id="gh4-IY-IPG">
                                             <size key="itemSize" width="128" height="128"/>
@@ -76,7 +76,7 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="azz-vW-ydz" secondAttribute="trailing" id="0o7-24-b1Y"/>
-                            <constraint firstItem="azz-vW-ydz" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="8Jj-ME-kOV"/>
+                            <constraint firstItem="azz-vW-ydz" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="8Jj-ME-kOV"/>
                             <constraint firstItem="azz-vW-ydz" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="iqR-gy-n2e"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="azz-vW-ydz" secondAttribute="bottom" id="ndM-23-a0Z"/>
                         </constraints>

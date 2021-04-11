@@ -17,7 +17,8 @@ typealias Snapshot = NSDiffableDataSourceSnapshot<Section, Genre>
 
 final class HomeViewController: UIViewController {
     
-    lazy var viewModel: HomeViewModel = {
+    /// Interactor
+    private lazy var viewModel: HomeViewModel = {
         HomeViewModel(moviesApi: MoviesApi(),
                       coordinator: HomeCoordinator(viewController: self))
     }()
@@ -32,8 +33,10 @@ final class HomeViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        configureView()
         configureSearchController()
         layoutCollection()
+        
         viewModel.requestGenres()
         
         let genres = viewModel.genres
@@ -43,7 +46,7 @@ final class HomeViewController: UIViewController {
         searchText
             .combineLatest(genres)
             .map { [unowned self] tuple in
-                self.filteredItems(genres: tuple.1.genres, searchText: tuple.0)
+                self.viewModel.filteredItems(genres: tuple.1.genres, searchText: tuple.0)
             }
             .sink(receiveValue: { [unowned self] genres in
                 self.applySnapshot(genres: genres)
@@ -83,11 +86,11 @@ private extension HomeViewController {
         collectionView.collectionViewLayout = layout
     }
     
-    func applySnapshot(animatingDifferences: Bool = true, genres: [Genre]) {
+    func applySnapshot(genres: [Genre]) {
         var snapshot = Snapshot()
         snapshot.appendSections([.main])
         snapshot.appendItems(genres)
-        dataSource.apply(snapshot, animatingDifferences: animatingDifferences)
+        dataSource.apply(snapshot, animatingDifferences: true)
     }
     
     func buildDataSource() -> DataSource {
@@ -101,24 +104,17 @@ private extension HomeViewController {
                    })
     }
     
-    func filteredItems(genres: [Genre], searchText: String?) -> [Genre] {
-        guard let searchText = searchText, !searchText.isEmpty else {
-            return genres
-        }
-        
-        return genres.filter { genre in
-            genre.name.lowercased().contains(searchText.lowercased())
-        }
+    func configureView() {
+        title = "Movie Genres"
+        navigationController?.navigationBar.prefersLargeTitles = true
     }
 }
 
 // MARK: - UISearchResultsUpdating Delegate
 
 extension HomeViewController: UISearchResultsUpdating {
-    
     func updateSearchResults(for searchController: UISearchController) {
         searchText.send(searchController.searchBar.text ?? "")
     }
-    
 }
 

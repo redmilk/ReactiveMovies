@@ -27,6 +27,16 @@ class HomeViewModel {
             .store(in: &subscriptions)
     }
     
+    public func filteredItems(genres: [Genre], searchText: String?) -> [Genre] {
+        guard let searchText = searchText, !searchText.isEmpty else {
+            return genres
+        }
+        
+        return genres.filter { genre in
+            genre.name.lowercased().contains(searchText.lowercased())
+        }
+    }
+    
     init(moviesApi: MoviesApi, coordinator: HomeCoordinator) {
         self.moviesApi = moviesApi
         self.coordinator = coordinator
