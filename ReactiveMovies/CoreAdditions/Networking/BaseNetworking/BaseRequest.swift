@@ -8,13 +8,6 @@
 import Combine
 import Foundation
 
-struct NetworkingError: Error {
-    let errorCode: Int
-    
-    static let unknown = NetworkingError(errorCode: 9999)
-}
-
-
 class BaseRequest {
     func request<D: Decodable>(with request: URLRequest, type: D.Type) -> AnyPublisher<D, Error> {
         return URLSession.shared

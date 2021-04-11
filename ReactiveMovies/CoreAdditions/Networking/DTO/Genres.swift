@@ -9,7 +9,7 @@ import Foundation
 
 // MARK: - Genre
 struct Genres: Codable {
-    let genres: [Genre]?
+    let genres: [Genre]
 
     enum CodingKeys: String, CodingKey {
         case genres = "genres"

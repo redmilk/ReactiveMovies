@@ -65,13 +65,21 @@ struct Movie: Codable {
 }
 
 // MARK: - Genre
-struct Genre: Codable {
-    let id: Int?
-    let name: String?
+struct Genre: Codable, Hashable {
+    let id: Int
+    let name: String
 
     enum CodingKeys: String, CodingKey {
         case id = "id"
         case name = "name"
+    }
+    
+    func hash(into hasher: inout Hasher) {
+      hasher.combine(id)
+    }
+
+    static func == (lhs: Genre, rhs: Genre) -> Bool {
+      lhs.id == rhs.id
     }
 }
 
