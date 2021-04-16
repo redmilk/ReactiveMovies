@@ -76,6 +76,14 @@ final class HomeViewController: UIViewController {
     }
 }
 
+// MARK: - UICollectionViewDelegate
+
+extension HomeViewController: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        viewModel.scrollIndexPath = indexPath
+    }
+}
+
 // MARK: - Private 🟨
 
 private extension HomeViewController {
@@ -96,14 +104,14 @@ private extension HomeViewController {
             case .genre:
                 let size = NSCollectionLayoutSize(
                     widthDimension: NSCollectionLayoutDimension.fractionalWidth(1),
-                    heightDimension: NSCollectionLayoutDimension.absolute(isPhone ? 50 : 80)
+                    heightDimension: NSCollectionLayoutDimension.absolute(isPhone ? 30 : 50)
                 )
                 let itemCount = isPhone ? 3 : 6
                 let item = NSCollectionLayoutItem(layoutSize: size)
                 item.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 10)
                 let group = NSCollectionLayoutGroup.horizontal(layoutSize: size, subitem: item, count: itemCount)
                 let section = NSCollectionLayoutSection(group: group)
-                section.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10)
+                section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 10, bottom: 20, trailing: 10)
                 section.interGroupSpacing = 20
                 return section
             case .movie:
@@ -119,8 +127,6 @@ private extension HomeViewController {
                 section.interGroupSpacing = 10
                 return section
             }
-            
-            
         })
         collectionView.collectionViewLayout = layout
     }
@@ -160,6 +166,7 @@ private extension HomeViewController {
     func configureView() {
         title = "Movie Genres"
         navigationController?.navigationBar.prefersLargeTitles = true
+        collectionView.delegate = self
         
         var snapshot = Snapshot()
         snapshot.appendSections([.genre, .movie])
