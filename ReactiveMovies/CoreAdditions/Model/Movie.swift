@@ -8,10 +8,30 @@
 import Foundation
 
 // MARK: - Movie
-struct Movie: Codable {
+struct Movie: Codable, Hashable {
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+        hasher.combine(popularity)
+        hasher.combine(posterPath)
+        hasher.combine(releaseDate)
+        hasher.combine(title)
+        hasher.combine(voteAverage)
+        hasher.combine(voteCount)
+    }
+    
+    static func == (lhs: Movie, rhs: Movie) -> Bool {
+        return (lhs.id == rhs.id) &&
+            (lhs.posterPath == rhs.posterPath) &&
+            (lhs.releaseDate == rhs.releaseDate) &&
+            (lhs.popularity == rhs.popularity) &&
+            (lhs.title == rhs.title) &&
+            (lhs.originalTitle == rhs.originalTitle)
+    }
+    
     let adult: Bool?
     let backdropPath: String?
-    let belongsToCollection: JSONNull?
+    let belongsToCollection: BelongsToCollection?
     let budget: Int?
     let genres: [Genre]?
     let homepage: String?
@@ -95,6 +115,21 @@ struct Genre: Codable, Hashable {
     }
 }
 
+// MARK: - BelongsToCollection
+struct BelongsToCollection: Codable {
+    let id: Int?
+    let name: String?
+    let posterPath: String?
+    let backdropPath: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id = "id"
+        case name = "name"
+        case posterPath = "poster_path"
+        case backdropPath = "backdrop_path"
+    }
+}
+
 // MARK: - ProductionCompany
 struct ProductionCompany: Codable {
     let id: Int?
@@ -134,29 +169,3 @@ struct SpokenLanguage: Codable {
     }
 }
 
-// MARK: - Encode/decode helpers
-
-class JSONNull: Codable, Hashable {
-
-    public static func == (lhs: JSONNull, rhs: JSONNull) -> Bool {
-        return true
-    }
-
-    public var hashValue: Int {
-        return 0
-    }
-
-    public init() {}
-
-    public required init(from decoder: Decoder) throws {
-        let container = try decoder.singleValueContainer()
-        if !container.decodeNil() {
-            throw DecodingError.typeMismatch(JSONNull.self, DecodingError.Context(codingPath: decoder.codingPath, debugDescription: "Wrong type for JSONNull"))
-        }
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.singleValueContainer()
-        try container.encodeNil()
-    }
-}

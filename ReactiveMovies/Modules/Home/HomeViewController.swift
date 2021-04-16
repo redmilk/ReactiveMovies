@@ -8,10 +8,7 @@
 import UIKit
 import Combine
 
-enum Section: Int {
-    case genre = 0
-    case movie = 1
-}
+
 
 enum HomeCollectionDataType: Hashable {
     case genre(Genre)
@@ -32,14 +29,20 @@ enum HomeCollectionDataType: Hashable {
     }
 }
 
-typealias DataSource = UICollectionViewDiffableDataSource<Section, HomeCollectionDataType>
-typealias Snapshot = NSDiffableDataSourceSnapshot<Section, HomeCollectionDataType>
-
 final class HomeViewController: UIViewController {
+    
+    typealias DataSource = UICollectionViewDiffableDataSource<HomeViewController.Section, HomeCollectionDataType>
+    typealias Snapshot = NSDiffableDataSourceSnapshot<HomeViewController.Section, HomeCollectionDataType>
+    
+    enum Section: Int {
+        case genre = 0
+        case movie = 1
+    }
     
     /// Interactor
     private lazy var viewModel: HomeViewModel = {
-        HomeViewModel(coordinator: HomeCoordinator(viewController: self), movieService: MovieService())
+        HomeViewModel(coordinator: HomeCoordinator(viewController: self, navigationController: navigationController),
+                      movieService: MovieService())
     }()
     
     @IBOutlet private weak var collectionView: UICollectionView!
@@ -80,7 +83,6 @@ final class HomeViewController: UIViewController {
                 self.navigationController?.setNavigationBarHidden(index != 0, animated: true)
             })
             .store(in: &subscriptions)
-        
     }
 }
 
@@ -92,14 +94,49 @@ extension HomeViewController: UICollectionViewDelegate {
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard indexPath.section == 0 else { return }
-        viewModel.selectedGenreIndex = indexPath.row
+        switch Section(rawValue: indexPath.section)! {
+        case .genre: viewModel.selectedGenreIndex = indexPath.row
+        case .movie: viewModel.selectedMovieIndex = indexPath.row
+        }
+        
     }
 }
 
 // MARK: - Private 🟨
 
 private extension HomeViewController {
+    
+    func applySnapshot(collectionData: [HomeCollectionDataType], type: Section) {
+        var snapshot = dataSource.snapshot()
+        switch type {
+        case .genre: snapshot.appendItems(collectionData, toSection: .genre)
+        case .movie:
+            let currentItems = snapshot.itemIdentifiers(inSection: .movie)
+            snapshot.deleteItems(currentItems)
+            snapshot.appendItems(collectionData, toSection: .movie)
+        }
+        dataSource.apply(snapshot, animatingDifferences: true)
+    }
+    
+    func buildDataSource() -> DataSource {
+        DataSource(collectionView: collectionView,
+                   cellProvider: { (collectionView, indexPath, collectionData) -> UICollectionViewCell? in
+                    var cell: UICollectionViewCell?
+                    
+                    switch collectionData {
+                    case .genre(let genre) where indexPath.section == Section.genre.rawValue:
+                        cell = collectionView.dequeueReusableCell(withReuseIdentifier: "GenreCell",
+                                                                  for: indexPath) as? GenreCell
+                        (cell as? GenreCell)?.configure(with: genre)
+                    case .movie(let movie) where indexPath.section == Section.movie.rawValue:
+                        cell = collectionView.dequeueReusableCell(withReuseIdentifier: "MovieQueryCell",
+                                                                  for: indexPath) as? MovieQueryCell
+                        (cell as? MovieQueryCell)?.configure(with: movie)
+                    case _: fatalError()
+                    }
+                    return cell
+                   })
+    }
     
     func configureView() {
         title = "Movies"
@@ -153,38 +190,6 @@ private extension HomeViewController {
             }
         })
         collectionView.collectionViewLayout = layout
-    }
-    
-    func applySnapshot(collectionData: [HomeCollectionDataType], type: Section) {
-        var snapshot = dataSource.snapshot()
-        switch type {
-        case .genre: snapshot.appendItems(collectionData, toSection: .genre)
-        case .movie:
-            let currentItems = snapshot.itemIdentifiers(inSection: .movie)
-            snapshot.deleteItems(currentItems)
-            snapshot.appendItems(collectionData, toSection: .movie)
-        }
-        dataSource.apply(snapshot, animatingDifferences: true)
-    }
-    
-    func buildDataSource() -> DataSource {
-        DataSource(collectionView: collectionView,
-                   cellProvider: { (collectionView, indexPath, collectionData) -> UICollectionViewCell? in
-                    var cell: UICollectionViewCell?
-                    
-                    switch collectionData {
-                    case .genre(let genre) where indexPath.section == Section.genre.rawValue:
-                        cell = collectionView.dequeueReusableCell(withReuseIdentifier: "GenreCell",
-                                                                  for: indexPath) as? GenreCell
-                        (cell as? GenreCell)?.configure(with: genre)
-                    case .movie(let movie) where indexPath.section == Section.movie.rawValue:
-                        cell = collectionView.dequeueReusableCell(withReuseIdentifier: "MovieQueryCell",
-                                                                  for: indexPath) as? MovieQueryCell
-                        (cell as? MovieQueryCell)?.configure(with: movie)
-                    case _: fatalError()
-                    }
-                    return cell
-                   })
     }
 }
 

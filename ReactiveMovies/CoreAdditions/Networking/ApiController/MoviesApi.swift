@@ -13,7 +13,12 @@ struct Endpoints {
     static let baseUrlString = "https://api.themoviedb.org/3"
     static let genres = "/genre/movie/list"
     static let discover = "/discover/movie"
+    static let movieDetails = "/movie/"
     static let images = "https://image.tmdb.org/t/p/w500/"
+    
+    static var baseUrl: URL {
+        return URL(string: Endpoints.baseUrlString)!
+    }
 }
 
 fileprivate struct Parameters {
@@ -33,7 +38,7 @@ final class MoviesApi: BaseRequest {
                                               parameters: [(Parameters.apiKey, Constants.apiKey),
                                                            (Parameters.language, languageSetting)])
         let headers = RequestHeaderAdapter()
-        let requestBuilder = RequestBuilder(baseUrl: baseUrl,
+        let requestBuilder = RequestBuilder(baseUrl: Endpoints.baseUrl,
                                             pathComponent: Endpoints.genres,
                                             adapters: [headers, params],
                                             method: .get)
@@ -49,7 +54,7 @@ final class MoviesApi: BaseRequest {
                                                            (Parameters.genres, genres),
                                                            (Parameters.page, page.description)])
         let headers = RequestHeaderAdapter()
-        let requestBuilder = RequestBuilder(baseUrl: baseUrl,
+        let requestBuilder = RequestBuilder(baseUrl: Endpoints.baseUrl,
                                             pathComponent: Endpoints.discover,
                                             adapters: [headers, params],
                                             method: .get)
@@ -58,12 +63,18 @@ final class MoviesApi: BaseRequest {
             .eraseToAnyPublisher()
     }
     
-}
-
-// MARK: - Private
-
-private extension MoviesApi {
-    var baseUrl: URL {
-        return URL(string: Endpoints.baseUrlString)!
+    public func requestMovieDetails(movieId: Int) -> AnyPublisher<Movie, Error> {
+        let params = RequestParametersAdapter(withBody: false,
+                                              parameters: [(Parameters.apiKey, Constants.apiKey),
+                                                           (Parameters.language, languageSetting)])
+        let headers = RequestHeaderAdapter()
+        let requestBuilder = RequestBuilder(baseUrl: Endpoints.baseUrl,
+                                            pathComponent: Endpoints.movieDetails + movieId.description,
+                                            adapters: [headers, params],
+                                            method: .get)
+        
+        return request(with: requestBuilder.request, type: Movie.self)
+            .eraseToAnyPublisher()
     }
+    
 }

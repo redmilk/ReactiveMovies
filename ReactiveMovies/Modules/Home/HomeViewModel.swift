@@ -10,6 +10,7 @@ import Combine
 
 class HomeViewModel {
     
+    /// Output
     var genres: AnyPublisher<[HomeCollectionDataType], Never> {
         _genres
             .receive(on: DispatchQueue.main)
@@ -26,6 +27,7 @@ class HomeViewModel {
     @Published var searchText: String = ""
     @Published var currentScroll: IndexPath = IndexPath()
     @Published var selectedGenreIndex: Int = 0
+    @Published var selectedMovieIndex: Int?
     
     private let coordinator: HomeCoordinator
     private let movieService: MovieService
@@ -42,12 +44,15 @@ class HomeViewModel {
         self.coordinator = coordinator
         self.movieService = movieService
         
+        /// subscriptions
         handleErrors()
         requestGenres()
         requestMovies()
         handleSearchText()
         handleInfiniteScroll()
         handleGenreSelection()
+        handleShowMovieDetail()
+        
     }
     
     private func requestMovies() {
@@ -132,6 +137,17 @@ class HomeViewModel {
                 self.showAlert(with: "Ooops", message: error.localizedDescription)
             }
             .sink(receiveValue: { _ in })
+            .store(in: &subscriptions)
+    }
+    
+    private func handleShowMovieDetail() {
+        $selectedMovieIndex.filter { $0 != nil }
+            .receive(on: DispatchQueue.main)
+            .eraseToAnyPublisher()
+            .sink(receiveValue: { [unowned self] index in
+                guard let movie = self._filteredMovies.value[index!].movie else { return }
+                self.coordinator.openMovieDetails(movie: movie)
+            })
             .store(in: &subscriptions)
     }
     

@@ -24,6 +24,12 @@ final class MovieService {
             .eraseToAnyPublisher()
     }
     
+    func requestMovieDetails(with id: Int) -> AnyPublisher<Movie, Error> {
+        return moviesApi
+            .requestMovieDetails(movieId: id)
+            .eraseToAnyPublisher()
+    }
+    
     func filteredMovies(_ movies: [MovieQueryElement], searchText: String?) -> [MovieQueryElement] {
         guard let searchText = searchText, !searchText.isEmpty else {
             return movies

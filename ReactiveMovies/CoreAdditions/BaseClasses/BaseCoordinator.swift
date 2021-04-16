@@ -12,9 +12,11 @@ import Combine
 class BaseCoordinator {
     
     weak var viewController: UIViewController!
+    weak var navigationController: UINavigationController?
     
-    init(viewController: UIViewController) {
+    init(viewController: UIViewController, navigationController: UINavigationController?) {
         self.viewController = viewController
+        self.navigationController = navigationController
     }
     
     func showAlert(title: String, message: String) -> AnyPublisher<Void, Never> {
