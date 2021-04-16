@@ -68,6 +68,17 @@ struct Movie: Codable {
 struct Genre: Codable, Hashable {
     let id: Int
     let name: String
+    var isSelected: Bool? = false
+    
+    static var allGenres: Genre {
+        return Genre(id: -1, name: "ALL", isSelected: true)
+    }
+    
+    init(id: Int, name: String, isSelected: Bool) {
+        self.id = id
+        self.name = name
+        self.isSelected = isSelected
+    }
 
     enum CodingKeys: String, CodingKey {
         case id = "id"

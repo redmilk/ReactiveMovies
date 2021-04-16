@@ -16,32 +16,12 @@ final class MovieService {
         return moviesApi
             .requestMoviesGenres()
             .eraseToAnyPublisher()
-//            .sink(receiveCompletion: { [weak self] completion in
-//                if case .failure(let error) = completion {
-//                    self?.errors.send(error)
-//                }
-//            },
-//            receiveValue: { [weak self] genres in
-//                let wrapedGenres = genres.dataSourceWrapper
-//                self?.genres.value.append(contentsOf: wrapedGenres)
-//            })
-//            .store(in: &subscriptions)
     }
     
     func queryMovies(page: Int, genres: String? = nil) -> AnyPublisher<MovieQuery, Error> {
         return moviesApi
             .requestMoviesWithQuery(page: page, genres: genres)
             .eraseToAnyPublisher()
-//            .sink(receiveCompletion: { [unowned self] completion in
-//                if case .failure(let error) = completion {
-//                    self.errors.send(error)
-//                }
-//            },
-//            receiveValue: { [weak self] movies in
-//                let wrapedMovies = movies.dataSourceWrapper
-//                self.movies.value.append(contentsOf: wrapedMovies)
-//            })
-//            .store(in: &subscriptions)
     }
     
     func filteredMovies(_ movies: [MovieQueryElement], searchText: String?) -> [MovieQueryElement] {
@@ -51,6 +31,11 @@ final class MovieService {
         return movies.filter { item in
             item.title!.lowercased().contains(searchText.lowercased())
         }
+    }
+    
+    func filteredMovies(_ movies: [MovieQueryElement], by genre: Genre?) -> [MovieQueryElement] {
+        guard let genre = genre else { return movies }
+        return movies.filter { ($0.genreIDS ?? []).contains(genre.id) }
     }
     
 }

@@ -80,7 +80,12 @@ final class HomeViewController: UIViewController {
 
 extension HomeViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        viewModel.scrollIndexPath = indexPath
+        viewModel.currentScroll = indexPath
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard indexPath.section == 0 else { return }
+        viewModel.selectedGenreIndex = indexPath.row
     }
 }
 
