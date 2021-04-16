@@ -16,6 +16,20 @@ enum Section: Int {
 enum HomeCollectionDataType: Hashable {
     case genre(Genre)
     case movie(MovieQueryElement)
+    
+    var genre: Genre? {
+        switch self {
+        case .genre(let genre): return genre
+        case _: return nil
+        }
+    }
+    
+    var movie: MovieQueryElement? {
+        switch self {
+        case .movie(let movie): return movie
+        case _: return nil
+        }
+    }
 }
 
 typealias DataSource = UICollectionViewDiffableDataSource<Section, HomeCollectionDataType>
@@ -25,8 +39,7 @@ final class HomeViewController: UIViewController {
     
     /// Interactor
     private lazy var viewModel: HomeViewModel = {
-        HomeViewModel(moviesApi: MoviesApi(),
-                      coordinator: HomeCoordinator(viewController: self))
+        HomeViewModel(coordinator: HomeCoordinator(viewController: self), movieService: MovieService())
     }()
     
     @IBOutlet private weak var collectionView: UICollectionView!
@@ -35,8 +48,6 @@ final class HomeViewController: UIViewController {
     private var subscriptions = Set<AnyCancellable>()
     private lazy var dataSource = buildDataSource()
     
-    @Published private var isCollectionAnimatingDifferences: Bool = false
-    @Published private var searchText: String = ""
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -55,24 +66,12 @@ final class HomeViewController: UIViewController {
             .store(in: &subscriptions)
         
         viewModel
-            .movies
+            .filteredMovies
             .eraseToAnyPublisher()
             .receive(on: DispatchQueue.main)
             .sink { [unowned self] collectionData in
                 self.applySnapshot(collectionData: collectionData, type: .movie)
             }
-            .store(in: &subscriptions)
-        
-        $searchText
-            .removeDuplicates()
-            .combineLatest($isCollectionAnimatingDifferences.filter { !$0 }.removeDuplicates())
-            .map { $0.0 }
-            .map { [unowned self] searchText in
-                self.viewModel.filteredMovies(searchText: searchText)
-            }
-            .sink(receiveValue: { [unowned self] collectionData in
-                self.applySnapshot(collectionData: collectionData, type: .movie, isFilter: searchText != "")
-            })
             .store(in: &subscriptions)
     }
 }
@@ -126,24 +125,16 @@ private extension HomeViewController {
         collectionView.collectionViewLayout = layout
     }
     
-    func applySnapshot(collectionData: [HomeCollectionDataType], type: Section, isFilter: Bool = false) {
+    func applySnapshot(collectionData: [HomeCollectionDataType], type: Section) {
         var snapshot = dataSource.snapshot()
         switch type {
         case .genre: snapshot.appendItems(collectionData, toSection: .genre)
         case .movie:
-            if !isFilter {
-                snapshot.appendItems(collectionData, toSection: .movie)
-            } else {
-                let currentItems = snapshot.itemIdentifiers(inSection: .movie)
-                snapshot.deleteItems(currentItems)
-                snapshot.appendItems(collectionData, toSection: .movie)
-            }
+            let currentItems = snapshot.itemIdentifiers(inSection: .movie)
+            snapshot.deleteItems(currentItems)
+            snapshot.appendItems(collectionData, toSection: .movie)
         }
-        /// for being able to use animating differences true
-        isCollectionAnimatingDifferences = true
-        dataSource.apply(snapshot, animatingDifferences: true) {
-            self.isCollectionAnimatingDifferences = false
-        }
+        dataSource.apply(snapshot, animatingDifferences: true)
     }
     
     func buildDataSource() -> DataSource {
@@ -180,7 +171,7 @@ private extension HomeViewController {
 
 extension HomeViewController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
-        searchText = searchController.searchBar.text ?? ""
+        viewModel.searchText = searchController.searchBar.text ?? ""
     }
 }
 
