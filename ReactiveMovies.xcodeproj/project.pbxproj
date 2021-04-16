@@ -28,8 +28,6 @@
 		79FEB92B26228259001A1DD2 /* HomeCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79FEB92A26228259001A1DD2 /* HomeCoordinator.swift */; };
 		79FEB92F2622827C001A1DD2 /* BaseCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79FEB92E2622827C001A1DD2 /* BaseCoordinator.swift */; };
 		79FEB932262283C3001A1DD2 /* BaseViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79FEB931262283C3001A1DD2 /* BaseViewModel.swift */; };
-		79FEB93626228738001A1DD2 /* GenresViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79FEB93426228738001A1DD2 /* GenresViewController.swift */; };
-		79FEB93726228738001A1DD2 /* GenresViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 79FEB93526228738001A1DD2 /* GenresViewController.xib */; };
 		79FEB93F262289A3001A1DD2 /* GenreCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79FEB93D262289A3001A1DD2 /* GenreCell.swift */; };
 		79FEB9522622F21F001A1DD2 /* PublishTimeLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79FEB9512622F21F001A1DD2 /* PublishTimeLogger.swift */; };
 		79FEB9562622FBD3001A1DD2 /* MovieQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79FEB9552622FBD3001A1DD2 /* MovieQuery.swift */; };
@@ -62,8 +60,6 @@
 		79FEB92A26228259001A1DD2 /* HomeCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeCoordinator.swift; sourceTree = "<group>"; };
 		79FEB92E2622827C001A1DD2 /* BaseCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseCoordinator.swift; sourceTree = "<group>"; };
 		79FEB931262283C3001A1DD2 /* BaseViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseViewModel.swift; sourceTree = "<group>"; };
-		79FEB93426228738001A1DD2 /* GenresViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenresViewController.swift; sourceTree = "<group>"; };
-		79FEB93526228738001A1DD2 /* GenresViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = GenresViewController.xib; sourceTree = "<group>"; };
 		79FEB93D262289A3001A1DD2 /* GenreCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenreCell.swift; sourceTree = "<group>"; };
 		79FEB9512622F21F001A1DD2 /* PublishTimeLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublishTimeLogger.swift; sourceTree = "<group>"; };
 		79FEB9552622FBD3001A1DD2 /* MovieQuery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieQuery.swift; sourceTree = "<group>"; };
@@ -163,7 +159,6 @@
 		7976AC3926227579008C3DA8 /* Modules */ = {
 			isa = PBXGroup;
 			children = (
-				79FEB93926228756001A1DD2 /* XibController */,
 				795DA93026227C8700C10373 /* Home */,
 			);
 			path = Modules;
@@ -211,15 +206,6 @@
 				79FEB931262283C3001A1DD2 /* BaseViewModel.swift */,
 			);
 			path = BaseClasses;
-			sourceTree = "<group>";
-		};
-		79FEB93926228756001A1DD2 /* XibController */ = {
-			isa = PBXGroup;
-			children = (
-				79FEB93426228738001A1DD2 /* GenresViewController.swift */,
-				79FEB93526228738001A1DD2 /* GenresViewController.xib */,
-			);
-			path = XibController;
 			sourceTree = "<group>";
 		};
 		79FEB93C2622897A001A1DD2 /* Views */ = {
@@ -302,7 +288,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				79FEB93726228738001A1DD2 /* GenresViewController.xib in Resources */,
 				7976AC16262262E7008C3DA8 /* LaunchScreen.storyboard in Resources */,
 				7976AC13262262E7008C3DA8 /* Assets.xcassets in Resources */,
 				7976AC11262262E5008C3DA8 /* HomeScreen.storyboard in Resources */,
@@ -317,7 +302,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				79FEB9522622F21F001A1DD2 /* PublishTimeLogger.swift in Sources */,
-				79FEB93626228738001A1DD2 /* GenresViewController.swift in Sources */,
 				7976AC2C26226DD7008C3DA8 /* ParametersAdapter.swift in Sources */,
 				7976AC3E262275DE008C3DA8 /* MoviesApi.swift in Sources */,
 				79FEB932262283C3001A1DD2 /* BaseViewModel.swift in Sources */,
