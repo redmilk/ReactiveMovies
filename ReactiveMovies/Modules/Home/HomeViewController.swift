@@ -73,6 +73,14 @@ final class HomeViewController: UIViewController {
                 self.applySnapshot(collectionData: collectionData, type: .movie)
             }
             .store(in: &subscriptions)
+        
+        viewModel
+            .$selectedGenreIndex
+            .sink(receiveValue: { [unowned self] index in
+                self.navigationController?.setNavigationBarHidden(index != 0, animated: true)
+            })
+            .store(in: &subscriptions)
+        
     }
 }
 
@@ -93,10 +101,21 @@ extension HomeViewController: UICollectionViewDelegate {
 
 private extension HomeViewController {
     
+    func configureView() {
+        title = "Movies"
+        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationController?.navigationItem.hidesSearchBarWhenScrolling = false
+        collectionView.delegate = self
+        
+        var snapshot = Snapshot()
+        snapshot.appendSections([.genre, .movie])
+        dataSource.apply(snapshot)
+    }
+    
     func configureSearchController() {
         searchController.searchResultsUpdater = self
         searchController.obscuresBackgroundDuringPresentation = false
-        searchController.searchBar.placeholder = "Search Genres"
+        searchController.searchBar.placeholder = "Find movie"
         navigationItem.searchController = searchController
         definesPresentationContext = true
     }
@@ -116,7 +135,7 @@ private extension HomeViewController {
                 item.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 10)
                 let group = NSCollectionLayoutGroup.horizontal(layoutSize: size, subitem: item, count: itemCount)
                 let section = NSCollectionLayoutSection(group: group)
-                section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 10, bottom: 20, trailing: 10)
+                section.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 10, bottom: 20, trailing: 10)
                 section.interGroupSpacing = 20
                 return section
             case .movie:
@@ -166,16 +185,6 @@ private extension HomeViewController {
                     }
                     return cell
                    })
-    }
-    
-    func configureView() {
-        title = "Movie Genres"
-        navigationController?.navigationBar.prefersLargeTitles = true
-        collectionView.delegate = self
-        
-        var snapshot = Snapshot()
-        snapshot.appendSections([.genre, .movie])
-        dataSource.apply(snapshot)
     }
 }
 

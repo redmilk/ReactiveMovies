@@ -61,6 +61,7 @@ class HomeViewModel {
             .replaceError(with: [])
             .sink(receiveValue: { movies in
                 self.movies += movies
+                print("🟨🟨 movies total: " + self.movies.count.description)
                 self._filteredMovies.send(self.movies)
             })
             .store(in: &subscriptions)
@@ -86,6 +87,7 @@ class HomeViewModel {
     private func handleSearchText() {
         $searchText
             .removeDuplicates()
+            .filter { _ in self.selectedGenreIndex == 0 }
             .map { [unowned self] searchText -> [HomeCollectionDataType] in
                 let movies = self.movies.compactMap { $0.movie }
                 let results = self.movieService.filteredMovies(movies, searchText: searchText)
