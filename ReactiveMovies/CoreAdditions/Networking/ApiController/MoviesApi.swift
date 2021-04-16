@@ -24,7 +24,7 @@ fileprivate struct Parameters {
     static let sortBy = "sort_by"
 }
 
-fileprivate let languageSetting = "ru-RU"
+fileprivate let languageSetting = "en-US"//"ru-RU"
 
 final class MoviesApi: BaseRequest {
     

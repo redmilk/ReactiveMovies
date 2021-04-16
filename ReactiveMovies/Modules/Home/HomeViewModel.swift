@@ -10,20 +10,19 @@ import Combine
 
 class HomeViewModel {
     
-    public var errors: AnyPublisher<Error, Never> { _errors.eraseToAnyPublisher() }
-    public var collectionData: AnyPublisher<[HomeCollectionDataType], Never> {
-        return _collectionData.eraseToAnyPublisher()
-    }
+    var errors: AnyPublisher<Error, Never> { _errors.eraseToAnyPublisher() }
+    let genres = CurrentValueSubject<[HomeCollectionDataType], Never>([])
+    let movies = CurrentValueSubject<[HomeCollectionDataType], Never>([])
         
-    public func filteredItems(items: [HomeCollectionDataType], searchText: String?) -> [HomeCollectionDataType] {
+    func filteredMovies(searchText: String?) -> [HomeCollectionDataType] {
         guard let searchText = searchText, !searchText.isEmpty else {
-            return items
+            return movies.value
         }
         
-        return items.filter { item in
+        return movies.value.filter { item in
             switch item {
-            case .genre(let genre):
-                return genre.name.lowercased().contains(searchText.lowercased())
+            case .genre(let genre): fatalError()
+                //return genre.name.lowercased().contains(searchText.lowercased())
             case .movie(let movie):
                 return movie.title!.lowercased().contains(searchText.lowercased())
             }
@@ -42,16 +41,18 @@ class HomeViewModel {
             .store(in: &subscriptions)
         
         requestGenres()
-        queryMovies()
+        queryMovies(page: 1)
+        
+        
     }
     
     /// Dependencies
     private let moviesApi: MoviesApi
     private let coordinator: HomeCoordinator
+    
     /// Combine
     private var subscriptions = Set<AnyCancellable>()
     private let _errors = PassthroughSubject<Error, Never>()
-    private let _collectionData = PassthroughSubject<[HomeCollectionDataType], Never>()
 }
 
 // MARK: - Private methods
@@ -60,28 +61,28 @@ private extension HomeViewModel {
     func requestGenres() {
         moviesApi
             .requestMoviesGenres()
-            .map { $0.dataSourceWrapper }
             .sink(receiveCompletion: { [weak self] completion in
                 if case .failure(let error) = completion {
                     self?._errors.send(error)
                 }
             },
             receiveValue: { [weak self] genres in
-                self?._collectionData.send(genres)
+                let wrapedGenres = genres.dataSourceWrapper
+                self?.genres.value.append(contentsOf: wrapedGenres)
             })
             .store(in: &subscriptions)
     }
     
-    func queryMovies(page: Int = 1, genres: String? = nil) {
+    func queryMovies(page: Int, genres: String? = nil) {
         moviesApi.requestMoviesWithQuery(page: page, genres: genres)
-            .map { $0.dataSourceWrapper }
             .sink(receiveCompletion: { [weak self] completion in
                 if case .failure(let error) = completion {
                     self?._errors.send(error)
                 }
             },
-            receiveValue: { [weak self] queryResult in
-                self?._collectionData.send(queryResult)
+            receiveValue: { [weak self] movies in
+                let wrapedMovies = movies.dataSourceWrapper
+                self?.movies.value.append(contentsOf: wrapedMovies)
             })
             .store(in: &subscriptions)
     }

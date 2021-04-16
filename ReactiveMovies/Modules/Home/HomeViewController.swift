@@ -9,8 +9,8 @@ import UIKit
 import Combine
 
 enum Section: Int {
-    case genres
-    case movies
+    case genre = 0
+    case movie = 1
 }
 
 enum HomeCollectionDataType: Hashable {
@@ -31,10 +31,12 @@ final class HomeViewController: UIViewController {
     
     @IBOutlet private weak var collectionView: UICollectionView!
     
-    private let searchText = CurrentValueSubject<String, Never>("")
     private let searchController = UISearchController(searchResultsController: nil)
     private var subscriptions = Set<AnyCancellable>()
     private lazy var dataSource = buildDataSource()
+    
+    @Published private var isCollectionAnimatingDifferences: Bool = false
+    @Published private var searchText: String = ""
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -42,27 +44,40 @@ final class HomeViewController: UIViewController {
         configureView()
         configureSearchController()
         layoutCollection()
-
-        let collectionData = viewModel
-            .collectionData
-            .receive(on: DispatchQueue.main)
-            .share()
         
-        searchText
-            .filter { $0 != "" }
-            .prepend("")
-            .combineLatest(collectionData)
-            .map { [unowned self] tuple in
-                self.viewModel.filteredItems(items: tuple.1, searchText: tuple.0)
+        viewModel
+            .genres
+            .eraseToAnyPublisher()
+            .receive(on: DispatchQueue.main)
+            .sink { [unowned self] collectionData in
+                self.applySnapshot(collectionData: collectionData, type: .genre)
+            }
+            .store(in: &subscriptions)
+        
+        viewModel
+            .movies
+            .eraseToAnyPublisher()
+            .receive(on: DispatchQueue.main)
+            .sink { [unowned self] collectionData in
+                self.applySnapshot(collectionData: collectionData, type: .movie)
+            }
+            .store(in: &subscriptions)
+        
+        $searchText
+            .removeDuplicates()
+            .combineLatest($isCollectionAnimatingDifferences.filter { !$0 }.removeDuplicates())
+            .map { $0.0 }
+            .map { [unowned self] searchText in
+                self.viewModel.filteredMovies(searchText: searchText)
             }
             .sink(receiveValue: { [unowned self] collectionData in
-                self.applySnapshot(dataContainer: collectionData)
+                self.applySnapshot(collectionData: collectionData, type: .movie, isFilter: searchText != "")
             })
             .store(in: &subscriptions)
     }
 }
 
-// MARK: - Private
+// MARK: - Private 🟨
 
 private extension HomeViewController {
     
@@ -77,9 +92,9 @@ private extension HomeViewController {
     func layoutCollection() {
         let layout = UICollectionViewCompositionalLayout(sectionProvider: { (sectionIndex, layoutEnvironment) -> NSCollectionLayoutSection? in
             let isPhone = layoutEnvironment.traitCollection.userInterfaceIdiom == UIUserInterfaceIdiom.phone
-
+            
             switch Section(rawValue: sectionIndex)! {
-            case .genres:
+            case .genre:
                 let size = NSCollectionLayoutSize(
                     widthDimension: NSCollectionLayoutDimension.fractionalWidth(1),
                     heightDimension: NSCollectionLayoutDimension.absolute(isPhone ? 50 : 80)
@@ -92,12 +107,12 @@ private extension HomeViewController {
                 section.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10)
                 section.interGroupSpacing = 20
                 return section
-            case .movies:
+            case .movie:
                 let size = NSCollectionLayoutSize(
                     widthDimension: NSCollectionLayoutDimension.fractionalWidth(1),
                     heightDimension: NSCollectionLayoutDimension.absolute(isPhone ? 300 : 500)
                 )
-                let itemCount = isPhone ? 1 : 2
+                let itemCount = isPhone ? 2 : 2
                 let item = NSCollectionLayoutItem(layoutSize: size)
                 let group = NSCollectionLayoutGroup.horizontal(layoutSize: size, subitem: item, count: itemCount)
                 let section = NSCollectionLayoutSection(group: group)
@@ -111,41 +126,37 @@ private extension HomeViewController {
         collectionView.collectionViewLayout = layout
     }
     
-    func applySnapshot(dataContainer: [HomeCollectionDataType]) {
+    func applySnapshot(collectionData: [HomeCollectionDataType], type: Section, isFilter: Bool = false) {
         var snapshot = dataSource.snapshot()
-        let genres = dataContainer.filter { (dataType) -> Bool in
-            switch dataType {
-            case .genre: return true
-            case _: break
+        switch type {
+        case .genre: snapshot.appendItems(collectionData, toSection: .genre)
+        case .movie:
+            if !isFilter {
+                snapshot.appendItems(collectionData, toSection: .movie)
+            } else {
+                let currentItems = snapshot.itemIdentifiers(inSection: .movie)
+                snapshot.deleteItems(currentItems)
+                snapshot.appendItems(collectionData, toSection: .movie)
             }
-            return false
         }
-        
-        let movies = dataContainer.filter { (dataType) -> Bool in
-            switch dataType {
-            case .movie: return true
-            case _: break
-            }
-            return false
+        /// for being able to use animating differences true
+        isCollectionAnimatingDifferences = true
+        dataSource.apply(snapshot, animatingDifferences: true) {
+            self.isCollectionAnimatingDifferences = false
         }
-
-        snapshot.indexOfSection(.genres) == nil ? snapshot.appendSections([.genres]) : ()
-        snapshot.indexOfSection(.movies) == nil ? snapshot.appendSections([.movies]) : ()
-        snapshot.appendItems(genres, toSection: .genres)
-        snapshot.appendItems(movies, toSection: .movies)
-        dataSource.apply(snapshot, animatingDifferences: true)
     }
     
     func buildDataSource() -> DataSource {
         DataSource(collectionView: collectionView,
-                   cellProvider: { (collectionView, indexPath, dataContainer) -> UICollectionViewCell? in
+                   cellProvider: { (collectionView, indexPath, collectionData) -> UICollectionViewCell? in
                     var cell: UICollectionViewCell?
-                    switch dataContainer {
-                    case .genre(let genre) where indexPath.section == Section.genres.rawValue:
+                    
+                    switch collectionData {
+                    case .genre(let genre) where indexPath.section == Section.genre.rawValue:
                         cell = collectionView.dequeueReusableCell(withReuseIdentifier: "GenreCell",
                                                                   for: indexPath) as? GenreCell
                         (cell as? GenreCell)?.configure(with: genre)
-                    case .movie(let movie) where indexPath.section == Section.movies.rawValue:
+                    case .movie(let movie) where indexPath.section == Section.movie.rawValue:
                         cell = collectionView.dequeueReusableCell(withReuseIdentifier: "MovieQueryCell",
                                                                   for: indexPath) as? MovieQueryCell
                         (cell as? MovieQueryCell)?.configure(with: movie)
@@ -158,6 +169,10 @@ private extension HomeViewController {
     func configureView() {
         title = "Movie Genres"
         navigationController?.navigationBar.prefersLargeTitles = true
+        
+        var snapshot = Snapshot()
+        snapshot.appendSections([.genre, .movie])
+        dataSource.apply(snapshot)
     }
 }
 
@@ -165,7 +180,7 @@ private extension HomeViewController {
 
 extension HomeViewController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
-        searchText.send(searchController.searchBar.text ?? "")
+        searchText = searchController.searchBar.text ?? ""
     }
 }
 

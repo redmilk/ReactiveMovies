@@ -14,8 +14,4 @@ struct Genres: Codable {
     var dataSourceWrapper: [HomeCollectionDataType] {
         return genres.map { HomeCollectionDataType.genre($0) }
     }
-
-    enum CodingKeys: String, CodingKey {
-        case genres = "genres"
-    }
 }
