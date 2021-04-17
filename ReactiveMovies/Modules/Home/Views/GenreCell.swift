@@ -19,7 +19,8 @@ final class GenreCell: UICollectionViewCell {
  
     public func configure(with model: Genre) {
         oneLabel.text = model.name
-        contentView.backgroundColor = model.name != "ALL" ? UIColor.white : #colorLiteral(red: 0.4745098054, green: 0.8392156959, blue: 0.9764705896, alpha: 1)
+        oneLabel.textColor = model.name != "ALL" ? #colorLiteral(red: 0.2594798207, green: 0.3202164769, blue: 1, alpha: 1) : UIColor.white
+        contentView.backgroundColor = model.name != "ALL" ? UIColor.white : #colorLiteral(red: 0.2594798207, green: 0.3202164769, blue: 1, alpha: 1)
         setSelected(model.isSelected!)
     }
     

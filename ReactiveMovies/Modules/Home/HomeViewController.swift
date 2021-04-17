@@ -84,6 +84,10 @@ final class HomeViewController: UIViewController {
             })
             .store(in: &subscriptions)
     }
+    
+    @objc private func scrollToTop() {
+        collectionView.scrollToItem(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
+    }
 }
 
 // MARK: - UICollectionViewDelegate
@@ -144,6 +148,9 @@ private extension HomeViewController {
         navigationController?.navigationItem.hidesSearchBarWhenScrolling = false
         collectionView.delegate = self
         
+        let scrollToTopButton = UIBarButtonItem(title: "Scroll top", style: .plain, target: self, action: #selector(scrollToTop))
+        navigationItem.setRightBarButton(scrollToTopButton, animated: false)
+        
         var snapshot = Snapshot()
         snapshot.appendSections([.genre, .movie])
         dataSource.apply(snapshot)
@@ -169,7 +176,7 @@ private extension HomeViewController {
                 )
                 let itemCount = isPhone ? 4 : 6
                 let item = NSCollectionLayoutItem(layoutSize: size)
-                item.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 10)
+                item.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 10)
                 let group = NSCollectionLayoutGroup.horizontal(layoutSize: size, subitem: item, count: itemCount)
                 let section = NSCollectionLayoutSection(group: group)
                 section.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 10, bottom: 20, trailing: 10)

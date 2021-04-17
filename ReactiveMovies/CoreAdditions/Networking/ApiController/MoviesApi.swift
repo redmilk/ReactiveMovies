@@ -30,6 +30,8 @@ fileprivate struct Parameters {
 }
 
 fileprivate let languageSetting = "en-US"//"ru-RU"
+fileprivate let averageVoteDesc = "vote_average.desc"
+fileprivate let popularityDesc = "popularity.desc"
 
 final class MoviesApi: BaseRequest {
     
@@ -52,7 +54,8 @@ final class MoviesApi: BaseRequest {
                                               parameters: [(Parameters.apiKey, Constants.apiKey),
                                                            (Parameters.language, languageSetting),
                                                            (Parameters.genres, genres),
-                                                           (Parameters.page, page.description)])
+                                                           (Parameters.page, page.description),
+                                                           (Parameters.sortBy, popularityDesc)])
         let headers = RequestHeaderAdapter()
         let requestBuilder = RequestBuilder(baseUrl: Endpoints.baseUrl,
                                             pathComponent: Endpoints.discover,
