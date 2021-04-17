@@ -17,7 +17,7 @@ final class MovieQueryCell: UICollectionViewCell {
     func configure(with model: MovieQueryElement) {
         movieImageView.kf.setImage(with: URL(string: Endpoints.images + (model.posterPath ?? "")))
         titleLabel.text = model.title
-        descriptionLabel.text = (model.originalTitle ?? "") + ": " + (model.voteAverage?.description ?? "")
+        descriptionLabel.text = (model.originalTitle ?? "") + ": ☆" + (model.voteAverage?.description ?? "")
         contentView.layer.cornerRadius = 12.0
     }
 }

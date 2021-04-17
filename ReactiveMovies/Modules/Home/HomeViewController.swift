@@ -167,7 +167,7 @@ private extension HomeViewController {
                     widthDimension: NSCollectionLayoutDimension.fractionalWidth(1),
                     heightDimension: NSCollectionLayoutDimension.absolute(isPhone ? 30 : 50)
                 )
-                let itemCount = isPhone ? 3 : 6
+                let itemCount = isPhone ? 4 : 6
                 let item = NSCollectionLayoutItem(layoutSize: size)
                 item.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 10)
                 let group = NSCollectionLayoutGroup.horizontal(layoutSize: size, subitem: item, count: itemCount)
@@ -180,7 +180,7 @@ private extension HomeViewController {
                     widthDimension: NSCollectionLayoutDimension.fractionalWidth(1),
                     heightDimension: NSCollectionLayoutDimension.absolute(isPhone ? 300 : 500)
                 )
-                let itemCount = isPhone ? 2 : 2
+                let itemCount = isPhone ? 3 : 4
                 let item = NSCollectionLayoutItem(layoutSize: size)
                 let group = NSCollectionLayoutGroup.horizontal(layoutSize: size, subitem: item, count: itemCount)
                 let section = NSCollectionLayoutSection(group: group)

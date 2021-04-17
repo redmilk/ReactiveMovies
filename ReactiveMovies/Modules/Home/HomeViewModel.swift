@@ -146,7 +146,7 @@ class HomeViewModel {
             .eraseToAnyPublisher()
             .sink(receiveValue: { [unowned self] index in
                 guard let movie = self._filteredMovies.value[index!].movie else { return }
-                self.coordinator.openMovieDetails(movie: movie)
+                self.coordinator.openMovieDetails(movie: self._filteredMovies.value.map { $0.movie }.compactMap { $0 }, initialIndex: index!)
             })
             .store(in: &subscriptions)
     }

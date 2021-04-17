@@ -8,7 +8,7 @@
 import Foundation
 import Combine
 
-class PublishTimeLogger: TextOutputStream {
+class DebugOutputStreamLogger: TextOutputStream {
     
     func write(_ string: String) {
         let trimmed = string.trimmingCharacters(in: .whitespacesAndNewlines)
