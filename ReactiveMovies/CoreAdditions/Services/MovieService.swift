@@ -12,19 +12,19 @@ final class MovieService {
     
     private let moviesApi = MoviesApi()
     
-    func requestGenres() -> AnyPublisher<Genres, Error> {
+    func requestGenres() -> AnyPublisher<Genres, RequestError> {
         return moviesApi
             .requestMoviesGenres()
             .eraseToAnyPublisher()
     }
     
-    func queryMovies(page: Int, genres: String? = nil) -> AnyPublisher<MovieQuery, Error> {
+    func queryMovies(page: Int, genres: String? = nil) -> AnyPublisher<MovieQuery, RequestError> {
         return moviesApi
             .requestMoviesWithQuery(page: page, genres: genres)
             .eraseToAnyPublisher()
     }
     
-    func requestMovieDetails(with id: Int) -> AnyPublisher<Movie, Error> {
+    func requestMovieDetailsWithMovieId(_ id: Int) -> AnyPublisher<Movie, RequestError> {
         return moviesApi
             .requestMovieDetails(movieId: id)
             .eraseToAnyPublisher()

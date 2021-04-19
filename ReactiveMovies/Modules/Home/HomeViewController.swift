@@ -8,8 +8,6 @@
 import UIKit
 import Combine
 
-
-
 enum HomeCollectionDataType: Hashable {
     case genre(Genre)
     case movie(MovieQueryElement)
@@ -60,18 +58,18 @@ final class HomeViewController: UIViewController {
         layoutCollection()
         
         viewModel
-            .genres
+            .$genres
             .eraseToAnyPublisher()
-            .receive(on: DispatchQueue.main)
+            .receive(on: RunLoop.main)
             .sink { [unowned self] collectionData in
                 self.applySnapshot(collectionData: collectionData, type: .genre)
             }
             .store(in: &subscriptions)
         
         viewModel
-            .filteredMovies
+            .$filteredMovies
             .eraseToAnyPublisher()
-            .receive(on: DispatchQueue.main)
+            .receive(on: RunLoop.main)
             .sink { [unowned self] collectionData in
                 self.applySnapshot(collectionData: collectionData, type: .movie)
             }

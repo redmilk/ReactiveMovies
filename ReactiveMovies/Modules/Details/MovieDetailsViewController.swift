@@ -49,16 +49,20 @@ final class MovieDetailsViewController: UIViewController {
         configureView()
         layoutCollection()
         
-        viewModel.movies.sink(receiveValue: { [unowned self] moviesAndIndex in
-            self.applySnapshot(with: moviesAndIndex.0)
+        viewModel
+            .$movies
+            .compactMap { $0 }
+            .sink(receiveValue: { [unowned self] moviesAndIndex in
+            applySnapshot(with: moviesAndIndex.0)
             collectionView.scrollToItem(at: IndexPath(row: moviesAndIndex.1, section: 0), at: .top, animated: true)
         })
         .store(in: &subscriptions)
         
-        viewModel.movieDetail.sink(receiveValue: { movie in
-            self.updateSnapshotItem(with: movie)
-        })
-        .store(in: &subscriptions)
+        viewModel
+            .$movieDetails
+            .compactMap { $0 }
+            .sink(receiveValue: { [unowned self] in updateSnapshotItem(with: $0) })
+            .store(in: &subscriptions)
     }
     
     private func layoutCollection() {

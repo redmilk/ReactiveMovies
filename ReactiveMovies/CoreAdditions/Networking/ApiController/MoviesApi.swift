@@ -21,24 +21,29 @@ struct Endpoints {
     }
 }
 
-fileprivate struct Parameters {
-    static let apiKey = "api_key"
-    static let language = "language"
-    static let page = "page"
-    static let genres = "with_genres"
-    static let sortBy = "sort_by"
-}
+
 
 fileprivate let languageSetting = "en-US"//"ru-RU"
 fileprivate let averageVoteDesc = "vote_average.desc"
 fileprivate let popularityDesc = "popularity.desc"
 
 final class MoviesApi: BaseRequest {
+    private let apiKeyValue = "ed13542fcfbf6b6bd02fb2723a0495ff" /// TODO: put in keychain
     
-    public func requestMoviesGenres() -> AnyPublisher<Genres, Error> {
-        let params = RequestParametersAdapter(withBody: false,
-                                              parameters: [(Parameters.apiKey, Constants.apiKey),
-                                                           (Parameters.language, languageSetting)])
+    /// Parameters keys
+    private let kLanguage = "language"
+    private let kPage = "page"
+    private let kGenres = "with_genres"
+    private let kSortBy = "sort_by"
+    private let kApiKey = "api_key"
+    
+    public func requestMoviesGenres() -> AnyPublisher<Genres, RequestError> {
+        let params = RequestParametersAdapter(
+            withBody: false,
+            parameters: [
+                Params(title: kApiKey, value: apiKeyValue),
+                Params(title: kLanguage, value: languageSetting),
+            ])
         let headers = RequestHeaderAdapter()
         let requestBuilder = RequestBuilder(baseUrl: Endpoints.baseUrl,
                                             pathComponent: Endpoints.genres,
@@ -49,35 +54,53 @@ final class MoviesApi: BaseRequest {
             .eraseToAnyPublisher()
     }
     
-    public func requestMoviesWithQuery(page: Int, genres: String?) -> AnyPublisher<MovieQuery, Error> {
-        let params = RequestParametersAdapter(withBody: false,
-                                              parameters: [(Parameters.apiKey, Constants.apiKey),
-                                                           (Parameters.language, languageSetting),
-                                                           (Parameters.genres, genres),
-                                                           (Parameters.page, page.description),
-                                                           (Parameters.sortBy, popularityDesc)])
+    /// Get movies by genre
+    func requestMoviesWithQuery(
+        page: Int,
+        genres: String?
+    ) -> AnyPublisher<MovieQuery, RequestError> {
+        
+        let params = RequestParametersAdapter(
+            withBody: false,
+            parameters: [
+                Params(title: kApiKey, value: apiKeyValue),
+                Params(title: kLanguage, value: languageSetting),
+                Params(title: kPage, value: page.description),
+                Params(title: kSortBy, value: popularityDesc),
+            ])
         let headers = RequestHeaderAdapter()
-        let requestBuilder = RequestBuilder(baseUrl: Endpoints.baseUrl,
-                                            pathComponent: Endpoints.discover,
-                                            adapters: [headers, params],
-                                            method: .get)
+        let requestBuilder = RequestBuilder(
+            baseUrl: Endpoints.baseUrl,
+            pathComponent: Endpoints.discover,
+            adapters: [headers, params],
+            method: .get
+        )
         
         return request(with: requestBuilder.request, type: MovieQuery.self)
             .eraseToAnyPublisher()
     }
     
-    public func requestMovieDetails(movieId: Int) -> AnyPublisher<Movie, Error> {
-        let params = RequestParametersAdapter(withBody: false,
-                                              parameters: [(Parameters.apiKey, Constants.apiKey),
-                                                           (Parameters.language, languageSetting)])
+    /// Get details of movie with id
+    func requestMovieDetails(
+        movieId: Int
+    ) -> AnyPublisher<Movie, RequestError> {
+        
+        let params = RequestParametersAdapter(
+            withBody: false,
+            parameters: [
+                Params(title: kApiKey, value: apiKeyValue),
+                Params(title: kLanguage, value: languageSetting),
+            ])
         let headers = RequestHeaderAdapter()
-        let requestBuilder = RequestBuilder(baseUrl: Endpoints.baseUrl,
-                                            pathComponent: Endpoints.movieDetails + movieId.description,
-                                            adapters: [headers, params],
-                                            method: .get)
+        let requestBuilder = RequestBuilder(
+            baseUrl: Endpoints.baseUrl,
+            pathComponent: Endpoints.movieDetails + movieId.description,
+            adapters: [headers, params],
+            method: .get
+        )
         
         return request(with: requestBuilder.request, type: Movie.self)
-            .eraseToAnyPublisher()
+        .eraseToAnyPublisher()
     }
     
 }

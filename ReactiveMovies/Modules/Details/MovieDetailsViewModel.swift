@@ -16,53 +16,47 @@ fileprivate extension Array where Element == MovieQueryElement {
 
 final class MoviewDetailsViewModel {
     
-    var movies: AnyPublisher<([MovieDetailsCollectionData], Int), Never> {
-        return _movies.compactMap { $0 }
-            .receive(on: DispatchQueue.main)
-            .eraseToAnyPublisher()
-    }
-    
-    var movieDetail: AnyPublisher<MovieDetailsCollectionData, Never> {
-        return _movieDetails.compactMap { $0 }
-            .receive(on: DispatchQueue.main)
-            .eraseToAnyPublisher()
-    }
-    
+    // MARK: - Output for VC
+    @Published var movies: ([MovieDetailsCollectionData], Int)?
+    @Published var movieDetails: MovieDetailsCollectionData?
+
+    // MARK: - Input from VC
     @Published var selectedScroll: IndexPath?
     
-    private let initialMovie: [MovieQueryElement]
-    private let initialIndex: Int
+    // MARK: - Required dependencies
+    private let initialMovies: [MovieQueryElement]
+    private let initialMovieIndexForDisplayDetail: Int
     private let movieService: MovieService
     
-    private var subscriptions = Set<AnyCancellable>()
-    private let _movies = CurrentValueSubject<([MovieDetailsCollectionData], Int)?, Never>(nil)
-    private let _movieDetails = CurrentValueSubject<MovieDetailsCollectionData?, Never>(nil)
+    // MARK: - Combine
     private let errors = PassthroughSubject<Error, Never>()
+    private var subscriptions = Set<AnyCancellable>()
+    @Published private var indexMovieRequiredExtraInfo: Int?
     
     init(initialMovie: [MovieQueryElement], initialIndex: Int, movieService: MovieService) {
-        self.initialMovie = initialMovie
+        self.initialMovies = initialMovie
         self.movieService = movieService
-        self.initialIndex = initialIndex
+        self.initialMovieIndexForDisplayDetail = initialIndex
         
-        _movies.send((initialMovie.wrapped, initialIndex))
+        movies = (initialMovie.wrapped, initialIndex)
         
         $selectedScroll
             .compactMap { $0?.row }
             .removeDuplicates()
             .print("👁‍🗨👁‍🗨👁‍🗨", to: DebugOutputStreamLogger())
-            .compactMap { [unowned self] in self._movies.value?.0[$0].movieQuery?.id }
-            .flatMap { [unowned self] (index: Int) -> AnyPublisher<Movie, Error> in
-                self.movieService.requestMovieDetails(with: index)
-            }
-            .eraseToAnyPublisher()
+            .compactMap { [unowned self] in self.movies?.0[$0].movieQuery?.id }
+            .setFailureType(to: RequestError.self)
+            .flatMap ({ index -> AnyPublisher<Movie, RequestError> in
+                self.movieService.requestMovieDetailsWithMovieId(index)
+            })
             .sink(receiveCompletion: { [unowned self] completion in
                 if case .failure(let error) = completion {
                     self.errors.send(error)
                 }
             }, receiveValue: { [unowned self] movie in
-                self._movies.value?.0[selectedScroll!.row].movie = movie
-                let updated = self._movies.value?.0[selectedScroll!.row]
-                self._movieDetails.send(updated)
+                self.movies?.0[selectedScroll!.row].movie = movie
+                let updated = self.movies?.0[selectedScroll!.row]
+                self.movieDetails = updated
             })
             .store(in: &subscriptions)
         

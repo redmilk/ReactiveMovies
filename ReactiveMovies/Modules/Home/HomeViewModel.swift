@@ -11,17 +11,8 @@ import Combine
 class HomeViewModel {
     
     /// Output
-    var genres: AnyPublisher<[HomeCollectionDataType], Never> {
-        _genres
-            .receive(on: DispatchQueue.main)
-            .eraseToAnyPublisher()
-    }
-    
-    var filteredMovies: AnyPublisher<[HomeCollectionDataType], Never> {
-        _filteredMovies
-            .receive(on: DispatchQueue.main)
-            .eraseToAnyPublisher()
-    }
+    @Published var genres: [HomeCollectionDataType] = []
+    @Published var filteredMovies: [HomeCollectionDataType] = []
     
     /// Input
     @Published var searchText: String = ""
@@ -35,8 +26,6 @@ class HomeViewModel {
     private var page: Int = 1
     private var movies: [HomeCollectionDataType] = []
     
-    private let _filteredMovies = CurrentValueSubject<[HomeCollectionDataType], Never>([])
-    private var _genres = CurrentValueSubject<[HomeCollectionDataType], Never>([])
     private let errors = PassthroughSubject<Error, Never>()
     private var subscriptions = Set<AnyCancellable>()
     
@@ -64,10 +53,10 @@ class HomeViewModel {
                 }
             })
             .replaceError(with: [])
-            .sink(receiveValue: { movies in
-                self.movies += movies
-                print("🟨🟨 movies total: " + self.movies.count.description)
-                self._filteredMovies.send(self.movies)
+            .sink(receiveValue: { [unowned self] requestedMovies in
+                movies += requestedMovies
+                print("🟨🟨 movies total: " + movies.count.description)
+                filteredMovies = movies
             })
             .store(in: &subscriptions)
     }
@@ -81,10 +70,8 @@ class HomeViewModel {
                 }
             })
             .replaceError(with: [])
-            .sink(receiveValue: { [weak self] genres in
-                var prependWithGenreAll = genres
-                prependWithGenreAll.insert(HomeCollectionDataType.genre(Genre.allGenres), at: 0)
-                self?._genres.send(prependWithGenreAll)
+            .sink(receiveValue: { [unowned self] requestedGenres in
+                genres = [HomeCollectionDataType.genre(Genre.allGenres)] + requestedGenres
             })
             .store(in: &subscriptions)
     }
@@ -98,16 +85,16 @@ class HomeViewModel {
                 let results = self.movieService.filteredMovies(movies, searchText: searchText)
                 return results.map { HomeCollectionDataType.movie($0) }
             }
-            .sink(receiveValue: { [unowned self] collectionData in
-                print("collection data count: " + collectionData.count.description)
-                _filteredMovies.send(collectionData)
+            .sink(receiveValue: { [unowned self] searchResults in
+                print("collection data count: " + searchResults.count.description)
+                filteredMovies = searchResults
             })
             .store(in: &subscriptions)
     }
     
     private func handleGenreSelection() {
         $selectedGenreIndex
-            .filter { [unowned self] _ in self._genres.value.count > 0 }
+            .filter { [unowned self] _ in genres.count > 0 }
             .sink { [unowned self] genreIndex in
                 self.deselectAllGenres()
                 self.selectGenreAtIndex(genreIndex)
@@ -119,14 +106,14 @@ class HomeViewModel {
     private func handleInfiniteScroll() {
         $currentScroll
             .dropFirst()
-            .filter { (self._filteredMovies.value.count - 1) == $0.row && $0.section == 1 && self.searchText.isEmpty && self.selectedGenreIndex == 0 }
+            .filter { [unowned self] in (filteredMovies.count - 1) == $0.row && $0.section == 1 && searchText.isEmpty && self.selectedGenreIndex == 0 }
             .handleEvents(receiveOutput: { _ in
                 self.page += 1
                 self.requestMovies()
             })
-            .sink { indexPath in
+            .sink { [unowned self] indexPath in
                 print(indexPath)
-                print(self._filteredMovies.value.count - 1)
+                print(filteredMovies.count - 1)
             }
             .store(in: &subscriptions)
     }
@@ -145,8 +132,9 @@ class HomeViewModel {
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
             .sink(receiveValue: { [unowned self] index in
-                guard let movie = self._filteredMovies.value[index!].movie else { return }
-                self.coordinator.openMovieDetails(movie: self._filteredMovies.value.map { $0.movie }.compactMap { $0 }, initialIndex: index!)
+                coordinator.openMovieDetails(
+                    movie: filteredMovies.map { $0.movie }.compactMap { $0 },
+                    initialIndex: index!)
             })
             .store(in: &subscriptions)
     }
@@ -156,26 +144,29 @@ class HomeViewModel {
     }
     
     private func deselectAllGenres() {
-        let deselected = _genres.value
+        let deselected = genres
             .compactMap { $0.genre }
             .map { HomeCollectionDataType.genre(Genre(id: $0.id, name: $0.name, isSelected: false)) }
-        _genres.send(deselected)
+        genres = deselected
     }
     
     private func selectGenreAtIndex(_ index: Int) {
-        var genre: Genre = self._genres.value[index].genre!
+        var genre: Genre = genres[index].genre!
         genre.isSelected = true
         let selectedGenre = HomeCollectionDataType.genre(genre)
-        self._genres.value[index] = selectedGenre
+        genres[index] = selectedGenre
     }
     
     private func filterMoviesByGenreIndex(_ index: Int) {
         guard index != 0 else { /// ALL item index
-            return self._filteredMovies.send(movies)
+            return filteredMovies = movies
         }
-        let movies = self.movies.compactMap { $0.movie }
-        let genre = self._genres.value[index].genre
-        let results = self.movieService.filteredMovies(movies, by: genre).map { HomeCollectionDataType.movie($0)}
-        self._filteredMovies.send(results)
+        let allMovies = movies.compactMap { $0.movie }
+        let genre = genres[index].genre
+        let results = movieService
+            .filteredMovies(allMovies, by: genre)
+            .map { HomeCollectionDataType.movie($0) }
+        
+        filteredMovies = results
     }
 }
