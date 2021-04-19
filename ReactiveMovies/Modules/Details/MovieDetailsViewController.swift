@@ -126,7 +126,7 @@ extension MovieDetailsViewController: UICollectionViewDelegate {
         let cell = collectionView.visibleCells.first
         if let cell = cell {
             let indexPath = collectionView.indexPath(for: cell)
-            viewModel.selectedScroll = indexPath
+            viewModel.selectedScrollItemRowIndex = indexPath?.row
         }
     }
 }

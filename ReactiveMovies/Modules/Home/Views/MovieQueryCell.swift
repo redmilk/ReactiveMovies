@@ -19,6 +19,8 @@ final class MovieQueryCell: UICollectionViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         imageLoadingSubscription?.cancel()
+        imageLoadingSubscription = nil
+        movieImageView.image = nil
     }
     
     func configure(with model: MovieQueryElement) {

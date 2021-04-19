@@ -60,7 +60,7 @@ final class HomeViewController: UIViewController {
         viewModel
             .$genres
             .eraseToAnyPublisher()
-            .receive(on: RunLoop.main)
+            .receive(on: DispatchQueue.main)
             .sink { [unowned self] collectionData in
                 self.applySnapshot(collectionData: collectionData, type: .genre)
             }
@@ -69,22 +69,25 @@ final class HomeViewController: UIViewController {
         viewModel
             .$filteredMovies
             .eraseToAnyPublisher()
-            .receive(on: RunLoop.main)
+            .receive(on: DispatchQueue.main)
             .sink { [unowned self] collectionData in
                 self.applySnapshot(collectionData: collectionData, type: .movie)
             }
             .store(in: &subscriptions)
         
         viewModel
-            .$selectedGenreIndex
-            .sink(receiveValue: { [unowned self] index in
-                self.navigationController?.setNavigationBarHidden(index != 0, animated: true)
+            .$hideNavigationBar
+            .receive(on: DispatchQueue.main)
+            .sink(receiveValue: { [unowned self] shouldHideNavbar in
+                navigationController?.setNavigationBarHidden(shouldHideNavbar, animated: true)
             })
             .store(in: &subscriptions)
-    }
-    
-    @objc private func scrollToTop() {
-        collectionView.scrollToItem(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
+        
+        viewModel
+            .updateScrollPositionFromDetail
+            .receive(on: RunLoop.main)
+            .sink { [unowned self] in collectionView.scrollToItem(at: $0, at: .top, animated: true) }
+            .store(in: &subscriptions)
     }
 }
 
@@ -145,10 +148,7 @@ private extension HomeViewController {
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationController?.navigationItem.hidesSearchBarWhenScrolling = false
         collectionView.delegate = self
-        
-        let scrollToTopButton = UIBarButtonItem(title: "Scroll top", style: .plain, target: self, action: #selector(scrollToTop))
-        navigationItem.setRightBarButton(scrollToTopButton, animated: false)
-        
+                
         var snapshot = Snapshot()
         snapshot.appendSections([.genre, .movie])
         dataSource.apply(snapshot)

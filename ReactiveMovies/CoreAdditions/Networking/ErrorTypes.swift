@@ -12,6 +12,15 @@ enum RequestError: Error {
     case parsing(description: String, error: Error)
     case network(description: String, error: URLError)
     case requestTimeout(description: String)
-    case unknown(error: NSError)
+    case unknown(description: String, error: NSError)
   //case session(description String, Response)
+    
+    var errorDescription: String {
+        switch self {
+        case .network(let description, _): return description
+        case .requestTimeout(let description): return description
+        case .parsing(let description, _): return description
+        case .unknown(let description, _): return description
+        }
+    }
 }

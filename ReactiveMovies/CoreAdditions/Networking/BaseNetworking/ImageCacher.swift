@@ -16,8 +16,8 @@ final class ImageCacher {
     struct Config {
         let countLimit: Int
         let memoryLimit: Int
-        static let defaultConfig = Config(countLimit: 100,
-                                          memoryLimit: 1024 * 1024 * 100) // 100 MB
+        static let defaultConfig = Config(countLimit: 1000,
+                                          memoryLimit: 1024 * 1024 * 100) // 1000 MB
     }
     
     private lazy var imageCache: NSCache<AnyObject, AnyObject> = {

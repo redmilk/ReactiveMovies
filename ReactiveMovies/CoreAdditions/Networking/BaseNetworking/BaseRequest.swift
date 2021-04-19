@@ -16,6 +16,8 @@ class BaseRequest {
     private let cache = ImageCacher()
     private let loadingQueue = DispatchQueue(label: "image-loading-queue", qos: .userInitiated, attributes: .concurrent)
     
+    // MARK: - Public API
+    
     func request<D: Decodable>(
         with request: URLRequest,
         type: D.Type
@@ -28,10 +30,9 @@ class BaseRequest {
                 switch error {
                 case is DecodingError: return RequestError.parsing(description: "Parsing failure", error: error)
                 case is URLError: return RequestError.network(description: "Network error", error: error as! URLError)
-                default: return RequestError.unknown(error: error as NSError)
+                default: return RequestError.unknown(description: "Other error", error: error as NSError)
                 }
             })
-            .retry(1)
             .eraseToAnyPublisher()
     }
     
@@ -51,7 +52,7 @@ class BaseRequest {
                 cache[url] = image
             })
             .subscribe(on: loadingQueue)
-            .receive(on: RunLoop.main)
+            .receive(on: DispatchQueue.main)//RunLoop.main)
             .eraseToAnyPublisher()
     }
 }

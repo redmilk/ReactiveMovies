@@ -8,25 +8,36 @@
 import Foundation
 import Combine
 
+// TODO: - Add infinite scroll in detail
+
 class HomeViewModel {
     
-    /// Output
+    // MARK: - Output for Home VC
+    
     @Published var genres: [HomeCollectionDataType] = []
     @Published var filteredMovies: [HomeCollectionDataType] = []
+    @Published var hideNavigationBar: Bool = false
+    var updateScrollPositionFromDetail: AnyPublisher<IndexPath, Never> {
+        _updateScrollPositionFromDetail
+            .receive(on: DispatchQueue.main)
+            .eraseToAnyPublisher()
+    }
+   
+    // MARK: - Input from Home VC
     
-    /// Input
     @Published var searchText: String = ""
     @Published var currentScroll: IndexPath = IndexPath()
     @Published var selectedGenreIndex: Int = 0
     @Published var selectedMovieIndex: Int?
     
+    // MARK: - Private
+    
     private let coordinator: HomeCoordinator
     private let movieService: MovieService
-
     private var page: Int = 1
     private var movies: [HomeCollectionDataType] = []
-    
-    private let errors = PassthroughSubject<Error, Never>()
+    private let errors = PassthroughSubject<RequestError, Never>()
+    private let _updateScrollPositionFromDetail = PassthroughSubject<IndexPath, Never>()
     private var subscriptions = Set<AnyCancellable>()
     
     init(coordinator: HomeCoordinator, movieService: MovieService) {
@@ -42,6 +53,22 @@ class HomeViewModel {
         handleGenreSelection()
         handleShowMovieDetail()
         
+        $currentScroll
+            .dropFirst()
+            .filter { [unowned self] _ in searchText.isEmpty }
+            .map { [unowned self] in $0.section == HomeViewController.Section.movie.rawValue && $0.row > 10 || selectedGenreIndex != 0 }
+            .removeDuplicates()
+            .assign(to: \.hideNavigationBar, on: self)
+            .store(in: &subscriptions)
+        
+        /// get value from detail screen
+        coordinator
+            .movieDetailsCurrentScrollItemIndex
+            .compactMap { $0 }
+            .compactMap { IndexPath(row: $0, section: HomeViewController.Section.movie.rawValue) }
+            //.print("🟨🟨")
+            .subscribe(_updateScrollPositionFromDetail)
+            .store(in: &subscriptions)
     }
     
     private func requestMovies() {
@@ -52,10 +79,13 @@ class HomeViewModel {
                     self?.errors.send(error)
                 }
             })
-            .replaceError(with: [])
-            .sink(receiveValue: { [unowned self] requestedMovies in
+            .sink(receiveCompletion: { [unowned self] completion in
+                if case .failure(let error) = completion {
+                    self.errors.send(error)
+                }
+            }, receiveValue: { [unowned self] requestedMovies in
                 movies += requestedMovies
-                print("🟨🟨 movies total: " + movies.count.description)
+                //print("🟨🟨 movies total: " + movies.count.description)
                 filteredMovies = movies
             })
             .store(in: &subscriptions)
@@ -86,7 +116,7 @@ class HomeViewModel {
                 return results.map { HomeCollectionDataType.movie($0) }
             }
             .sink(receiveValue: { [unowned self] searchResults in
-                print("collection data count: " + searchResults.count.description)
+                //print("collection data count: " + searchResults.count.description)
                 filteredMovies = searchResults
             })
             .store(in: &subscriptions)
@@ -107,23 +137,27 @@ class HomeViewModel {
         $currentScroll
             .dropFirst()
             .filter { [unowned self] in (filteredMovies.count - 1) == $0.row && $0.section == 1 && searchText.isEmpty && self.selectedGenreIndex == 0 }
+            //.print("🟨")
             .handleEvents(receiveOutput: { _ in
                 self.page += 1
                 self.requestMovies()
             })
             .sink { [unowned self] indexPath in
-                print(indexPath)
-                print(filteredMovies.count - 1)
+                //print(indexPath)
+                //print(filteredMovies.count - 1)
             }
             .store(in: &subscriptions)
     }
     
     private func handleErrors() {
         errors
-            .flatMap { [unowned self] error in
-                self.showAlert(with: "Ooops", message: error.localizedDescription)
-            }
-            .sink(receiveValue: { _ in })
+            .receive(on: DispatchQueue.main)
+            .flatMap ({ [unowned self] (error: RequestError) -> AnyPublisher<Void, Never> in
+                coordinator.showAlert(title: "Ooops", message: error.errorDescription)
+            })
+            .sink(receiveValue: { error in
+                
+            })
             .store(in: &subscriptions)
     }
     
@@ -137,10 +171,6 @@ class HomeViewModel {
                     initialIndex: index!)
             })
             .store(in: &subscriptions)
-    }
-    
-    private func showAlert(with title: String, message: String) -> AnyPublisher<Void, Never> {
-        return coordinator.showAlert(title: title, message: message)
     }
     
     private func deselectAllGenres() {

@@ -21,45 +21,60 @@ final class MoviewDetailsViewModel {
     @Published var movieDetails: MovieDetailsCollectionData?
 
     // MARK: - Input from VC
-    @Published var selectedScroll: IndexPath?
+    // MARK: - Return scroll value for home VC
+    @Published var selectedScrollItemRowIndex: Int?
     
-    // MARK: - Required dependencies
+    /// Dependencies
     private let initialMovies: [MovieQueryElement]
     private let initialMovieIndexForDisplayDetail: Int
     private let movieService: MovieService
-    
-    // MARK: - Combine
-    private let errors = PassthroughSubject<Error, Never>()
-    private var subscriptions = Set<AnyCancellable>()
+    private let coordinator: MovieDetailsCoordinator
+    /// Combine internal
     @Published private var indexMovieRequiredExtraInfo: Int?
+    private let errors = PassthroughSubject<RequestError, Never>()
+    private var subscriptions = Set<AnyCancellable>()
     
-    init(initialMovie: [MovieQueryElement], initialIndex: Int, movieService: MovieService) {
+    
+    init(
+        initialMovie: [MovieQueryElement],
+        initialIndex: Int,
+        movieService: MovieService,
+        coordinator: MovieDetailsCoordinator
+    ) {
         self.initialMovies = initialMovie
         self.movieService = movieService
         self.initialMovieIndexForDisplayDetail = initialIndex
+        self.coordinator = coordinator
         
         movies = (initialMovie.wrapped, initialIndex)
         
-        $selectedScroll
-            .compactMap { $0?.row }
+        $selectedScrollItemRowIndex
+            .compactMap { $0 }
             .removeDuplicates()
-            .print("👁‍🗨👁‍🗨👁‍🗨", to: DebugOutputStreamLogger())
-            .compactMap { [unowned self] in self.movies?.0[$0].movieQuery?.id }
+            //.print("👁‍🗨👁‍🗨👁‍🗨", to: DebugOutputStreamLogger())
+            .compactMap { [unowned self] in movies?.0[$0].movieQuery?.id }
             .setFailureType(to: RequestError.self)
-            .flatMap ({ index -> AnyPublisher<Movie, RequestError> in
+            .flatMap ({ [unowned self] index -> AnyPublisher<Movie, RequestError> in
                 self.movieService.requestMovieDetailsWithMovieId(index)
             })
             .sink(receiveCompletion: { [unowned self] completion in
                 if case .failure(let error) = completion {
-                    self.errors.send(error)
+                    errors.send(error)
                 }
             }, receiveValue: { [unowned self] movie in
-                self.movies?.0[selectedScroll!.row].movie = movie
-                let updated = self.movies?.0[selectedScroll!.row]
+                self.movies?.0[selectedScrollItemRowIndex!].movie = movie
+                let updated = self.movies?.0[selectedScrollItemRowIndex!]
                 self.movieDetails = updated
             })
             .store(in: &subscriptions)
         
+        errors
+            .receive(on: DispatchQueue.main)
+            .flatMap({ error in
+                coordinator.showAlert(title: "Ooops", message: error.errorDescription)
+            })
+            .sink(receiveValue: { _ in })
+            .store(in: &subscriptions)
+            
     }
-    
 }

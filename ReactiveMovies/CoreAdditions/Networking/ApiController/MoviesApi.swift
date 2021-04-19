@@ -22,11 +22,6 @@ struct Endpoints {
 }
 
 
-
-fileprivate let languageSetting = "en-US"//"ru-RU"
-fileprivate let averageVoteDesc = "vote_average.desc"
-fileprivate let popularityDesc = "popularity.desc"
-
 final class MoviesApi: BaseRequest {
     private let apiKeyValue = "ed13542fcfbf6b6bd02fb2723a0495ff" /// TODO: put in keychain
     
@@ -36,6 +31,11 @@ final class MoviesApi: BaseRequest {
     private let kGenres = "with_genres"
     private let kSortBy = "sort_by"
     private let kApiKey = "api_key"
+    /// Default parameters
+    private let languageSetting = "en-US"//"ru-RU"
+    private let averageVoteDesc = "vote_average.desc"
+    private let popularityDesc = "popularity.desc"
+    
     
     public func requestMoviesGenres() -> AnyPublisher<Genres, RequestError> {
         let params = RequestParametersAdapter(
@@ -100,7 +100,7 @@ final class MoviesApi: BaseRequest {
         )
         
         return request(with: requestBuilder.request, type: Movie.self)
-        .eraseToAnyPublisher()
+            .eraseToAnyPublisher()
     }
     
 }
