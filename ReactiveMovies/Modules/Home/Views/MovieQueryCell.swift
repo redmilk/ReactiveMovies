@@ -6,7 +6,7 @@
 //
 
 import UIKit
-import Kingfisher
+import Combine
 
 final class MovieQueryCell: UICollectionViewCell {
     
@@ -14,10 +14,21 @@ final class MovieQueryCell: UICollectionViewCell {
     @IBOutlet private weak var titleLabel: UILabel!
     @IBOutlet private weak var descriptionLabel: UILabel!
     
+    var imageLoadingSubscription: AnyCancellable?
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        imageLoadingSubscription?.cancel()
+    }
+    
     func configure(with model: MovieQueryElement) {
-        movieImageView.kf.setImage(with: URL(string: Endpoints.images + (model.posterPath ?? "")))
         titleLabel.text = model.title
         descriptionLabel.text = (model.originalTitle ?? "") + ": ☆" + (model.voteAverage?.description ?? "")
         contentView.layer.cornerRadius = 12.0
+        
+        guard let imageUrl = URL(string: Endpoints.images + (model.posterPath ?? "")) else { return }
+        imageLoadingSubscription = BaseRequest.shared
+            .loadImage(from: imageUrl)
+            .sink(receiveValue: { [weak self] in self?.movieImageView.image = $0 })
     }
 }

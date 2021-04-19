@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Combine
 
 final class MovieDetailCell: UICollectionViewCell {
     
@@ -26,6 +27,13 @@ final class MovieDetailCell: UICollectionViewCell {
     @IBOutlet private weak var homePageLabel: UILabel!
     @IBOutlet private weak var titleLabel: UILabel!
     
+    private var imageLoadingSubscription: AnyCancellable?
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        imageLoadingSubscription?.cancel()
+    }
+    
     override func layoutSubviews() {
         super.layoutSubviews()
         containerView.layer.borderColor = #colorLiteral(red: 0.2594798207, green: 0.3202164769, blue: 1, alpha: 1)
@@ -40,7 +48,6 @@ final class MovieDetailCell: UICollectionViewCell {
     }
     
     private func configure(with movieQuery: MovieQueryElement) {
-        imageView.kf.setImage(with: URL(string: Endpoints.images + movieQuery.posterPath!)!)
         descriptionLabel.text = movieQuery.overview
         popularityLabel.text = movieQuery.popularity?.description
         voteAverageLabel.text = "☆ " + (movieQuery.voteAverage?.description ?? "")
@@ -48,10 +55,14 @@ final class MovieDetailCell: UICollectionViewCell {
         originalTitleLabel.text = movieQuery.originalTitle
         originalLanguageLabel.text = movieQuery.originalLanguage
         titleLabel.text = movieQuery.title
+        
+        guard let imageUrl = URL(string: Endpoints.images + movieQuery.posterPath!) else { return }
+        imageLoadingSubscription = BaseRequest.shared
+            .loadImage(from: imageUrl)
+            .sink(receiveValue: { [weak self] in self?.imageView.image = $0 })
     }
     
     private func configure(with movie: Movie) {
-        imageView.kf.setImage(with: URL(string: Endpoints.images + movie.posterPath!)!)
         descriptionLabel.text = movie.overview
         budgetLabel.text = (movie.budget?.description ?? "") + " $"
         popularityLabel.text = movie.popularity?.description
@@ -66,9 +77,10 @@ final class MovieDetailCell: UICollectionViewCell {
         homePageLabel.text = movie.homepage
         titleLabel.text = movie.title
 
-        if let logoPath = movie.productionCompanies?.first?.logoPath {
-            productionIconImageView.kf.setImage(with: URL(string: Endpoints.images + logoPath)!)
-        }
+        guard let imageUrl = URL(string: Endpoints.images + movie.posterPath!) else { return }
+        imageLoadingSubscription = BaseRequest.shared
+            .loadImage(from: imageUrl)
+            .sink(receiveValue: { [weak self] in self?.imageView.image = $0 })
     }
 
 }
