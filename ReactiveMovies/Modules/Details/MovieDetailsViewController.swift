@@ -52,11 +52,11 @@ final class MovieDetailsViewController: UIViewController {
         viewModel
             .$movies
             .compactMap { $0 }
-            .sink(receiveValue: { [unowned self] moviesAndIndex in
-            applySnapshot(with: moviesAndIndex.0)
-            collectionView.scrollToItem(at: IndexPath(row: moviesAndIndex.1, section: 0), at: .top, animated: true)
-        })
-        .store(in: &subscriptions)
+            .sink(receiveValue: { [unowned self] movies in
+                applySnapshot(with: movies)
+                collectionView.scrollToItem(at: IndexPath(row: viewModel.selectedScrollItemRowIndex!, section: 0), at: .top, animated: true)
+            })
+            .store(in: &subscriptions)
         
         viewModel
             .$movieDetails

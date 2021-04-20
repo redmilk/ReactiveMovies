@@ -86,7 +86,7 @@ final class HomeViewController: UIViewController {
         viewModel
             .updateScrollPositionFromDetail
             .receive(on: RunLoop.main)
-            .sink { [unowned self] in collectionView.scrollToItem(at: $0, at: .top, animated: true) }
+            .sink { [unowned self] in collectionView.scrollToItem(at: $0, at: .centeredVertically, animated: true) }
             .store(in: &subscriptions)
     }
 }

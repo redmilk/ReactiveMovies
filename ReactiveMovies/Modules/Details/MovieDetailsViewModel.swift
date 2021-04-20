@@ -17,7 +17,7 @@ fileprivate extension Array where Element == MovieQueryElement {
 final class MoviewDetailsViewModel {
     
     // MARK: - Output for VC
-    @Published var movies: ([MovieDetailsCollectionData], Int)?
+    @Published var movies: [MovieDetailsCollectionData] = []
     @Published var movieDetails: MovieDetailsCollectionData?
 
     // MARK: - Input from VC
@@ -25,8 +25,8 @@ final class MoviewDetailsViewModel {
     @Published var selectedScrollItemRowIndex: Int?
     
     /// Dependencies
-    private let initialMovies: [MovieQueryElement]
-    private let initialMovieIndexForDisplayDetail: Int
+    @Published private var initialMovies: [MovieQueryElement] = []
+    //private let initialMovieIndexForDisplayDetail: Int
     private let movieService: MovieService
     private let coordinator: MovieDetailsCoordinator
     /// Combine internal
@@ -36,23 +36,26 @@ final class MoviewDetailsViewModel {
     
     
     init(
-        initialMovie: [MovieQueryElement],
+        initialMovie: AnyPublisher<[MovieQueryElement], Never>,
         initialIndex: Int,
         movieService: MovieService,
         coordinator: MovieDetailsCoordinator
     ) {
-        self.initialMovies = initialMovie
         self.movieService = movieService
-        self.initialMovieIndexForDisplayDetail = initialIndex
+        self.selectedScrollItemRowIndex = initialIndex
         self.coordinator = coordinator
-        
-        movies = (initialMovie.wrapped, initialIndex)
+        //self.selectedScrollItemRowIndex = initialIndex
+       
+        initialMovie
+            .map { $0.wrapped }
+            .assign(to: \.movies, on: self)
+            .store(in: &subscriptions)
         
         $selectedScrollItemRowIndex
             .compactMap { $0 }
             .removeDuplicates()
             //.print("👁‍🗨👁‍🗨👁‍🗨", to: DebugOutputStreamLogger())
-            .compactMap { [unowned self] in movies?.0[$0].movieQuery?.id }
+            .compactMap { [unowned self] in movies[$0].movieQuery?.id }
             .setFailureType(to: RequestError.self)
             .flatMap ({ [unowned self] index -> AnyPublisher<Movie, RequestError> in
                 self.movieService.requestMovieDetailsWithMovieId(index)
@@ -62,8 +65,8 @@ final class MoviewDetailsViewModel {
                     errors.send(error)
                 }
             }, receiveValue: { [unowned self] movie in
-                self.movies?.0[selectedScrollItemRowIndex!].movie = movie
-                let updated = self.movies?.0[selectedScrollItemRowIndex!]
+                self.movies[selectedScrollItemRowIndex!].movie = movie
+                let updated = self.movies[selectedScrollItemRowIndex!]
                 self.movieDetails = updated
             })
             .store(in: &subscriptions)

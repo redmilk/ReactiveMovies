@@ -11,7 +11,7 @@ import Combine
 
 final class HomeCoordinator: BaseCoordinator {
     
-    // MARK: - Output to HomeViewModel
+    // MARK: - Output to HomeVM from DetailVM
     
     var movieDetailsCurrentScrollItemIndex: AnyPublisher<Int?, Never> {
         return $_movieDetailsCurrentScrollItemIndex.eraseToAnyPublisher()
@@ -20,7 +20,7 @@ final class HomeCoordinator: BaseCoordinator {
     // MARK: - Public API
     
     func openMovieDetails(
-        movie: [MovieQueryElement],
+        movie: AnyPublisher<[MovieQueryElement], Never>,
         initialIndex: Int
     ) {
         let detailVC = MovieDetailsViewController(nibName: "MovieDetailsViewController", bundle: nil)

@@ -31,14 +31,17 @@ class HomeViewModel {
     @Published var selectedMovieIndex: Int?
     
     // MARK: - Private
-    
-    private let coordinator: HomeCoordinator
-    private let movieService: MovieService
+    private var selectedGenreId: Int? {
+        genres[safe: selectedGenreIndex]?.genre?.id
+    }
     private var page: Int = 1
     private var movies: [HomeCollectionDataType] = []
     private let errors = PassthroughSubject<RequestError, Never>()
     private let _updateScrollPositionFromDetail = PassthroughSubject<IndexPath, Never>()
     private var subscriptions = Set<AnyCancellable>()
+    /// dependence
+    private let coordinator: HomeCoordinator
+    private let movieService: MovieService
     
     init(coordinator: HomeCoordinator, movieService: MovieService) {
         self.coordinator = coordinator
@@ -53,6 +56,7 @@ class HomeViewModel {
         handleGenreSelection()
         handleShowMovieDetail()
         
+        /// hiding nav bar
         $currentScroll
             .dropFirst()
             .filter { [unowned self] _ in searchText.isEmpty }
@@ -69,6 +73,21 @@ class HomeViewModel {
             //.print("🟨🟨")
             .subscribe(_updateScrollPositionFromDetail)
             .store(in: &subscriptions)
+        
+        
+        movieService.requestGenres()
+            .map { $0.dataSourceWrapper }
+            .handleEvents(receiveCompletion: { [weak self] completion in
+                if case .failure(let error) = completion {
+                    self?.errors.send(error)
+                }
+            })
+            .replaceError(with: [])
+            .sink(receiveValue: { [unowned self] requestedGenres in
+                genres = [HomeCollectionDataType.genre(Genre.allGenres)] + requestedGenres
+            })
+            .store(in: &subscriptions)
+        
     }
     
     private func requestMovies() {
@@ -136,7 +155,7 @@ class HomeViewModel {
     private func handleInfiniteScroll() {
         $currentScroll
             .dropFirst()
-            .filter { [unowned self] in (filteredMovies.count - 1) == $0.row && $0.section == 1 && searchText.isEmpty && self.selectedGenreIndex == 0 }
+            .filter { [unowned self] in (filteredMovies.count - 1) == $0.row && $0.section == 1 && searchText.isEmpty && selectedGenreIndex == 0 }
             //.print("🟨")
             .handleEvents(receiveOutput: { _ in
                 self.page += 1
@@ -164,10 +183,9 @@ class HomeViewModel {
     private func handleShowMovieDetail() {
         $selectedMovieIndex.filter { $0 != nil }
             .receive(on: DispatchQueue.main)
-            .eraseToAnyPublisher()
             .sink(receiveValue: { [unowned self] index in
                 coordinator.openMovieDetails(
-                    movie: filteredMovies.map { $0.movie }.compactMap { $0 },
+                    movie: Just(filteredMovies.map { $0.movie }.compactMap { $0 }).setFailureType(to: Never.self).eraseToAnyPublisher(),
                     initialIndex: index!)
             })
             .store(in: &subscriptions)
