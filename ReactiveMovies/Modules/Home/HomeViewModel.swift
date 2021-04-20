@@ -83,6 +83,15 @@ class HomeViewModel {
             })
             .store(in: &subscriptions)
         
+        /// update scroll position after detail
+        movieService.$selectedMovieIndex
+            .compactMap { $0 }
+            .receive(on: DispatchQueue.main)
+            .map { _ in }
+            .eraseToAnyPublisher()
+            .subscribe(updateScrollPositionTrigger)
+            .store(in: &subscriptions)
+        
         bindOutputToMovieService()
         movieService.fetchGenres()
         movieService.fetchMovies()
@@ -106,16 +115,18 @@ class HomeViewModel {
         $searchText.removeDuplicates()
             .assign(to: \.searchText, on: movieService)
             .store(in: &subscriptions)
-    }
-    
-    private func handleShowMovieDetail() {
-        //        $selectedMovieIndex.filter { $0 != nil }
-        //            .receive(on: DispatchQueue.main)
-        //            .sink(receiveValue: { [unowned self] index in
-        //                coordinator.openMovieDetails(
-        //                    movie: Just(filteredMovies.map { $0.movie }.compactMap { $0 }).setFailureType(to: Never.self).eraseToAnyPublisher(),
-        //                    initialIndex: index!)
-        //            })
-        //            .store(in: &subscriptions)
+        
+        $selectedMovieIndex.compactMap { $0 }
+            .assign(to: \.selectedMovieIndex, on: movieService)
+            .store(in: &subscriptions)
+        
+        $selectedMovieIndex
+            .dropFirst()
+            .receive(on: DispatchQueue.main)
+            .print("dsfasdfsdf")
+            .sink(receiveValue: { [weak self] _ in
+                self?.coordinator.openMovieDetails()
+            })
+            .store(in: &subscriptions)
     }
 }

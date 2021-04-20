@@ -8,26 +8,6 @@
 import UIKit
 import Combine
 
-class MovieDetailsCollectionData: Hashable {
-    var movieQuery: MovieQueryElement?
-    var movie: Movie?
-    
-    private let id = UUID().uuidString
-    
-    init(movieQuery: MovieQueryElement?, movie: Movie?) {
-        self.movieQuery = movieQuery
-        self.movie = movie
-    }
-    
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
-    }
-    
-    static func == (lhs: MovieDetailsCollectionData, rhs: MovieDetailsCollectionData) -> Bool {
-        return lhs.id == rhs.id
-    }
-}
-
 final class MovieDetailsViewController: UIViewController {
     
     typealias DataSource = UICollectionViewDiffableDataSource<MovieDetailsViewController.Section, MovieDetailsCollectionData>
@@ -49,20 +29,27 @@ final class MovieDetailsViewController: UIViewController {
         configureView()
         layoutCollection()
         
-        viewModel
-            .$movies
-            .compactMap { $0 }
-            .sink(receiveValue: { [unowned self] movies in
-                applySnapshot(with: movies)
-                collectionView.scrollToItem(at: IndexPath(row: viewModel.selectedScrollItemRowIndex!, section: 0), at: .top, animated: true)
+        Publishers.CombineLatest(viewModel.movies, viewModel.scrollCollectionRowIndex)
+            .receive(on: DispatchQueue.main)
+            .eraseToAnyPublisher()
+            .sink(receiveValue: { [weak self] movies, index in
+                self?.applySnapshot(with: movies)
+                self?.collectionView.scrollToItem(at: IndexPath(row: index, section: 0), at: .top, animated: true)
             })
             .store(in: &subscriptions)
         
-        viewModel
-            .$movieDetails
+        viewModel.$movieDetails
             .compactMap { $0 }
             .sink(receiveValue: { [unowned self] in updateSnapshotItem(with: $0) })
             .store(in: &subscriptions)
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        if isBeingDismissed {
+            viewModel.dissmissViewControllerSignal.send(())
+        }
     }
     
     private func layoutCollection() {
@@ -124,9 +111,8 @@ final class MovieDetailsViewController: UIViewController {
 extension MovieDetailsViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         let cell = collectionView.visibleCells.first
-        if let cell = cell {
-            let indexPath = collectionView.indexPath(for: cell)
-            viewModel.selectedScrollItemRowIndex = indexPath?.row
+        if let _ = cell {
+            viewModel.updateScrollIndex(indexPath.row)
         }
     }
 }

@@ -17,59 +17,37 @@ fileprivate extension Array where Element == MovieQueryElement {
 final class MoviewDetailsViewModel {
     
     // MARK: - Output for VC
-    @Published var movies: [MovieDetailsCollectionData] = []
+    var movies: AnyPublisher<[MovieDetailsCollectionData], Never> {
+        movieService.$moviesFiltered
+            .map { MoviesDetailCollectionDataAdapter.adaptMovies($0) }
+            .receive(on: DispatchQueue.main)
+            .eraseToAnyPublisher()
+    }
+    
     @Published var movieDetails: MovieDetailsCollectionData?
-
-    // MARK: - Input from VC
-    // MARK: - Return scroll value for home VC
-    @Published var selectedScrollItemRowIndex: Int?
+    
+    lazy var scrollCollectionRowIndex: AnyPublisher<Int, Never> = {
+        movieService.$selectedMovieIndex
+            .compactMap { $0 }
+            .receive(on: DispatchQueue.main)
+            .eraseToAnyPublisher()
+    }()
     
     /// Dependencies
     @Published private var initialMovies: [MovieQueryElement] = []
-    //private let initialMovieIndexForDisplayDetail: Int
     private let movieService: MovieService
     private let coordinator: MovieDetailsCoordinator
     /// Combine internal
     @Published private var indexMovieRequiredExtraInfo: Int?
     private let errors = PassthroughSubject<RequestError, Never>()
     private var subscriptions = Set<AnyCancellable>()
+    var dissmissViewControllerSignal = PassthroughSubject<(), Never>()
     
-    
-    init(
-        initialMovie: AnyPublisher<[MovieQueryElement], Never>,
-        initialIndex: Int,
-        movieService: MovieService,
-        coordinator: MovieDetailsCoordinator
+    init(movieService: MovieService,
+         coordinator: MovieDetailsCoordinator
     ) {
         self.movieService = movieService
-        self.selectedScrollItemRowIndex = initialIndex
         self.coordinator = coordinator
-        //self.selectedScrollItemRowIndex = initialIndex
-       
-        initialMovie
-            .map { $0.wrapped }
-            .assign(to: \.movies, on: self)
-            .store(in: &subscriptions)
-        
-        $selectedScrollItemRowIndex
-            .compactMap { $0 }
-            .removeDuplicates()
-            //.print("👁‍🗨👁‍🗨👁‍🗨", to: DebugOutputStreamLogger())
-            .compactMap { [unowned self] in movies[$0].movieQuery?.id }
-            .setFailureType(to: RequestError.self)
-            .flatMap ({ [unowned self] index -> AnyPublisher<Movie, RequestError> in
-                self.movieService.requestMovieDetailsWithMovieId(index)
-            })
-            .sink(receiveCompletion: { [unowned self] completion in
-                if case .failure(let error) = completion {
-                    errors.send(error)
-                }
-            }, receiveValue: { [unowned self] movie in
-                self.movies[selectedScrollItemRowIndex!].movie = movie
-                let updated = self.movies[selectedScrollItemRowIndex!]
-                self.movieDetails = updated
-            })
-            .store(in: &subscriptions)
         
         errors
             .receive(on: DispatchQueue.main)
@@ -78,6 +56,15 @@ final class MoviewDetailsViewModel {
             })
             .sink(receiveValue: { _ in })
             .store(in: &subscriptions)
+        
+        dissmissViewControllerSignal.receive(on: DispatchQueue.main)
+            .sink(receiveValue: { _ in
+                
+            })
             
+    }
+    
+    func updateScrollIndex(_ index: Int) {
+        //movieService.selectedMovieIndex = index
     }
 }

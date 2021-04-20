@@ -19,23 +19,15 @@ final class HomeCoordinator: BaseCoordinator {
     
     // MARK: - Public API
     
-    func openMovieDetails(
-        movie: AnyPublisher<[MovieQueryElement], Never>,
-        initialIndex: Int
-    ) {
-//        let detailVC = MovieDetailsViewController(nibName: "MovieDetailsViewController", bundle: nil)
-//        let detailCoordinator = MovieDetailsCoordinator(viewController: detailVC, navigationController: nil)
-//        let viewModel = MoviewDetailsViewModel(initialMovie: movie,
-//                                               initialIndex: initialIndex,
-//                                               movieService: MovieService(),
-//                                               coordinator: detailCoordinator)
-//        viewModel
-//            .$selectedScrollItemRowIndex
-//            .assign(to: \._movieDetailsCurrentScrollItemIndex, on: self)
-//            .store(in: &subscriptions)
-//        
-//        detailVC.viewModel = viewModel
-//        viewController.present(detailVC, animated: true, completion: nil)
+    func openMovieDetails() {
+        
+        let detailVC = MovieDetailsViewController(nibName: "MovieDetailsViewController", bundle: nil)
+        let detailCoordinator = MovieDetailsCoordinator(viewController: detailVC, navigationController: nil)
+        let viewModel = MoviewDetailsViewModel(movieService: MovieService.shared,
+                                               coordinator: detailCoordinator)
+        
+        detailVC.viewModel = viewModel
+        viewController.present(detailVC, animated: true, completion: nil)
     }
     
     // MARK: - Internal

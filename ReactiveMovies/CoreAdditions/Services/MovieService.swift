@@ -27,7 +27,7 @@ import Combine
 
 final class MovieService {
     
-    static let shared = MovieService(moviesApi: MoviesApi())
+    static let shared = MovieService()
         
     // MARK: - Input
     @Published var currentScroll: IndexPath = IndexPath(row: 0, section: 0)
@@ -43,11 +43,17 @@ final class MovieService {
         errors_.eraseToAnyPublisher()
     }
     
+    var getMovieWithCurrentScrollIndex: AnyPublisher<MovieQueryElement, Never> {
+        $selectedMovieIndex.compactMap{ $0 }
+            .map { [unowned self] in moviesOriginal[$0] }
+            .eraseToAnyPublisher()
+    }
+    
     private var pagination: Int = 1
     private(set) var moviesOriginal: [MovieQueryElement] = []
     private let errors_ = PassthroughSubject<RequestError, Never>()
     private var subscriptions = Set<AnyCancellable>()
-    private let moviesApi: MoviesApi
+    private let moviesApi = MoviesApi()
     
     func fetchMovies() {
         moviesApi
@@ -79,11 +85,36 @@ final class MovieService {
             })
             .store(in: &subscriptions)
     }
-
-    init(moviesApi: MoviesApi) {
-        self.moviesApi = moviesApi
-        bindInput()
+    
+    func fetchExtraMovieInfo() {
+        $selectedMovieIndex
+            .removeDuplicates()
+            .compactMap { $0 }
+            //.print("👁‍🗨👁‍🗨👁‍🗨", to: DebugOutputStreamLogger())
+            .compactMap { [unowned self] in moviesFiltered[$0].id }
+            .setFailureType(to: RequestError.self)
+            .flatMap ({ [unowned self] index -> AnyPublisher<Movie, RequestError> in
+                fetchMovieDetailsWithMovieId(index)
+            })
+            .sink(receiveCompletion: { [unowned self] completion in
+                if case .failure(let error) = completion {
+                    errors_.send(error)
+                }
+            }, receiveValue: { [unowned self] movie in
+                //movies[selectedMovieIndex!].movie = movie
+                //let updated = movies[selectedMovieIndex!]
+                //movieDetails = updated
+            })
+            .store(in: &subscriptions)
     }
+    
+    private func fetchMovieDetailsWithMovieId(_ id: Int) -> AnyPublisher<Movie, RequestError> {
+        return moviesApi
+            .requestMovieDetails(movieId: id)
+            .eraseToAnyPublisher()
+    }
+
+    private init() { bindInput() }
     
     private func bindInput() {
         /// infinite scroll
@@ -118,12 +149,6 @@ final class MovieService {
                 filterMoviesByGenre(genres[genreIndex])
             }
             .store(in: &subscriptions)
-    }
-    
-    private func fetchMovieDetailsWithMovieId(_ id: Int) -> AnyPublisher<Movie, RequestError> {
-        return moviesApi
-            .requestMovieDetails(movieId: id)
-            .eraseToAnyPublisher()
     }
 }
 

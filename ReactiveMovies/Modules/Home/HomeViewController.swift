@@ -21,7 +21,7 @@ final class HomeViewController: UIViewController {
     /// Interactor
     private lazy var viewModel: HomeViewModel = {
         HomeViewModel(coordinator: HomeCoordinator(viewController: self, navigationController: navigationController),
-                      movieService: MovieService(moviesApi: MoviesApi()))
+                      movieService: MovieService.shared)
     }()
     
     @IBOutlet private weak var collectionView: UICollectionView!
