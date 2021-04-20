@@ -14,8 +14,8 @@ struct MovieQuery: Codable {
     let totalPages: Int?
     let totalResults: Int?
     
-    var dataSourceWrapper: [HomeCollectionDataType] {
-        return results?.map { HomeCollectionDataType.movie($0) } ?? []
+    var dataSourceWrapper: [MoviesListCollectionDataType] {
+        return results?.map { MoviesListCollectionDataType.movie($0) } ?? []
     }
 
     enum CodingKeys: String, CodingKey {

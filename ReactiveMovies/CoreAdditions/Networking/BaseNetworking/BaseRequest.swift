@@ -24,6 +24,7 @@ class BaseRequest {
     ) -> AnyPublisher<D, RequestError> {
         return URLSession.shared
             .dataTaskPublisher(for: request)
+            .handleEvents(receiveOutput: { print("🏁" + ($0.response.url?.absoluteString ?? "")) })
             .map(\.data)
             .decode(type: type.self, decoder: JSONDecoder())
             .mapError({ (error) -> RequestError in

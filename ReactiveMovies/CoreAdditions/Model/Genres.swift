@@ -11,7 +11,7 @@ import Foundation
 struct Genres: Codable {
     let genres: [Genre]
     
-    var dataSourceWrapper: [HomeCollectionDataType] {
-        return genres.map { HomeCollectionDataType.genre($0) }
+    var dataSourceWrapper: [MoviesListCollectionDataType] {
+        return genres.map { MoviesListCollectionDataType.genre($0) }
     }
 }

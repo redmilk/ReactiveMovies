@@ -8,29 +8,10 @@
 import UIKit
 import Combine
 
-enum HomeCollectionDataType: Hashable {
-    case genre(Genre)
-    case movie(MovieQueryElement)
-    
-    var genre: Genre? {
-        switch self {
-        case .genre(let genre): return genre
-        case _: return nil
-        }
-    }
-    
-    var movie: MovieQueryElement? {
-        switch self {
-        case .movie(let movie): return movie
-        case _: return nil
-        }
-    }
-}
-
 final class HomeViewController: UIViewController {
     
-    typealias DataSource = UICollectionViewDiffableDataSource<HomeViewController.Section, HomeCollectionDataType>
-    typealias Snapshot = NSDiffableDataSourceSnapshot<HomeViewController.Section, HomeCollectionDataType>
+    typealias DataSource = UICollectionViewDiffableDataSource<HomeViewController.Section, MoviesListCollectionDataType>
+    typealias Snapshot = NSDiffableDataSourceSnapshot<HomeViewController.Section, MoviesListCollectionDataType>
     
     enum Section: Int {
         case genre = 0
@@ -40,7 +21,7 @@ final class HomeViewController: UIViewController {
     /// Interactor
     private lazy var viewModel: HomeViewModel = {
         HomeViewModel(coordinator: HomeCoordinator(viewController: self, navigationController: navigationController),
-                      movieService: MovieService())
+                      movieService: MovieService(moviesApi: MoviesApi()))
     }()
     
     @IBOutlet private weak var collectionView: UICollectionView!
@@ -57,35 +38,25 @@ final class HomeViewController: UIViewController {
         configureSearchController()
         layoutCollection()
         
-        viewModel
-            .$genres
-            .eraseToAnyPublisher()
-            .receive(on: DispatchQueue.main)
-            .sink { [unowned self] collectionData in
-                self.applySnapshot(collectionData: collectionData, type: .genre)
+        viewModel.genres
+            .sink { [unowned self] genres in
+                self.applySnapshot(collectionData: genres, type: .genre)
             }
             .store(in: &subscriptions)
         
-        viewModel
-            .$filteredMovies
-            .eraseToAnyPublisher()
-            .receive(on: DispatchQueue.main)
-            .sink { [unowned self] collectionData in
-                self.applySnapshot(collectionData: collectionData, type: .movie)
+        viewModel.movies
+            .sink { [unowned self] movies in
+                self.applySnapshot(collectionData: movies, type: .movie)
             }
             .store(in: &subscriptions)
-        
-        viewModel
-            .$hideNavigationBar
-            .receive(on: DispatchQueue.main)
+    
+        viewModel.hideNavigationBar
             .sink(receiveValue: { [unowned self] shouldHideNavbar in
                 navigationController?.setNavigationBarHidden(shouldHideNavbar, animated: true)
             })
             .store(in: &subscriptions)
         
-        viewModel
-            .updateScrollPositionFromDetail
-            .receive(on: RunLoop.main)
+        viewModel.updateScrollPosition
             .sink { [unowned self] in collectionView.scrollToItem(at: $0, at: .centeredVertically, animated: true) }
             .store(in: &subscriptions)
     }
@@ -111,10 +82,11 @@ extension HomeViewController: UICollectionViewDelegate {
 
 private extension HomeViewController {
     
-    func applySnapshot(collectionData: [HomeCollectionDataType], type: Section) {
+    func applySnapshot(collectionData: [MoviesListCollectionDataType], type: Section) {
         var snapshot = dataSource.snapshot()
         switch type {
-        case .genre: snapshot.appendItems(collectionData, toSection: .genre)
+        case .genre:
+            snapshot.appendItems(collectionData, toSection: .genre)
         case .movie:
             let currentItems = snapshot.itemIdentifiers(inSection: .movie)
             snapshot.deleteItems(currentItems)
