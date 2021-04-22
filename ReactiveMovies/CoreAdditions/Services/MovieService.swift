@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 import Combine
 // think about it
 
@@ -47,7 +48,11 @@ final class MovieService {
     static let shared = MovieService()
         
     // MARK: - Input
-    @Published var currentScroll: IndexPath = IndexPath(row: 0, section: 0)
+    @Published var currentScroll: IndexPath = IndexPath(row: 0, section: 0)  {
+        didSet {
+            print(currentScroll.row)
+        }
+    }
     @Published var selectedGenreIndex: Int = 0
     @Published var selectedMovieIndex: Int?
     @Published var searchText: String = ""
@@ -84,16 +89,43 @@ final class MovieService {
             .store(in: &subscriptions)
     }
     
+    func loadImage(_ path: String?) -> AnyPublisher<UIImage?, Never> {
+        guard let imageUrl = URL(string: Endpoints.images + (path ?? "")) else {
+            return Just(nil).setFailureType(to: Never.self).eraseToAnyPublisher()
+        }
+        return NetworkService.shared
+            .loadImage(from: imageUrl)
+            .eraseToAnyPublisher()
+    }
+    
     func fetchMovies() {
-        moviesApi.requestMoviesWithQuery(page: pagination, genres: nil)
+        moviesApi.requestMoviesWithQuery(page: pagination, genres: nil) /// request movies by page
             .compactMap { $0.results }
-            .flatMap({ movs -> AnyPublisher<MovieQueryElement, Error> in
-                Publishers.Sequence(sequence: movs)
+            .subscribe(on: Scheduler.backgroundWorkScheduler)
+            .flatMap({ movies -> AnyPublisher<MovieQueryElement, Error> in /// make publishers sequence
+                Publishers.Sequence(sequence: movies)
                     .eraseToAnyPublisher()
             })
-            .flatMap({ [unowned self] movie -> AnyPublisher<Movie, Error> in
-                moviesApi.requestMovieDetails(movieId: movie.id!).eraseToAnyPublisher()
+            .flatMap({ [unowned self] movie -> AnyPublisher<Movie, Error> in /// building the movie
+                moviesApi.requestMovieDetails(movieId: movie.id!) /// get movies full details
+                    .flatMap({ [unowned self] movie -> AnyPublisher<Movie, Error> in
+                        Future<Movie, Never> { promise in /// return the movie filled with image
+                            loadImage(movie.posterPath) /// load movie poster image
+                                .subscribe(on: Scheduler.backgroundWorkScheduler)
+                                .setFailureType(to: Never.self)
+                                .eraseToAnyPublisher()
+                                .sink(receiveValue: { image in
+                                    movie.image = image
+                                    promise(.success(movie))
+                                })
+                                .store(in: &subscriptions)
+                        }
+                        .setFailureType(to: Error.self)
+                        .eraseToAnyPublisher()
+                    })
+                    .eraseToAnyPublisher()
             })
+            .receive(on: Scheduler.mainScheduler)
             .sink(receiveCompletion: { [unowned self] completion in
                 if case .failure(let error) = completion {
                     errors_.send(error)

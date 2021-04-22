@@ -20,7 +20,7 @@ final class MovieDetailsViewController: UIViewController {
     @IBOutlet private weak var collectionView: UICollectionView!
     
     var viewModel: MoviewDetailsViewModel!
-    private lazy var dataSource = buildDataSource()
+    private var dataSource: DataSource!
     private var subscriptions = Set<AnyCancellable>()
     
     override func viewDidLoad() {
@@ -30,14 +30,20 @@ final class MovieDetailsViewController: UIViewController {
         layoutCollection()
         
         viewModel.movies
-            .receive(on: DispatchQueue.main)
-            .eraseToAnyPublisher()
             .sink(receiveValue: { [unowned self] movies in
-                let initialIndex = IndexPath(row: viewModel.itemScrollIndex!, section: Section.main.rawValue)
+                //let initialIndex = IndexPath(row: viewModel.itemScrollIndex!, section: Section.main.rawValue)
                 applySnapshot(with: movies)
-                collectionView.scrollToItem(at: initialIndex, at: .top, animated: true)
+                //collectionView.scrollToItem(at: initialIndex, at: .top, animated: true)
             })
             .store(in: &subscriptions)
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        let initialIndex = IndexPath(row: viewModel.itemScrollIndex!, section: Section.main.rawValue)
+        collectionView.scrollToItem(at: initialIndex, at: .centeredVertically, animated: true)
+
     }
     
     private func layoutCollection() {
@@ -64,10 +70,10 @@ final class MovieDetailsViewController: UIViewController {
         collectionView.register(UINib(nibName: "MovieDetailCell", bundle: nil), forCellWithReuseIdentifier: "MovieDetailCell")
         collectionView.isPagingEnabled = true
         collectionView.delegate = self
-
+        dataSource = buildDataSource()
         var snapshot = Snapshot()
         snapshot.appendSections([.main])
-        dataSource.apply(snapshot)
+        dataSource.apply(snapshot, animatingDifferences: false)
     }
     
     private func buildDataSource() -> DataSource {
@@ -80,8 +86,16 @@ final class MovieDetailsViewController: UIViewController {
     
     private func applySnapshot(with movies: [Movie]) {
         var snapshot = dataSource.snapshot()
+        //var snapshot = Snapshot()
+        //snapshot.appendSections([.main])
+        //let itemsCount = snapshot.numberOfItems
+        //print("ITEMS COUNT IN SNAPSHOT")
+        //print(itemsCount)
+        //print(movies.count)
         snapshot.appendItems(movies, toSection: .main)
-        dataSource.apply(snapshot)
+        //print(snapshot.numberOfItems)
+        //print()
+        dataSource.apply(snapshot, animatingDifferences: false)
     }
 }
 
@@ -91,7 +105,7 @@ extension MovieDetailsViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         let cell = collectionView.visibleCells.first
         if let _ = cell {
-            viewModel.updateScrollIndex(indexPath.row)
+            viewModel.updateScrollIndex(indexPath.row + 1)
         }
     }
 }

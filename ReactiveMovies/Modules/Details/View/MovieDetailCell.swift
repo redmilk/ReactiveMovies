@@ -27,13 +27,6 @@ final class MovieDetailCell: UICollectionViewCell {
     @IBOutlet private weak var homePageLabel: UILabel!
     @IBOutlet private weak var titleLabel: UILabel!
     
-    private var imageLoadingSubscription: AnyCancellable?
-    
-    override func prepareForReuse() {
-        super.prepareForReuse()
-        imageLoadingSubscription?.cancel()
-    }
-    
     override func layoutSubviews() {
         super.layoutSubviews()
         containerView.layer.borderColor = #colorLiteral(red: 0.2594798207, green: 0.3202164769, blue: 1, alpha: 1)
@@ -53,11 +46,7 @@ final class MovieDetailCell: UICollectionViewCell {
         productionCountryLabel.text = movie.productionCompanies?.first?.originCountry
         homePageLabel.text = movie.homepage
         titleLabel.text = movie.title
-
-        guard let imageUrl = URL(string: Endpoints.images + movie.posterPath!) else { return }
-        imageLoadingSubscription = NetworkService.shared
-            .loadImage(from: imageUrl)
-            .sink(receiveValue: { [weak self] in self?.imageView.image = $0 })
+        imageView.image = movie.image
     }
 
 }

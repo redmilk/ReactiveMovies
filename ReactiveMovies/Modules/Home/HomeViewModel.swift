@@ -89,7 +89,8 @@ final class HomeViewModel {
     }
     
     public func showDetailWithMovieIndex(_ index: Int) {
-        movieService.selectedMovieIndex = index
+        //movieService.selectedMovieIndex = index
+        movieService.currentScroll = IndexPath(row: index, section: 1)
         coordinator.openMovieDetails()
     }
     

@@ -6,9 +6,10 @@
 //
 
 import Foundation
+import UIKit
 
 // MARK: - Movie
-struct Movie: Codable, Hashable {
+class Movie: Codable, Hashable {
     
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
@@ -28,7 +29,7 @@ struct Movie: Codable, Hashable {
             (lhs.title == rhs.title) &&
             (lhs.originalTitle == rhs.originalTitle)
     }
-    
+    var image: UIImage?
     let adult: Bool?
     let backdropPath: String?
     let belongsToCollection: BelongsToCollection?

@@ -18,7 +18,7 @@ final class MoviewDetailsViewModel {
     }
     
     var itemScrollIndex: Int? {
-        return movieService.selectedMovieIndex
+        return movieService.currentScroll.row
     }
  
     /// Dependencies
@@ -51,6 +51,8 @@ final class MoviewDetailsViewModel {
     
     func updateScrollIndex(_ index: Int) {
         movieItemIndex = index
+        movieService.currentScroll = IndexPath(row: index, section: HomeViewController.Section.movie.rawValue)
+        //movieService.currentScroll = IndexPath(row: index, section: HomeViewController.Section.movie.rawValue)
     }
 }
 
