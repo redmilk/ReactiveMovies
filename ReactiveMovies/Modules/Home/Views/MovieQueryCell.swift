@@ -23,12 +23,12 @@ final class MovieQueryCell: UICollectionViewCell {
         movieImageView.image = nil
     }
     
-    func configure(with model: MovieQueryElement) {
-        titleLabel.text = model.title
-        descriptionLabel.text = (model.originalTitle ?? "") + ": ☆" + (model.voteAverage?.description ?? "")
+    func configureWithMovie(_ movie: Movie) {
+        titleLabel.text = movie.title
+        descriptionLabel.text = (movie.originalTitle ?? "") + ": ☆" + (movie.voteAverage?.description ?? "")
         contentView.layer.cornerRadius = 12.0
         
-        guard let imageUrl = URL(string: Endpoints.images + (model.posterPath ?? "")) else { return }
+        guard let imageUrl = URL(string: Endpoints.images + (movie.posterPath ?? "")) else { return }
         imageLoadingSubscription = BaseRequest.shared
             .loadImage(from: imageUrl)
             .sink(receiveValue: { [weak self] in self?.movieImageView.image = $0 })

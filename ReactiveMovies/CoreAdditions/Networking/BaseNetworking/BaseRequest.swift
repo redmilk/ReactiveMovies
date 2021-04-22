@@ -18,13 +18,20 @@ class BaseRequest {
     
     // MARK: - Public API
     
+    func formatPrint(urlString: String?, keyWord: String) {
+        guard let urlString = urlString else { return }
+        guard urlString.contains(keyWord) else { return }
+        
+        print("🏁🏁🏁 " + urlString)
+    }
+    
     func request<D: Decodable>(
         with request: URLRequest,
         type: D.Type
     ) -> AnyPublisher<D, RequestError> {
         return URLSession.shared
             .dataTaskPublisher(for: request)
-            .handleEvents(receiveOutput: { print("🏁" + ($0.response.url?.absoluteString ?? "")) })
+            .handleEvents(receiveOutput: { [unowned self] in formatPrint(urlString: $0.response.url?.absoluteString, keyWord: "discover") })
             .map(\.data)
             .decode(type: type.self, decoder: JSONDecoder())
             .mapError({ (error) -> RequestError in

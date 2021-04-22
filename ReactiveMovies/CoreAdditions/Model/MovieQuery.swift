@@ -13,10 +13,6 @@ struct MovieQuery: Codable {
     let results: [MovieQueryElement]?
     let totalPages: Int?
     let totalResults: Int?
-    
-    var dataSourceWrapper: [MoviesListCollectionDataType] {
-        return results?.map { MoviesListCollectionDataType.movie($0) } ?? []
-    }
 
     enum CodingKeys: String, CodingKey {
         case page = "page"

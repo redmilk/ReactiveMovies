@@ -10,8 +10,8 @@ import Combine
 
 final class MovieDetailsViewController: UIViewController {
     
-    typealias DataSource = UICollectionViewDiffableDataSource<MovieDetailsViewController.Section, MovieDetailsCollectionData>
-    typealias Snapshot = NSDiffableDataSourceSnapshot<MovieDetailsViewController.Section, MovieDetailsCollectionData>
+    typealias DataSource = UICollectionViewDiffableDataSource<MovieDetailsViewController.Section, Movie>
+    typealias Snapshot = NSDiffableDataSourceSnapshot<MovieDetailsViewController.Section, Movie>
 
     enum Section: Int {
         case main
@@ -29,27 +29,15 @@ final class MovieDetailsViewController: UIViewController {
         configureView()
         layoutCollection()
         
-        Publishers.CombineLatest(viewModel.movies, viewModel.scrollCollectionRowIndex)
+        viewModel.movies
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
-            .sink(receiveValue: { [weak self] movies, index in
-                self?.applySnapshot(with: movies)
-                self?.collectionView.scrollToItem(at: IndexPath(row: index, section: 0), at: .top, animated: true)
+            .sink(receiveValue: { [unowned self] movies in
+                let initialIndex = IndexPath(row: viewModel.itemScrollIndex!, section: Section.main.rawValue)
+                applySnapshot(with: movies)
+                collectionView.scrollToItem(at: initialIndex, at: .top, animated: true)
             })
             .store(in: &subscriptions)
-        
-        viewModel.$movieDetails
-            .compactMap { $0 }
-            .sink(receiveValue: { [unowned self] in updateSnapshotItem(with: $0) })
-            .store(in: &subscriptions)
-    }
-    
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        
-        if isBeingDismissed {
-            viewModel.dissmissViewControllerSignal.send(())
-        }
     }
     
     private func layoutCollection() {
@@ -83,27 +71,18 @@ final class MovieDetailsViewController: UIViewController {
     }
     
     private func buildDataSource() -> DataSource {
-        return DataSource(collectionView: collectionView) { (collectionView, indexPath, collectionData) -> UICollectionViewCell? in
+        return DataSource(collectionView: collectionView) { (collectionView, indexPath, movie) -> UICollectionViewCell? in
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "MovieDetailCell", for: indexPath) as! MovieDetailCell
-            cell.configure(with: collectionData)
+            cell.configureWithMovie(movie)
             return cell
         }
     }
     
-    private func applySnapshot(with collectionData: [MovieDetailsCollectionData]) {
+    private func applySnapshot(with movies: [Movie]) {
         var snapshot = dataSource.snapshot()
-        snapshot.appendItems(collectionData, toSection: .main)
+        snapshot.appendItems(movies, toSection: .main)
         dataSource.apply(snapshot)
     }
-    
-    private func updateSnapshotItem(with data: MovieDetailsCollectionData) {
-        var snapshot = dataSource.snapshot()
-        if let _ = snapshot.indexOfItem(data) {
-            snapshot.reloadItems([data])
-            dataSource.apply(snapshot, animatingDifferences: false)
-        }
-    }
-    
 }
 
 // MARK: - UICollectionViewDelegate

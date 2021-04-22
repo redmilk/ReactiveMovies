@@ -9,7 +9,7 @@ import Foundation
 
 enum MoviesListCollectionDataType: Hashable {
     case genre(Genre)
-    case movie(MovieQueryElement)
+    case movie(Movie)
     
     var genre: Genre? {
         switch self {
@@ -18,7 +18,7 @@ enum MoviesListCollectionDataType: Hashable {
         }
     }
     
-    var movie: MovieQueryElement? {
+    var movie: Movie? {
         switch self {
         case .movie(let movie): return movie
         case _: return nil

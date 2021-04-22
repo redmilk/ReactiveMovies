@@ -8,9 +8,8 @@
 import Foundation
 import Combine
 
-// TODO: - Add infinite scroll in detail
 
-class HomeViewModel {
+final class HomeViewModel {
     
     // MARK: - Output for Home VC
     
@@ -21,24 +20,42 @@ class HomeViewModel {
     }()
     
     lazy var updateScrollPosition: AnyPublisher<IndexPath, Never> = {
-        $currentScroll
-            .combineLatest(updateScrollPositionTrigger)
-            .map { $0.0 }
+        movieService.$selectedMovieIndex
+            .compactMap { $0 }
+            .map { IndexPath(row: $0, section: HomeViewController.Section.movie.rawValue) }
             .receive(on: RunLoop.main)
             .eraseToAnyPublisher()
     }()
+
+//    lazy var genres: AnyPublisher<[MoviesListCollectionDataType], Never> = {
+//            return Future<[MoviesListCollectionDataType], Never> { [unowned self] promise in
+//                self.movieService.$genres
+//                    .filter { $0.count > 0 }
+//                    .map { MoviesCollectionDataAdapter.adaptGenres($0) }
+//                    .subscribe(on: Scheduler.backgroundWorkScheduler)
+//                    .receive(on: DispatchQueue.main)
+//                    .sink(receiveValue: { genres in
+//                        let hardcodedGenreFirstElement = MoviesListCollectionDataType.genre(Genre.allGenres)
+//                        var allGenres = genres
+//                        allGenres.insert(hardcodedGenreFirstElement, at: 0)
+//                        promise(.success(allGenres))
+//                    })
+//                    .store(in: &self.subscriptions)
+//            }
+//        .eraseToAnyPublisher()
+//    }()
     
     lazy var genres: AnyPublisher<[MoviesListCollectionDataType], Never> = {
         movieService.$genres
             .map { MoviesCollectionDataAdapter.adaptGenres($0) }
-            .receive(on: DispatchQueue.main)
+            .receive(on: Scheduler.mainScheduler)
             .eraseToAnyPublisher()
     }()
     
     var movies: AnyPublisher<[MoviesListCollectionDataType], Never> {
         movieService.$moviesFiltered
             .map { MoviesCollectionDataAdapter.adaptMovies($0) }
-            .receive(on: DispatchQueue.main)
+            .receive(on: Scheduler.mainScheduler)
             .eraseToAnyPublisher()
     }
     
@@ -47,7 +64,7 @@ class HomeViewModel {
     @Published var searchText: String = ""
     @Published var currentScroll = IndexPath(row: 0, section: 0)
     @Published var selectedGenreIndex: Int = 0
-    @Published var selectedMovieIndex: Int?
+    var selectedMovieIndex: Int?
 
     private var errors: AnyPublisher<RequestError, Never> {
         movieService.errors
@@ -59,7 +76,6 @@ class HomeViewModel {
     private let coordinator: HomeCoordinator
     private let movieService: MovieService
     private let _hideNavigationBar = PassthroughSubject<Bool, Never>()
-    private let updateScrollPositionTrigger = PassthroughSubject<(), Never>()
     
     init(coordinator: HomeCoordinator, movieService: MovieService) {
         self.coordinator = coordinator
@@ -83,27 +99,20 @@ class HomeViewModel {
             })
             .store(in: &subscriptions)
         
-        /// update scroll position after detail
-        movieService.$selectedMovieIndex
-            .compactMap { $0 }
-            .receive(on: DispatchQueue.main)
-            .map { _ in }
-            .eraseToAnyPublisher()
-            .subscribe(updateScrollPositionTrigger)
-            .store(in: &subscriptions)
-        
         bindOutputToMovieService()
+        
         movieService.fetchGenres()
         movieService.fetchMovies()
+    }
+    
+    public func showDetailWithMovieIndex(_ index: Int) {
+        movieService.selectedMovieIndex = index
+        coordinator.openMovieDetails()
     }
     
     private func bindOutputToMovieService() {
         $selectedGenreIndex
             .assign(to: \.selectedGenreIndex, on: movieService)
-            .store(in: &subscriptions)
-        
-        $selectedMovieIndex.compactMap{ $0 }
-            .assign(to: \.selectedMovieIndex, on: movieService)
             .store(in: &subscriptions)
         
         $currentScroll.filter { $0.section >= 0 && $0.row >= 0 }
@@ -114,19 +123,6 @@ class HomeViewModel {
         
         $searchText.removeDuplicates()
             .assign(to: \.searchText, on: movieService)
-            .store(in: &subscriptions)
-        
-        $selectedMovieIndex.compactMap { $0 }
-            .assign(to: \.selectedMovieIndex, on: movieService)
-            .store(in: &subscriptions)
-        
-        $selectedMovieIndex
-            .dropFirst()
-            .receive(on: DispatchQueue.main)
-            .print("dsfasdfsdf")
-            .sink(receiveValue: { [weak self] _ in
-                self?.coordinator.openMovieDetails()
-            })
             .store(in: &subscriptions)
     }
 }

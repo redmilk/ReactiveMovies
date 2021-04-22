@@ -15,7 +15,7 @@ enum MoviesCollectionDataAdapter {
     }
     
     static func adaptMovies(
-        _ movies: [MovieQueryElement]
+        _ movies: [Movie]
     ) -> [MoviesListCollectionDataType] {
         movies.map { MoviesListCollectionDataType.movie($0) }
     }

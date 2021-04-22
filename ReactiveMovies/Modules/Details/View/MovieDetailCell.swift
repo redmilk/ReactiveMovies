@@ -39,30 +39,7 @@ final class MovieDetailCell: UICollectionViewCell {
         containerView.layer.borderColor = #colorLiteral(red: 0.2594798207, green: 0.3202164769, blue: 1, alpha: 1)
     }
     
-    func configure(with item: MovieDetailsCollectionData) {
-        if let movie = item.movie {
-            configure(with: movie)
-        } else if let movieQuery = item.movieQuery {
-            configure(with: movieQuery)
-        }
-    }
-    
-    private func configure(with movieQuery: MovieQueryElement) {
-        descriptionLabel.text = movieQuery.overview
-        popularityLabel.text = movieQuery.popularity?.description
-        voteAverageLabel.text = "☆ " + (movieQuery.voteAverage?.description ?? "")
-        releaseDateLabel.text = movieQuery.releaseDate?.description
-        originalTitleLabel.text = movieQuery.originalTitle
-        originalLanguageLabel.text = movieQuery.originalLanguage
-        titleLabel.text = movieQuery.title
-        
-        guard let imageUrl = URL(string: Endpoints.images + movieQuery.posterPath!) else { return }
-        imageLoadingSubscription = BaseRequest.shared
-            .loadImage(from: imageUrl)
-            .sink(receiveValue: { [weak self] in self?.imageView.image = $0 })
-    }
-    
-    private func configure(with movie: Movie) {
+    func configureWithMovie(_ movie: Movie) {
         descriptionLabel.text = movie.overview
         budgetLabel.text = (movie.budget?.description ?? "") + " $"
         popularityLabel.text = movie.popularity?.description

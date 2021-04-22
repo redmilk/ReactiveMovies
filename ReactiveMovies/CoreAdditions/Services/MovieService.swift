@@ -23,6 +23,23 @@ import Combine
 //    var genres: [MovieGenre]
 //}
 
+/**
+ head // [Entity]
+     .flatMap { entities -> AnyPublisher<Entity, Error> in
+         Publishers.Sequence(sequence: entities).eraseToAnyPublisher()
+     }.flatMap { entity -> AnyPublisher<Entity, Error> in
+         self.makeFuture(for: entity) // [Derivative]
+             .flatMap { derivatives -> AnyPublisher<Derivative, Error> in
+                 Publishers.Sequence(sequence: derivatives).eraseToAnyPublisher()
+             }
+             .flatMap { derivative -> AnyPublisher<Derivative2, Error> in
+                 self.makeFuture(for: derivative).eraseToAnyPublisher() // Derivative2
+         }.collect().map { derivative2s -> Entity in
+             self.configuredEntity(entity, from: derivative2s)
+         }.eraseToAnyPublisher()
+     }.collect()
+ */
+
 // MARK: - MovieService
 
 final class MovieService {
@@ -36,40 +53,21 @@ final class MovieService {
     @Published var searchText: String = ""
     
     // MARK: - Output
-    @Published private(set) var moviesFiltered: [MovieQueryElement] = []
+    @Published private(set) var moviesFiltered: [Movie] = []
     @Published private(set) var genres: [Genre] = []
-    
     var errors: AnyPublisher<RequestError, Never> {
         errors_.eraseToAnyPublisher()
     }
     
-    var getMovieWithCurrentScrollIndex: AnyPublisher<MovieQueryElement, Never> {
-        $selectedMovieIndex.compactMap{ $0 }
-            .map { [unowned self] in moviesOriginal[$0] }
-            .eraseToAnyPublisher()
-    }
-    
+    // MARK: - Private
     private var pagination: Int = 1
-    private(set) var moviesOriginal: [MovieQueryElement] = []
+    private var moviesOriginal: [Movie] = []
     private let errors_ = PassthroughSubject<RequestError, Never>()
     private var subscriptions = Set<AnyCancellable>()
     private let moviesApi = MoviesApi()
     
-    func fetchMovies() {
-        moviesApi
-            .requestMoviesWithQuery(page: pagination, genres: nil)
-            .compactMap { $0.results }
-            .sink(receiveCompletion: { [unowned self] completion in
-                if case .failure(let error) = completion {
-                    self.errors_.send(error)
-                }
-            }, receiveValue: { [unowned self] requestedMovies in
-                moviesOriginal += requestedMovies
-                moviesFiltered = moviesOriginal
-                self.pagination += 1
-            })
-            .store(in: &subscriptions)
-    }
+    // MARK: - Bindings
+    private init() { bindInput() }
     
     func fetchGenres() {
         moviesApi
@@ -86,37 +84,34 @@ final class MovieService {
             .store(in: &subscriptions)
     }
     
-    func fetchExtraMovieInfo() {
-        $selectedMovieIndex
-            .removeDuplicates()
-            .compactMap { $0 }
-            //.print("👁‍🗨👁‍🗨👁‍🗨", to: DebugOutputStreamLogger())
-            .compactMap { [unowned self] in moviesFiltered[$0].id }
-            .setFailureType(to: RequestError.self)
-            .flatMap ({ [unowned self] index -> AnyPublisher<Movie, RequestError> in
-                fetchMovieDetailsWithMovieId(index)
+    func fetchMovies() {
+        moviesApi.requestMoviesWithQuery(page: pagination, genres: nil)
+            .compactMap { $0.results }
+            .flatMap({ movs -> AnyPublisher<MovieQueryElement, RequestError> in
+                Publishers.Sequence(sequence: movs)
+                    .eraseToAnyPublisher()
+            })
+            .flatMap({ [unowned self] movie -> AnyPublisher<Movie, RequestError> in
+                moviesApi.requestMovieDetails(movieId: movie.id!).eraseToAnyPublisher()
             })
             .sink(receiveCompletion: { [unowned self] completion in
                 if case .failure(let error) = completion {
                     errors_.send(error)
                 }
-            }, receiveValue: { [unowned self] movie in
-                //movies[selectedMovieIndex!].movie = movie
-                //let updated = movies[selectedMovieIndex!]
-                //movieDetails = updated
+            }, receiveValue: { [unowned self] fullMovie in
+                moviesOriginal.append(fullMovie)
+                moviesFiltered = moviesOriginal
+                pagination += 1
             })
             .store(in: &subscriptions)
     }
-    
-    private func fetchMovieDetailsWithMovieId(_ id: Int) -> AnyPublisher<Movie, RequestError> {
-        return moviesApi
-            .requestMovieDetails(movieId: id)
-            .eraseToAnyPublisher()
-    }
+}
 
-    private init() { bindInput() }
+// MARK: - Private
+
+private extension MovieService {
     
-    private func bindInput() {
+    func bindInput() {
         /// infinite scroll
         $currentScroll
             .filter { [unowned self] in (moviesFiltered.count - 1) == $0.row && $0.section == 1 && searchText.isEmpty && selectedGenreIndex == 0 }
@@ -130,11 +125,10 @@ final class MovieService {
         $searchText
             .removeDuplicates()
             .filter { [unowned self] _ in selectedGenreIndex == 0 }
-            .map { [unowned self] searchText -> [MovieQueryElement] in
+            .map { [unowned self] searchText -> [Movie] in
                 filteredMovies(moviesOriginal, searchText: searchText)
             }
             .sink(receiveValue: { [unowned self] searchResults in
-                print("search movies count: " + searchResults.count.description)
                 moviesFiltered = searchResults
             })
             .store(in: &subscriptions)
@@ -150,16 +144,17 @@ final class MovieService {
             }
             .store(in: &subscriptions)
     }
-}
-
-// MARK: - Filters
-
-private extension MovieService {
+    
+    func fetchMovieDetailsWithMovieId(_ id: Int) -> AnyPublisher<Movie, RequestError> {
+        return moviesApi
+            .requestMovieDetails(movieId: id)
+            .eraseToAnyPublisher()
+    }
     
     func filteredMovies(
-        _ movies: [MovieQueryElement],
+        _ movies: [Movie],
         searchText: String?
-    ) -> [MovieQueryElement] {
+    ) -> [Movie] {
         guard let searchText = searchText, !searchText.isEmpty else {
             return movies
         }
@@ -179,9 +174,40 @@ private extension MovieService {
     }
     
     func filterMoviesByGenre(_ genre: Genre?) {
-        guard let genre = genre, genre.id != -1 else { /// ALL item index
+        guard let genre = genre, genre.id != -1 else { /// -1 ALL genre items index
             return moviesFiltered = moviesOriginal
         }
-        moviesFiltered = moviesOriginal.filter { $0.genreIDS!.contains(genre.id) }
+        let result = moviesOriginal.filter { $0.genres?.contains(genre) ?? true }
+        moviesFiltered = result
+    }
+    
+    func chainAllRequests() {
+        moviesApi.requestMoviesGenres()
+            .compactMap { $0.genres }
+            .flatMap({ genres -> AnyPublisher<Genre, RequestError> in
+                Publishers.Sequence(sequence: genres).eraseToAnyPublisher()
+            })
+            .map { $0.id }
+            .flatMap({ [unowned self] genreId -> AnyPublisher<Movie, RequestError> in
+                moviesApi.requestMoviesWithQuery(page: 1, genres: genreId.description)
+                    .eraseToAnyPublisher()
+                    .compactMap { $0.results }
+                    .flatMap({ movies -> AnyPublisher<MovieQueryElement, RequestError> in
+                        Publishers.Sequence(sequence: movies).eraseToAnyPublisher()
+                    })
+                    .compactMap { $0.id }
+                    .flatMap({ id -> AnyPublisher<Movie, RequestError> in
+                        moviesApi.requestMovieDetails(movieId: id)
+                    })
+                    .eraseToAnyPublisher()
+            })
+            .sink(receiveCompletion: { [unowned self] completion in
+                if case .failure(let error) = completion {
+                    errors_.send(error)
+                }
+            }, receiveValue: { [unowned self] movie in
+                //_movies_.append(movie)
+            })
+            .store(in: &subscriptions)
     }
 }

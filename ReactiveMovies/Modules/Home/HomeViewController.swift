@@ -18,7 +18,6 @@ final class HomeViewController: UIViewController {
         case movie = 1
     }
     
-    /// Interactor
     private lazy var viewModel: HomeViewModel = {
         HomeViewModel(coordinator: HomeCoordinator(viewController: self, navigationController: navigationController),
                       movieService: MovieService.shared)
@@ -40,13 +39,13 @@ final class HomeViewController: UIViewController {
         
         viewModel.genres
             .sink { [unowned self] genres in
-                self.applySnapshot(collectionData: genres, type: .genre)
+                applySnapshot(collectionData: genres, type: .genre)
             }
             .store(in: &subscriptions)
         
         viewModel.movies
             .sink { [unowned self] movies in
-                self.applySnapshot(collectionData: movies, type: .movie)
+                applySnapshot(collectionData: movies, type: .movie)
             }
             .store(in: &subscriptions)
     
@@ -72,9 +71,8 @@ extension HomeViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         switch Section(rawValue: indexPath.section)! {
         case .genre: viewModel.selectedGenreIndex = indexPath.row
-        case .movie: viewModel.selectedMovieIndex = indexPath.row
+        case .movie: viewModel.showDetailWithMovieIndex(indexPath.row)
         }
-        
     }
 }
 
@@ -108,7 +106,7 @@ private extension HomeViewController {
                     case .movie(let movie) where indexPath.section == Section.movie.rawValue:
                         cell = collectionView.dequeueReusableCell(withReuseIdentifier: "MovieQueryCell",
                                                                   for: indexPath) as? MovieQueryCell
-                        (cell as? MovieQueryCell)?.configure(with: movie)
+                        (cell as? MovieQueryCell)?.configureWithMovie(movie)
                     case _: fatalError()
                     }
                     return cell
