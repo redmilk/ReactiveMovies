@@ -26,24 +26,6 @@ final class HomeViewModel {
             .receive(on: RunLoop.main)
             .eraseToAnyPublisher()
     }()
-
-//    lazy var genres: AnyPublisher<[MoviesListCollectionDataType], Never> = {
-//            return Future<[MoviesListCollectionDataType], Never> { [unowned self] promise in
-//                self.movieService.$genres
-//                    .filter { $0.count > 0 }
-//                    .map { MoviesCollectionDataAdapter.adaptGenres($0) }
-//                    .subscribe(on: Scheduler.backgroundWorkScheduler)
-//                    .receive(on: DispatchQueue.main)
-//                    .sink(receiveValue: { genres in
-//                        let hardcodedGenreFirstElement = MoviesListCollectionDataType.genre(Genre.allGenres)
-//                        var allGenres = genres
-//                        allGenres.insert(hardcodedGenreFirstElement, at: 0)
-//                        promise(.success(allGenres))
-//                    })
-//                    .store(in: &self.subscriptions)
-//            }
-//        .eraseToAnyPublisher()
-//    }()
     
     lazy var genres: AnyPublisher<[MoviesListCollectionDataType], Never> = {
         movieService.$genres
@@ -66,7 +48,7 @@ final class HomeViewModel {
     @Published var selectedGenreIndex: Int = 0
     var selectedMovieIndex: Int?
 
-    private var errors: AnyPublisher<RequestError, Never> {
+    private var errors: AnyPublisher<Error, Never> {
         movieService.errors
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
@@ -91,8 +73,9 @@ final class HomeViewModel {
         
         /// displaying error alert
         errors.receive(on: DispatchQueue.main)
-            .flatMap ({ (error: RequestError) -> AnyPublisher<Void, Never> in
-                coordinator.showAlert(title: "Ooops", message: error.errorDescription)
+            .flatMap ({ (error: Error) -> AnyPublisher<Void, Never> in
+                let errorMessage = (error as? RequestError)?.errorDescription ?? error.localizedDescription
+                return coordinator.showAlert(title: "Ooops", message: errorMessage)
             })
             .sink(receiveValue: { error in
                 print(error)

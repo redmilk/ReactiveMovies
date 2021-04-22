@@ -7,20 +7,23 @@
 
 import Foundation
 
-
 enum RequestError: Error {
-    case parsing(description: String, error: Error)
-    case network(description: String, error: URLError)
-    case requestTimeout(description: String)
-    case unknown(description: String, error: NSError)
-  //case session(description String, Response)
+    case invalidRequest
+    case invalidResponse
+    case parsing(message: String, error: Error)
+    case network(message: String, error: URLError)
+    case timeout(description: String)
+    case dataLoadingError(statusCode: Int, data: Data)
     
     var errorDescription: String {
         switch self {
         case .network(let description, _): return description
-        case .requestTimeout(let description): return description
+        case .timeout(let description): return description
         case .parsing(let description, _): return description
-        case .unknown(let description, _): return description
+        case .invalidRequest: return "Invalid request. Check URL or components."
+        case .invalidResponse: return "Invalid response"
+        case .dataLoadingError: return "Data loading error"
         }
     }
 }
+

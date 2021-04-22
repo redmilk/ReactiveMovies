@@ -22,7 +22,7 @@ struct Endpoints {
 }
 
 
-final class MoviesApi: BaseRequest {
+final class MoviesApi: NetworkService {
     private let apiKeyValue = "ed13542fcfbf6b6bd02fb2723a0495ff" /// TODO: put in keychain
     
     /// Parameters keys
@@ -37,7 +37,7 @@ final class MoviesApi: BaseRequest {
     private let popularityDesc = "popularity.desc"
     
     
-    public func requestMoviesGenres() -> AnyPublisher<Genres, RequestError> {
+    public func requestMoviesGenres() -> AnyPublisher<Genres, Error> {
         let params = RequestParametersAdapter(
             withBody: false,
             parameters: [
@@ -50,7 +50,7 @@ final class MoviesApi: BaseRequest {
                                             adapters: [headers, params],
                                             method: .get)
         
-        return request(with: requestBuilder.request, type: Genres.self)
+        return request(with: requestBuilder.request)
             .eraseToAnyPublisher()
     }
     
@@ -58,7 +58,7 @@ final class MoviesApi: BaseRequest {
     func requestMoviesWithQuery(
         page: Int,
         genres: String?
-    ) -> AnyPublisher<MovieQuery, RequestError> {
+    ) -> AnyPublisher<MovieQuery, Error> {
         
         let params = RequestParametersAdapter(
             withBody: false,
@@ -76,15 +76,14 @@ final class MoviesApi: BaseRequest {
             method: .get
         )
         
-        return request(with: requestBuilder.request, type: MovieQuery.self)
+        return request(with: requestBuilder.request)
             .eraseToAnyPublisher()
     }
     
     /// Get details of movie with id
     func requestMovieDetails(
         movieId: Int
-    ) -> AnyPublisher<Movie, RequestError> {
-        
+    ) -> AnyPublisher<Movie, Error> {
         let params = RequestParametersAdapter(
             withBody: false,
             parameters: [
@@ -99,7 +98,7 @@ final class MoviesApi: BaseRequest {
             method: .get
         )
         
-        return request(with: requestBuilder.request, type: Movie.self)
+        return request(with: requestBuilder.request)
             .eraseToAnyPublisher()
     }
     

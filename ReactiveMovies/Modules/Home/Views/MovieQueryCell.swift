@@ -29,8 +29,10 @@ final class MovieQueryCell: UICollectionViewCell {
         contentView.layer.cornerRadius = 12.0
         
         guard let imageUrl = URL(string: Endpoints.images + (movie.posterPath ?? "")) else { return }
-        imageLoadingSubscription = BaseRequest.shared
+        imageLoadingSubscription = NetworkService.shared
             .loadImage(from: imageUrl)
+            .subscribe(on: Scheduler.backgroundWorkScheduler)
+            .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] in self?.movieImageView.image = $0 })
     }
 }

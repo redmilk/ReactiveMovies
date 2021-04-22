@@ -94,23 +94,25 @@ private extension HomeViewController {
     }
     
     func buildDataSource() -> DataSource {
-        DataSource(collectionView: collectionView,
-                   cellProvider: { (collectionView, indexPath, collectionData) -> UICollectionViewCell? in
-                    var cell: UICollectionViewCell?
-                    
-                    switch collectionData {
-                    case .genre(let genre) where indexPath.section == Section.genre.rawValue:
-                        cell = collectionView.dequeueReusableCell(withReuseIdentifier: "GenreCell",
-                                                                  for: indexPath) as? GenreCell
-                        (cell as? GenreCell)?.configure(with: genre)
-                    case .movie(let movie) where indexPath.section == Section.movie.rawValue:
-                        cell = collectionView.dequeueReusableCell(withReuseIdentifier: "MovieQueryCell",
-                                                                  for: indexPath) as? MovieQueryCell
-                        (cell as? MovieQueryCell)?.configureWithMovie(movie)
-                    case _: fatalError()
-                    }
-                    return cell
-                   })
+        DataSource(
+            collectionView: collectionView,
+            cellProvider: { (collectionView, indexPath, collectionData) -> UICollectionViewCell? in
+                var cell: UICollectionViewCell?
+                switch collectionData {
+                case .genre(let genre) where indexPath.section == Section.genre.rawValue:
+                    cell = collectionView.dequeueReusableCell(
+                        withReuseIdentifier: "GenreCell",
+                        for: indexPath) as? GenreCell
+                    (cell as? GenreCell)?.configure(with: genre)
+                case .movie(let movie) where indexPath.section == Section.movie.rawValue:
+                    cell = collectionView.dequeueReusableCell(
+                        withReuseIdentifier: "MovieQueryCell",
+                        for: indexPath) as? MovieQueryCell
+                    (cell as? MovieQueryCell)?.configureWithMovie(movie)
+                case _: fatalError()
+                }
+                return cell
+            })
     }
     
     func configureView() {

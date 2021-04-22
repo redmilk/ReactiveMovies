@@ -55,14 +55,14 @@ final class MovieService {
     // MARK: - Output
     @Published private(set) var moviesFiltered: [Movie] = []
     @Published private(set) var genres: [Genre] = []
-    var errors: AnyPublisher<RequestError, Never> {
+    var errors: AnyPublisher<Error, Never> {
         errors_.eraseToAnyPublisher()
     }
     
     // MARK: - Private
     private var pagination: Int = 1
     private var moviesOriginal: [Movie] = []
-    private let errors_ = PassthroughSubject<RequestError, Never>()
+    private let errors_ = PassthroughSubject<Error, Never>()
     private var subscriptions = Set<AnyCancellable>()
     private let moviesApi = MoviesApi()
     
@@ -87,11 +87,11 @@ final class MovieService {
     func fetchMovies() {
         moviesApi.requestMoviesWithQuery(page: pagination, genres: nil)
             .compactMap { $0.results }
-            .flatMap({ movs -> AnyPublisher<MovieQueryElement, RequestError> in
+            .flatMap({ movs -> AnyPublisher<MovieQueryElement, Error> in
                 Publishers.Sequence(sequence: movs)
                     .eraseToAnyPublisher()
             })
-            .flatMap({ [unowned self] movie -> AnyPublisher<Movie, RequestError> in
+            .flatMap({ [unowned self] movie -> AnyPublisher<Movie, Error> in
                 moviesApi.requestMovieDetails(movieId: movie.id!).eraseToAnyPublisher()
             })
             .sink(receiveCompletion: { [unowned self] completion in
@@ -145,7 +145,7 @@ private extension MovieService {
             .store(in: &subscriptions)
     }
     
-    func fetchMovieDetailsWithMovieId(_ id: Int) -> AnyPublisher<Movie, RequestError> {
+    func fetchMovieDetailsWithMovieId(_ id: Int) -> AnyPublisher<Movie, Error> {
         return moviesApi
             .requestMovieDetails(movieId: id)
             .eraseToAnyPublisher()
@@ -184,19 +184,19 @@ private extension MovieService {
     func chainAllRequests() {
         moviesApi.requestMoviesGenres()
             .compactMap { $0.genres }
-            .flatMap({ genres -> AnyPublisher<Genre, RequestError> in
+            .flatMap({ genres -> AnyPublisher<Genre, Error> in
                 Publishers.Sequence(sequence: genres).eraseToAnyPublisher()
             })
             .map { $0.id }
-            .flatMap({ [unowned self] genreId -> AnyPublisher<Movie, RequestError> in
+            .flatMap({ [unowned self] genreId -> AnyPublisher<Movie, Error> in
                 moviesApi.requestMoviesWithQuery(page: 1, genres: genreId.description)
                     .eraseToAnyPublisher()
                     .compactMap { $0.results }
-                    .flatMap({ movies -> AnyPublisher<MovieQueryElement, RequestError> in
+                    .flatMap({ movies -> AnyPublisher<MovieQueryElement, Error> in
                         Publishers.Sequence(sequence: movies).eraseToAnyPublisher()
                     })
                     .compactMap { $0.id }
-                    .flatMap({ id -> AnyPublisher<Movie, RequestError> in
+                    .flatMap({ id -> AnyPublisher<Movie, Error> in
                         moviesApi.requestMovieDetails(movieId: id)
                     })
                     .eraseToAnyPublisher()

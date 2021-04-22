@@ -55,7 +55,7 @@ final class MovieDetailCell: UICollectionViewCell {
         titleLabel.text = movie.title
 
         guard let imageUrl = URL(string: Endpoints.images + movie.posterPath!) else { return }
-        imageLoadingSubscription = BaseRequest.shared
+        imageLoadingSubscription = NetworkService.shared
             .loadImage(from: imageUrl)
             .sink(receiveValue: { [weak self] in self?.imageView.image = $0 })
     }
