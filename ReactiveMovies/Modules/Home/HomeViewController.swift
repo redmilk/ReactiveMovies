@@ -51,12 +51,18 @@ final class HomeViewController: UIViewController {
     
         viewModel.hideNavigationBar
             .sink(receiveValue: { [unowned self] shouldHideNavbar in
-                navigationController?.setNavigationBarHidden(shouldHideNavbar, animated: true)
+                DispatchQueue.main.async {
+                    navigationController?.setNavigationBarHidden(shouldHideNavbar, animated: true)
+                }
             })
             .store(in: &subscriptions)
         
         viewModel.updateScrollPosition
-            .sink { [unowned self] in collectionView.scrollToItem(at: $0, at: .centeredVertically, animated: true) }
+            .sink { [unowned self] index in
+                DispatchQueue.main.async {
+                    collectionView.scrollToItem(at: index, at: .centeredVertically, animated: true)
+                }
+            }
             .store(in: &subscriptions)
     }
 }
@@ -117,13 +123,22 @@ private extension HomeViewController {
     
     func configureView() {
         title = "Movies"
-        navigationController?.navigationBar.prefersLargeTitles = true
-        navigationController?.navigationItem.hidesSearchBarWhenScrolling = false
+        applyStyling()
         collectionView.delegate = self
                 
         var snapshot = Snapshot()
         snapshot.appendSections([.genre, .movie])
         dataSource.apply(snapshot)
+    }
+    
+    func applyStyling() {
+        navigationController?.navigationBar.prefersLargeTitles = false
+        navigationController?.navigationItem.hidesSearchBarWhenScrolling = false
+        collectionView.backgroundColor = .black
+        view.backgroundColor = .black
+        navigationController?.navigationBar.barTintColor = .black
+        navigationController?.navigationBar.tintColor = .white
+        searchController.searchBar.searchTextField.textColor = .white
     }
     
     func configureSearchController() {
@@ -155,14 +170,14 @@ private extension HomeViewController {
             case .movie:
                 let size = NSCollectionLayoutSize(
                     widthDimension: NSCollectionLayoutDimension.fractionalWidth(1),
-                    heightDimension: NSCollectionLayoutDimension.absolute(isPhone ? 300 : 500)
+                    heightDimension: NSCollectionLayoutDimension.absolute(200)//estimated(300)//absolute(isPhone ? 300 : 500)
                 )
-                let itemCount = isPhone ? 3 : 4
+                let itemCount = isPhone ? 4 : 5
                 let item = NSCollectionLayoutItem(layoutSize: size)
                 let group = NSCollectionLayoutGroup.horizontal(layoutSize: size, subitem: item, count: itemCount)
                 let section = NSCollectionLayoutSection(group: group)
-                section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 10, bottom: 30, trailing: 10)
-                section.interGroupSpacing = 10
+                section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 0, bottom: 30, trailing: 0)
+                //section.interGroupSpacing = 10
                 return section
             }
         })

@@ -11,12 +11,6 @@ import Combine
 
 final class HomeCoordinator: BaseCoordinator {
     
-    // MARK: - Output to HomeVM from DetailVM
-    
-    var movieDetailsCurrentScrollItemIndex: AnyPublisher<Int?, Never> {
-        return $_movieDetailsCurrentScrollItemIndex.eraseToAnyPublisher()
-    }
-    
     // MARK: - Public API
     
     func openMovieDetails() {
@@ -29,9 +23,4 @@ final class HomeCoordinator: BaseCoordinator {
         detailVC.viewModel = viewModel
         viewController.present(detailVC, animated: true, completion: nil)
     }
-    
-    // MARK: - Internal
-    
-    @Published private var _movieDetailsCurrentScrollItemIndex: Int?
-    private var subscriptions = Set<AnyCancellable>()
 }

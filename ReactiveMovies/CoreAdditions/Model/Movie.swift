@@ -92,7 +92,7 @@ struct Genre: Codable, Hashable {
     var isSelected: Bool? = false
     
     static var allGenres: Genre {
-        return Genre(id: -1, name: "ALL", isSelected: true)
+        return Genre(id: -1, name: "ALL🔎", isSelected: true)
     }
     
     init(id: Int, name: String, isSelected: Bool) {

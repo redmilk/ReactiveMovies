@@ -15,6 +15,7 @@ struct Endpoints {
     static let discover = "/discover/movie"
     static let movieDetails = "/movie/"
     static let images = "https://image.tmdb.org/t/p/w500/"
+    static let smallImageUrl = "https://image.tmdb.org/t/p/w154/"
     
     static var baseUrl: URL {
         return URL(string: Endpoints.baseUrlString)!

@@ -11,11 +11,12 @@ import Combine
 final class MoviewDetailsViewModel {
     
     // MARK: - Output for VC
-    var movies: AnyPublisher<[Movie], Never> {
+    lazy var movies: AnyPublisher<[Movie], Never> = {
         movieService.$moviesFiltered
             .receive(on: DispatchQueue.main)
+            .share()
             .eraseToAnyPublisher()
-    }
+    }()
     
     var itemScrollIndex: Int? {
         return movieService.currentScroll.row
@@ -27,7 +28,7 @@ final class MoviewDetailsViewModel {
     /// Combine internal
     private let errors = PassthroughSubject<RequestError, Never>()
     private var subscriptions = Set<AnyCancellable>()
-    private var movieItemIndex: Int?
+    //private var movieItemIndex: Int?
     
     init(movieService: MovieService,
          coordinator: MovieDetailsCoordinator
@@ -46,13 +47,13 @@ final class MoviewDetailsViewModel {
     
     deinit {
         /// update current movie item index before dismiss
-        movieService.selectedMovieIndex = movieItemIndex
+        //movieService.selectedMovieIndex = movieItemIndex
     }
     
     func updateScrollIndex(_ index: Int) {
-        movieItemIndex = index
+        //movieItemIndex = index
+        movieService.selectedMovieIndex = index//movieItemIndex
         movieService.currentScroll = IndexPath(row: index, section: HomeViewController.Section.movie.rawValue)
-        //movieService.currentScroll = IndexPath(row: index, section: HomeViewController.Section.movie.rawValue)
     }
 }
 

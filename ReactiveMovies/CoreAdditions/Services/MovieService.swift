@@ -50,7 +50,7 @@ final class MovieService {
     // MARK: - Input
     @Published var currentScroll: IndexPath = IndexPath(row: 0, section: 0)  {
         didSet {
-            print(currentScroll.row)
+            //print(currentScroll.row)
         }
     }
     @Published var selectedGenreIndex: Int = 0
@@ -150,7 +150,7 @@ private extension MovieService {
             .handleEvents(receiveOutput: { [unowned self] _ in
                 fetchMovies()
             })
-            .sink { indexPath in }
+            .sink { _ in }
             .store(in: &subscriptions)
         
         /// search text

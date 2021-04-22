@@ -23,7 +23,7 @@ final class HomeViewModel {
         movieService.$selectedMovieIndex
             .compactMap { $0 }
             .map { IndexPath(row: $0, section: HomeViewController.Section.movie.rawValue) }
-            .receive(on: RunLoop.main)
+            .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
     }()
     
@@ -37,7 +37,7 @@ final class HomeViewModel {
     var movies: AnyPublisher<[MoviesListCollectionDataType], Never> {
         movieService.$moviesFiltered
             .map { MoviesCollectionDataAdapter.adaptMovies($0) }
-            .receive(on: Scheduler.mainScheduler)
+            .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
     }
     
@@ -66,8 +66,10 @@ final class HomeViewModel {
         /// hiding nav bar
         $currentScroll
             .filter { [unowned self] _ in searchText.isEmpty }
-            .map { $0.section == HomeViewController.Section.movie.rawValue && $0.row > 10 || movieService.selectedGenreIndex != 0 }
+            .map { $0.section == HomeViewController.Section.movie.rawValue && $0.row > 20 || movieService.selectedGenreIndex != 0 }
+            .prepend(false)
             .removeDuplicates()
+            .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] in self?._hideNavigationBar.send($0) })
             .store(in: &subscriptions)
         

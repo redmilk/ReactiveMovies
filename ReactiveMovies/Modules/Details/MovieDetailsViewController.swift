@@ -31,19 +31,20 @@ final class MovieDetailsViewController: UIViewController {
         
         viewModel.movies
             .sink(receiveValue: { [unowned self] movies in
-                //let initialIndex = IndexPath(row: viewModel.itemScrollIndex!, section: Section.main.rawValue)
+                print("RECEIVE MOVIES")
+                print(movies.count)
                 applySnapshot(with: movies)
-                //collectionView.scrollToItem(at: initialIndex, at: .top, animated: true)
             })
             .store(in: &subscriptions)
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
-        let initialIndex = IndexPath(row: viewModel.itemScrollIndex!, section: Section.main.rawValue)
-        collectionView.scrollToItem(at: initialIndex, at: .centeredVertically, animated: true)
 
+        let initialIndex = IndexPath(row: viewModel.itemScrollIndex!, section: Section.main.rawValue)
+        DispatchQueue.main.async {
+            self.collectionView.scrollToItem(at: initialIndex, at: .top, animated: true)
+        }
     }
     
     private func layoutCollection() {
@@ -57,7 +58,6 @@ final class MovieDetailsViewController: UIViewController {
                 let group = NSCollectionLayoutGroup.horizontal(layoutSize: size, subitem: item, count: 1)
                 let section = NSCollectionLayoutSection(group: group)
                 section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0)
-                //section.interGroupSpacing = 20
                 section.orthogonalScrollingBehavior = .groupPaging
                 return section
             }
@@ -86,15 +86,7 @@ final class MovieDetailsViewController: UIViewController {
     
     private func applySnapshot(with movies: [Movie]) {
         var snapshot = dataSource.snapshot()
-        //var snapshot = Snapshot()
-        //snapshot.appendSections([.main])
-        //let itemsCount = snapshot.numberOfItems
-        //print("ITEMS COUNT IN SNAPSHOT")
-        //print(itemsCount)
-        //print(movies.count)
         snapshot.appendItems(movies, toSection: .main)
-        //print(snapshot.numberOfItems)
-        //print()
         dataSource.apply(snapshot, animatingDifferences: false)
     }
 }
