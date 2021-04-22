@@ -84,19 +84,6 @@ final class HomeViewModel {
             })
             .store(in: &subscriptions)
         
-        bindOutputToMovieService()
-        
-        movieService.fetchGenres()
-        movieService.fetchMovies()
-    }
-    
-    public func showDetailWithMovieIndex(_ index: Int) {
-        //movieService.selectedMovieIndex = index
-        movieService.currentScroll = IndexPath(row: index, section: 1)
-        coordinator.openMovieDetails()
-    }
-    
-    private func bindOutputToMovieService() {
         $selectedGenreIndex
             .assign(to: \.selectedGenreIndex, on: movieService)
             .store(in: &subscriptions)
@@ -110,5 +97,14 @@ final class HomeViewModel {
         $searchText.removeDuplicates()
             .assign(to: \.searchText, on: movieService)
             .store(in: &subscriptions)
+        
+        movieService.fetchGenres()
+        movieService.fetchMovies()
     }
+    
+    public func showDetailWithMovieIndex(_ index: Int) {
+        //movieService.selectedMovieIndex = index
+        movieService.currentScroll = IndexPath(row: index, section: 1)
+        coordinator.openMovieDetails()
+    }        
 }

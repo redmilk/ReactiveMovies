@@ -114,10 +114,11 @@
                                         </cells>
                                     </collectionView>
                                 </subviews>
+                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </stackView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="azz-vW-ydz" secondAttribute="trailing" id="0o7-24-b1Y"/>
                             <constraint firstItem="azz-vW-ydz" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="8Jj-ME-kOV"/>

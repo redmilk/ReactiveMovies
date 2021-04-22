@@ -170,7 +170,7 @@ private extension HomeViewController {
             case .movie:
                 let size = NSCollectionLayoutSize(
                     widthDimension: NSCollectionLayoutDimension.fractionalWidth(1),
-                    heightDimension: NSCollectionLayoutDimension.absolute(200)//estimated(300)//absolute(isPhone ? 300 : 500)
+                    heightDimension: NSCollectionLayoutDimension.absolute(200)
                 )
                 let itemCount = isPhone ? 4 : 5
                 let item = NSCollectionLayoutItem(layoutSize: size)
