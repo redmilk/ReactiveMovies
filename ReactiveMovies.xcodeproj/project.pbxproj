@@ -32,6 +32,9 @@
 		799091D2262DEC5C008CEDB0 /* ImageCacher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 799091D1262DEC5C008CEDB0 /* ImageCacher.swift */; };
 		79A1CB952631F23D001C24EF /* Schedulers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79A1CB942631F23D001C24EF /* Schedulers.swift */; };
 		79A1CB9826320127001C24EF /* Publisher+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79A1CB9726320127001C24EF /* Publisher+Extensions.swift */; };
+		79A1CB9E26324922001C24EF /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79A1CB9C26324922001C24EF /* SearchViewController.swift */; };
+		79A1CB9F26324922001C24EF /* SearchViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 79A1CB9D26324922001C24EF /* SearchViewController.xib */; };
+		79A1CBA326324983001C24EF /* MoviesSearchService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79A1CBA226324982001C24EF /* MoviesSearchService.swift */; };
 		79E47F79262E022B00BA661F /* ErrorTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79E47F78262E022B00BA661F /* ErrorTypes.swift */; };
 		79E6BBFE262F0CB500CC1C38 /* MoviesCollectionDataAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79E6BBFD262F0CB500CC1C38 /* MoviesCollectionDataAdapter.swift */; };
 		79E6BC02262F0E0C00CC1C38 /* MoviesCollectionDataType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79E6BC01262F0E0C00CC1C38 /* MoviesCollectionDataType.swift */; };
@@ -74,6 +77,9 @@
 		799091D1262DEC5C008CEDB0 /* ImageCacher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCacher.swift; sourceTree = "<group>"; };
 		79A1CB942631F23D001C24EF /* Schedulers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Schedulers.swift; sourceTree = "<group>"; };
 		79A1CB9726320127001C24EF /* Publisher+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Publisher+Extensions.swift"; sourceTree = "<group>"; };
+		79A1CB9C26324922001C24EF /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
+		79A1CB9D26324922001C24EF /* SearchViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SearchViewController.xib; sourceTree = "<group>"; };
+		79A1CBA226324982001C24EF /* MoviesSearchService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoviesSearchService.swift; sourceTree = "<group>"; };
 		79E47F78262E022B00BA661F /* ErrorTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorTypes.swift; sourceTree = "<group>"; };
 		79E6BBFD262F0CB500CC1C38 /* MoviesCollectionDataAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoviesCollectionDataAdapter.swift; sourceTree = "<group>"; };
 		79E6BC01262F0E0C00CC1C38 /* MoviesCollectionDataType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoviesCollectionDataType.swift; sourceTree = "<group>"; };
@@ -179,6 +185,7 @@
 		7976AC3926227579008C3DA8 /* Modules */ = {
 			isa = PBXGroup;
 			children = (
+				79A1CB9B263248FB001C24EF /* Search */,
 				795DA93026227C8700C10373 /* Home */,
 				797FE69E262A1209007A7E4D /* Details */,
 			);
@@ -207,6 +214,7 @@
 			isa = PBXGroup;
 			children = (
 				797FE6992629C2EF007A7E4D /* MovieService.swift */,
+				79A1CBA226324982001C24EF /* MoviesSearchService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -241,6 +249,15 @@
 				797FE6AD262A1967007A7E4D /* MovieDetailCell.xib */,
 			);
 			path = View;
+			sourceTree = "<group>";
+		};
+		79A1CB9B263248FB001C24EF /* Search */ = {
+			isa = PBXGroup;
+			children = (
+				79A1CB9C26324922001C24EF /* SearchViewController.swift */,
+				79A1CB9D26324922001C24EF /* SearchViewController.xib */,
+			);
+			path = Search;
 			sourceTree = "<group>";
 		};
 		79E6BBF0262EF55700CC1C38 /* Utils */ = {
@@ -351,6 +368,7 @@
 			files = (
 				7976AC16262262E7008C3DA8 /* LaunchScreen.storyboard in Resources */,
 				7976AC13262262E7008C3DA8 /* Assets.xcassets in Resources */,
+				79A1CB9F26324922001C24EF /* SearchViewController.xib in Resources */,
 				7976AC11262262E5008C3DA8 /* HomeScreen.storyboard in Resources */,
 				79288F9A262F491D00C22CC2 /* MovieDetailCell.xib in Resources */,
 				79288F9D262F491D00C22CC2 /* MovieDetailsViewController.xib in Resources */,
@@ -368,6 +386,7 @@
 				79288F9C262F491D00C22CC2 /* MovieDetailCell.swift in Sources */,
 				79FEB9522622F21F001A1DD2 /* PublishTimeLogger.swift in Sources */,
 				79E6BBFE262F0CB500CC1C38 /* MoviesCollectionDataAdapter.swift in Sources */,
+				79A1CBA326324983001C24EF /* MoviesSearchService.swift in Sources */,
 				7976AC2C26226DD7008C3DA8 /* ParametersAdapter.swift in Sources */,
 				7976AC3E262275DE008C3DA8 /* MoviesApi.swift in Sources */,
 				79FEB932262283C3001A1DD2 /* BaseViewModel.swift in Sources */,
@@ -376,6 +395,7 @@
 				79E6BC02262F0E0C00CC1C38 /* MoviesCollectionDataType.swift in Sources */,
 				797FE69A2629C2EF007A7E4D /* MovieService.swift in Sources */,
 				79A1CB952631F23D001C24EF /* Schedulers.swift in Sources */,
+				79A1CB9E26324922001C24EF /* SearchViewController.swift in Sources */,
 				79E47F79262E022B00BA661F /* ErrorTypes.swift in Sources */,
 				79FEB959262302AF001A1DD2 /* MovieQueryCell.swift in Sources */,
 				799091D2262DEC5C008CEDB0 /* ImageCacher.swift in Sources */,

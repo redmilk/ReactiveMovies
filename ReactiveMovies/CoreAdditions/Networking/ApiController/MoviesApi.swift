@@ -16,7 +16,7 @@ struct Endpoints {
     static let movieDetails = "/movie/"
     static let images = "https://image.tmdb.org/t/p/w500/"
     static let smallImageUrl = "https://image.tmdb.org/t/p/w154/"
-    
+    static let search = "/search/movie"
     static var baseUrl: URL {
         return URL(string: Endpoints.baseUrlString)!
     }
@@ -32,11 +32,32 @@ final class MoviesApi: NetworkService {
     private let kGenres = "with_genres"
     private let kSortBy = "sort_by"
     private let kApiKey = "api_key"
+    private let kQuery = "query"
+    
     /// Default parameters
-    private let languageSetting = "en-US"//"ru-RU"
+    private let languageSetting = "en-US"//"ru-RU" "en-US"
     private let averageVoteDesc = "vote_average.desc"
     private let popularityDesc = "popularity.desc"
     
+    public func searchMovies(_ query: String, page: Int?, year: String?) -> AnyPublisher<MovieQuery, Error> {
+        let params = RequestParametersAdapter(
+            withBody: false,
+            parameters: [
+                Params(title: kApiKey, value: apiKeyValue),
+                Params(title: kLanguage, value: languageSetting),
+                Params(title: kPage, value: page?.description),
+                Params(title: kQuery, value: query),
+            ])
+        let headers = RequestHeaderAdapter()
+        let requestBuilder = RequestBuilder(
+            baseUrl: Endpoints.baseUrl,
+            pathComponent: Endpoints.search,
+            adapters: [headers, params],
+            method: .get
+        )
+        return request(with: requestBuilder.request)
+            .eraseToAnyPublisher()
+    }
     
     public func requestMoviesGenres() -> AnyPublisher<Genres, Error> {
         let params = RequestParametersAdapter(

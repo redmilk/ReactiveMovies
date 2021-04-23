@@ -48,11 +48,7 @@ final class MovieService {
     static let shared = MovieService()
         
     // MARK: - Input
-    @Published var currentScroll: IndexPath = IndexPath(row: 0, section: 0)  {
-        didSet {
-            //print(currentScroll.row)
-        }
-    }
+    @Published var currentScroll: IndexPath = IndexPath(row: 0, section: 0)
     @Published var selectedGenreIndex: Int = 0
     @Published var selectedMovieIndex: Int?
     @Published var searchText: String = ""
@@ -72,7 +68,41 @@ final class MovieService {
     private let moviesApi = MoviesApi()
     
     // MARK: - Bindings
-    private init() { bindInput() }
+    private init() {
+        /// infinite scroll
+        $currentScroll
+            .filter { [unowned self] in (moviesFiltered.count - 1) == $0.row && $0.section == 1 && searchText.isEmpty && selectedGenreIndex == 0 }
+            .handleEvents(receiveOutput: { [unowned self] _ in
+                fetchMovies()
+            })
+            .sink { _ in }
+            .store(in: &subscriptions)
+        
+        /// search text
+        $searchText
+            .removeDuplicates()
+            .filter { [unowned self] _ in selectedGenreIndex == 0 }
+            .map { [unowned self] searchText -> [Movie] in
+                filteredMovies(moviesOriginal, searchText: searchText)
+            }
+            .sink(receiveValue: { [unowned self] searchResults in
+                moviesFiltered = searchResults
+            })
+            .store(in: &subscriptions)
+        
+        /// selected genre
+        $selectedGenreIndex
+            .compactMap { $0 }
+            .filter { [unowned self] _ in searchText.isEmpty && genres.count > 0 }
+            .sink { [unowned self] genreIndex in
+                deselectAllGenres()
+                selectGenreAtIndex(genreIndex)
+                filterMoviesByGenre(genres[genreIndex])
+            }
+            .store(in: &subscriptions)
+    }
+    
+    // MARK: - Public API
     
     func fetchGenres() {
         moviesApi
@@ -87,15 +117,6 @@ final class MovieService {
                 genres = [Genre.allGenres] + genresResult
             })
             .store(in: &subscriptions)
-    }
-    
-    func loadImage(_ path: String?) -> AnyPublisher<UIImage?, Never> {
-        guard let imageUrl = URL(string: Endpoints.images + (path ?? "")) else {
-            return Just(nil).setFailureType(to: Never.self).eraseToAnyPublisher()
-        }
-        return NetworkService.shared
-            .loadImage(from: imageUrl)
-            .eraseToAnyPublisher()
     }
     
     func fetchMovies() {
@@ -143,38 +164,13 @@ final class MovieService {
 
 private extension MovieService {
     
-    func bindInput() {
-        /// infinite scroll
-        $currentScroll
-            .filter { [unowned self] in (moviesFiltered.count - 1) == $0.row && $0.section == 1 && searchText.isEmpty && selectedGenreIndex == 0 }
-            .handleEvents(receiveOutput: { [unowned self] _ in
-                fetchMovies()
-            })
-            .sink { _ in }
-            .store(in: &subscriptions)
-        
-        /// search text
-        $searchText
-            .removeDuplicates()
-            .filter { [unowned self] _ in selectedGenreIndex == 0 }
-            .map { [unowned self] searchText -> [Movie] in
-                filteredMovies(moviesOriginal, searchText: searchText)
-            }
-            .sink(receiveValue: { [unowned self] searchResults in
-                moviesFiltered = searchResults
-            })
-            .store(in: &subscriptions)
-        
-        /// selected genre
-        $selectedGenreIndex
-            .compactMap { $0 }
-            .filter { [unowned self] _ in searchText.isEmpty && genres.count > 0 }
-            .sink { [unowned self] genreIndex in
-                deselectAllGenres()
-                selectGenreAtIndex(genreIndex)
-                filterMoviesByGenre(genres[genreIndex])
-            }
-            .store(in: &subscriptions)
+    private func loadImage(_ path: String?) -> AnyPublisher<UIImage?, Never> {
+        guard let imageUrl = URL(string: Endpoints.images + (path ?? "")) else {
+            return Just(nil).setFailureType(to: Never.self).eraseToAnyPublisher()
+        }
+        return NetworkService.shared
+            .loadImage(from: imageUrl)
+            .eraseToAnyPublisher()
     }
     
     func fetchMovieDetailsWithMovieId(_ id: Int) -> AnyPublisher<Movie, Error> {

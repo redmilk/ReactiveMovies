@@ -31,8 +31,6 @@ final class MovieDetailsViewController: UIViewController {
         
         viewModel.movies
             .sink(receiveValue: { [unowned self] movies in
-                print("RECEIVE MOVIES")
-                print(movies.count)
                 applySnapshot(with: movies)
             })
             .store(in: &subscriptions)

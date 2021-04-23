@@ -100,11 +100,20 @@ final class HomeViewModel {
         
         movieService.fetchGenres()
         movieService.fetchMovies()
+        
+        $searchText.filter { !$0.isEmpty }
+            .debounce(for: .milliseconds(200), scheduler: DispatchQueue.main)
+            .removeDuplicates()
+            .sink(receiveValue: { query in
+                print("REQUEST WITH " + query)
+                MoviesSearchService.shared.searchMovies(query)
+            })
+            .store(in: &subscriptions)
     }
     
     public func showDetailWithMovieIndex(_ index: Int) {
         //movieService.selectedMovieIndex = index
         movieService.currentScroll = IndexPath(row: index, section: 1)
         coordinator.openMovieDetails()
-    }        
+    }
 }

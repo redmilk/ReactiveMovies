@@ -18,14 +18,15 @@ class NetworkService {
         return URLSession.shared
             .dataTaskPublisher(for: request)
             .handleEvents(receiveOutput: { formatPrint(urlString: $0.response.url?.absoluteString, keyWord: "discover") })
-            .mapError { _ in RequestError.invalidRequest }
+            .mapError({ error -> Error in error })
             .flatMap { data, response -> AnyPublisher<Data, Error> in
                 guard let response = response as? HTTPURLResponse else {
                     return Fail(error: RequestError.invalidResponse)
                         .eraseToAnyPublisher()
                 }
                 guard 200..<300 ~= response.statusCode else {
-                    let error = RequestError.dataLoadingError(statusCode: response.statusCode, data: data)
+                    let error = response.statusCode == 401 ? RequestError.unauthorized :
+                        RequestError.dataLoadingError(statusCode: response.statusCode, data: data)
                     return Fail(error: error)
                         .eraseToAnyPublisher()
                 }
@@ -35,14 +36,13 @@ class NetworkService {
             }
             .decode(type: D.self, decoder: JSONDecoder())
             .mapError({ error -> Error in
+                if (error as NSError).code == -1001 {
+                    return RequestError.timeout(description: "Request time out")
+                }
                 switch error {
                 case is DecodingError: return RequestError.parsing(message: "Parsing failure", error: error)
-                case is URLError: return RequestError.network(message: "Network error", error: error as! URLError)
-                default:
-                    if (error as NSError).code == -1001 {
-                        return RequestError.timeout(description: "Request time out")
-                    }
-                    return error
+                case is URLError: return RequestError.network(message: "Request URL error", error: error as! URLError)
+                default: return error
                 }
             })
             .eraseToAnyPublisher()
