@@ -30,6 +30,7 @@
 		7976AC4326227756008C3DA8 /* Genres.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7976AC4226227756008C3DA8 /* Genres.swift */; };
 		797FE69A2629C2EF007A7E4D /* MovieService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 797FE6992629C2EF007A7E4D /* MovieService.swift */; };
 		799091D2262DEC5C008CEDB0 /* ImageCacher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 799091D1262DEC5C008CEDB0 /* ImageCacher.swift */; };
+		799091EC2632A8CC008CEDB0 /* UIControl+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 799091EB2632A8CC008CEDB0 /* UIControl+Extensions.swift */; };
 		79A1CB952631F23D001C24EF /* Schedulers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79A1CB942631F23D001C24EF /* Schedulers.swift */; };
 		79A1CB9826320127001C24EF /* Publisher+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79A1CB9726320127001C24EF /* Publisher+Extensions.swift */; };
 		79A1CB9E26324922001C24EF /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79A1CB9C26324922001C24EF /* SearchViewController.swift */; };
@@ -75,6 +76,7 @@
 		797FE6AD262A1967007A7E4D /* MovieDetailCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MovieDetailCell.xib; sourceTree = "<group>"; };
 		797FE6B3262A1EB2007A7E4D /* MovieDetailsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieDetailsViewModel.swift; sourceTree = "<group>"; };
 		799091D1262DEC5C008CEDB0 /* ImageCacher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCacher.swift; sourceTree = "<group>"; };
+		799091EB2632A8CC008CEDB0 /* UIControl+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIControl+Extensions.swift"; sourceTree = "<group>"; };
 		79A1CB942631F23D001C24EF /* Schedulers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Schedulers.swift; sourceTree = "<group>"; };
 		79A1CB9726320127001C24EF /* Publisher+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Publisher+Extensions.swift"; sourceTree = "<group>"; };
 		79A1CB9C26324922001C24EF /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
@@ -275,6 +277,7 @@
 				79FEB926262281EA001A1DD2 /* UIViewController+Extensions.swift */,
 				79FEB96126231039001A1DD2 /* Collection+Extensions.swift */,
 				79A1CB9726320127001C24EF /* Publisher+Extensions.swift */,
+				799091EB2632A8CC008CEDB0 /* UIControl+Extensions.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -394,6 +397,7 @@
 				79288F99262F491D00C22CC2 /* MovieDetailsCoordinator.swift in Sources */,
 				79E6BC02262F0E0C00CC1C38 /* MoviesCollectionDataType.swift in Sources */,
 				797FE69A2629C2EF007A7E4D /* MovieService.swift in Sources */,
+				799091EC2632A8CC008CEDB0 /* UIControl+Extensions.swift in Sources */,
 				79A1CB952631F23D001C24EF /* Schedulers.swift in Sources */,
 				79A1CB9E26324922001C24EF /* SearchViewController.swift in Sources */,
 				79E47F79262E022B00BA661F /* ErrorTypes.swift in Sources */,

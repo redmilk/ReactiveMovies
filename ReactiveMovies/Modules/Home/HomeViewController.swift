@@ -25,10 +25,42 @@ final class HomeViewController: UIViewController {
     
     @IBOutlet private weak var collectionView: UICollectionView!
     
+    private lazy var button: UIButton = {
+        let button = UIButton()
+        button.setTitle("PRESS ME", for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.setTitleShadowColor(.gray, for: .normal)
+        button.layer.borderColor = UIColor.white.cgColor
+        button.layer.cornerRadius = 10.0
+        button.layer.borderWidth = 8.0
+        button.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(button)
+        
+        NSLayoutConstraint.activate([
+            button.heightAnchor.constraint(equalToConstant: 60),
+            button.widthAnchor.constraint(equalToConstant: 100),
+            button.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            button.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+        ])
+        
+        button.publisher(for: .touchUpInside)
+            .receive(on: DispatchQueue.main)
+            .sink(receiveValue: { button in
+                print("BUTTON PRERSSSEEED")
+                print("BUTTON PRERSSSEEED")
+                print("BUTTON PRERSSSEEED")
+                print("BUTTON PRERSSSEEED")
+                print("BUTTON PRERSSSEEED")
+                
+            })
+            .store(in: &subscriptions)
+        return button
+    }()
+  
+    
     private let searchController = UISearchController(searchResultsController: nil)
     private var subscriptions = Set<AnyCancellable>()
     private lazy var dataSource = buildDataSource()
-    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -64,6 +96,8 @@ final class HomeViewController: UIViewController {
                 }
             }
             .store(in: &subscriptions)
+        
+        button.isEnabled = true
     }
 }
 
