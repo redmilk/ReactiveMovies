@@ -13,38 +13,35 @@ class NetworkService {
     static let shared = NetworkService()
     private let cache = ImageCacher()
     private let session = URLSession(configuration: .ephemeral)
-
+    
     func request<D: Decodable>(with request: URLRequest) -> AnyPublisher<D, Error> {
         return URLSession.shared
             .dataTaskPublisher(for: request)
-            .handleEvents(receiveOutput: { formatPrint(urlString: $0.response.url?.absoluteString, keyWord: "discover") })
-            .mapError({ error -> Error in error })
-            .flatMap { data, response -> AnyPublisher<Data, Error> in
-                guard let response = response as? HTTPURLResponse else {
-                    return Fail(error: RequestError.invalidResponse)
-                        .eraseToAnyPublisher()
+            .handleEvents(receiveOutput: { formatPrint(urlString: $0.response.url?.absoluteString,
+                                                       keyWord: "discover") })
+            .mapError { $0 }
+            .flatMap ({ data, response -> AnyPublisher<Data, Error> in
+                guard let httpResponse = response as? HTTPURLResponse else {
+                    return .fail(RequestError.unknown)
                 }
-                guard 200..<300 ~= response.statusCode else {
-                    let error = response.statusCode == 401 ? RequestError.unauthorized :
-                        RequestError.dataLoadingError(statusCode: response.statusCode, data: data)
-                    return Fail(error: error)
-                        .eraseToAnyPublisher()
+                guard  200..<300 ~= httpResponse.statusCode else {
+                    return .fail(httpResponse.statusCode == 401 ?
+                                    RequestError.unauthorized :
+                                    RequestError.api(httpResponse.statusCode))
                 }
-                return Just(data)
-                    .setFailureType(to: Error.self)
-                    .eraseToAnyPublisher()
-            }
-            .decode(type: D.self, decoder: JSONDecoder())
-            .mapError({ error -> Error in
-                if (error as NSError).code == -1001 {
-                    return RequestError.timeout(description: "Request time out")
-                }
-                switch error {
-                case is DecodingError: return RequestError.parsing(message: "Parsing failure", error: error)
-                case is URLError: return RequestError.network(message: "Request URL error", error: error as! URLError)
-                default: return error
-                }
+                return Just(data).setFailureType(to: Error.self).eraseToAnyPublisher()
             })
+            .decode(type: D.self, decoder: JSONDecoder())
+            .mapError { error -> Error in
+                switch error {
+                case is DecodingError: return RequestError.parsing("Parsing failure", error)
+                case is URLError: return RequestError.network("URL request error", error as! URLError)
+                case is RequestError: return error
+                default: return (error as NSError).code == -1001 ?
+                    RequestError.timeout :
+                    RequestError.unknown
+                }
+            }
             .eraseToAnyPublisher()
     }
     
@@ -68,4 +65,4 @@ fileprivate func formatPrint(urlString: String?, keyWord: String) {
     guard urlString.contains(keyWord) else { return }
     print("🏁🏁🏁 " + urlString)
 }
-   
+

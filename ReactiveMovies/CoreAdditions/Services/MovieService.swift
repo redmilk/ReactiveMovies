@@ -233,7 +233,7 @@ private extension MovieService {
                 if case .failure(let error) = completion {
                     errors_.send(error)
                 }
-            }, receiveValue: { [unowned self] movie in
+            }, receiveValue: { movie in
                 //_movies_.append(movie)
             })
             .store(in: &subscriptions)

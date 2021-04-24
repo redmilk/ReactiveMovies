@@ -53,7 +53,7 @@ final class MoviewDetailsViewModel {
     func updateScrollIndex(_ index: Int) {
         //movieItemIndex = index
         movieService.selectedMovieIndex = index//movieItemIndex
-        movieService.currentScroll = IndexPath(row: index, section: HomeViewController.Section.movie.rawValue)
+        movieService.currentScroll = IndexPath(row: index, section: Section.movie.rawValue)
     }
 }
 

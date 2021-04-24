@@ -22,7 +22,7 @@ final class HomeViewModel {
     lazy var updateScrollPosition: AnyPublisher<IndexPath, Never> = {
         movieService.$selectedMovieIndex
             .compactMap { $0 }
-            .map { IndexPath(row: $0, section: HomeViewController.Section.movie.rawValue) }
+            .map { IndexPath(row: $0, section: Section.movie.rawValue) }
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
     }()
@@ -66,7 +66,7 @@ final class HomeViewModel {
         /// hiding nav bar
         $currentScroll
             .filter { [unowned self] _ in searchText.isEmpty }
-            .map { $0.section == HomeViewController.Section.movie.rawValue && $0.row > 20 || movieService.selectedGenreIndex != 0 }
+            .map { $0.section == Section.movie.rawValue && $0.row > 20 || movieService.selectedGenreIndex != 0 }
             .prepend(false)
             .removeDuplicates()
             .receive(on: DispatchQueue.main)
