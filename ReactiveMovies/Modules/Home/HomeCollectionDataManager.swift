@@ -8,34 +8,29 @@
 import Foundation
 import UIKit
 
-typealias DataSource = UICollectionViewDiffableDataSource<Section, MoviesListCollectionDataType>
-typealias Snapshot = NSDiffableDataSourceSnapshot<Section, MoviesListCollectionDataType>
+typealias DataSource = UICollectionViewDiffableDataSource<HomeMoviesSection, MoviesListCollectionDataType>
+typealias Snapshot = NSDiffableDataSourceSnapshot<HomeMoviesSection, MoviesListCollectionDataType>
 
-enum Section: Int {
+
+enum HomeMoviesSection: Int {
     case genre = 0
     case movie = 1
 }
 
 // MARK: - UICollectionViewDelegate
 
-extension CollectionDataManager: UICollectionViewDelegate {
+extension HomeCollectionDataManager: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         onWillDisplay(indexPath)
-        //viewModel.currentScroll = indexPath
     }
-    
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         onDidSelect(indexPath)
-//        switch Section(rawValue: indexPath.section)! {
-//        case .genre: viewModel.selectedGenreIndex = indexPath.row
-//        case .movie: viewModel.showDetailWithMovieIndex(indexPath.row)
-//        }
     }
 }
 
+// MARK: - CollectionDataManager
 
-class CollectionDataManager: NSObject {
-    
+final class HomeCollectionDataManager: NSObject {
     
     private unowned let collectionView: UICollectionView
     private var dataSource: DataSource!
@@ -51,6 +46,8 @@ class CollectionDataManager: NSObject {
         self.onDidSelect = onDidSelect
     }
     
+    // MARK: - API
+    
     func configure() {
         dataSource = buildDataSource()
         collectionView.delegate = self
@@ -60,8 +57,8 @@ class CollectionDataManager: NSObject {
         snapshot.appendSections([.genre, .movie])
         dataSource.apply(snapshot)
     }
-    
-    func applySnapshot(collectionData: [MoviesListCollectionDataType], type: Section) {
+        
+    func applySnapshot(collectionData: [MoviesListCollectionDataType], type: HomeMoviesSection) {
         var snapshot = dataSource.snapshot()
         switch type {
         case .genre:
@@ -74,18 +71,20 @@ class CollectionDataManager: NSObject {
         dataSource.apply(snapshot, animatingDifferences: true)
     }
     
-    func buildDataSource() -> DataSource {
+    // MARK: - Private
+    
+    private func buildDataSource() -> DataSource {
         DataSource(
             collectionView: collectionView,
             cellProvider: { (collectionView, indexPath, collectionData) -> UICollectionViewCell? in
                 var cell: UICollectionViewCell?
                 switch collectionData {
-                case .genre(let genre) where indexPath.section == Section.genre.rawValue:
+                case .genre(let genre) where indexPath.section == HomeMoviesSection.genre.rawValue:
                     cell = collectionView.dequeueReusableCell(
                         withReuseIdentifier: "GenreCell",
                         for: indexPath) as? GenreCell
                     (cell as? GenreCell)?.configure(with: genre)
-                case .movie(let movie) where indexPath.section == Section.movie.rawValue:
+                case .movie(let movie) where indexPath.section == HomeMoviesSection.movie.rawValue:
                     cell = collectionView.dequeueReusableCell(
                         withReuseIdentifier: "MovieQueryCell",
                         for: indexPath) as? MovieQueryCell
@@ -96,11 +95,11 @@ class CollectionDataManager: NSObject {
             })
     }
     
-    func layoutCollection() {
+    private func layoutCollection() {
         let layout = UICollectionViewCompositionalLayout(sectionProvider: { (sectionIndex, layoutEnvironment) -> NSCollectionLayoutSection? in
             let isPhone = layoutEnvironment.traitCollection.userInterfaceIdiom == UIUserInterfaceIdiom.phone
             
-            switch Section(rawValue: sectionIndex)! {
+            switch HomeMoviesSection(rawValue: sectionIndex)! {
             case .genre:
                 let size = NSCollectionLayoutSize(
                     widthDimension: NSCollectionLayoutDimension.fractionalWidth(1),

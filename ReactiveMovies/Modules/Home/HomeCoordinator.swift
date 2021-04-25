@@ -13,7 +13,7 @@ final class HomeCoordinator: BaseCoordinator {
     
     // MARK: - Public API
     
-    func openMovieDetails() {
+    func openMovieDetails(completion: @escaping () -> Void) {
         
         let detailVC = MovieDetailsViewController(nibName: "MovieDetailsViewController", bundle: nil)
         let detailCoordinator = MovieDetailsCoordinator(viewController: detailVC, navigationController: nil)
@@ -21,6 +21,6 @@ final class HomeCoordinator: BaseCoordinator {
                                                coordinator: detailCoordinator)
         
         detailVC.viewModel = viewModel
-        viewController.present(detailVC, animated: true, completion: nil)
+        viewController.present(detailVC, animated: true, completion: completion)
     }
 }

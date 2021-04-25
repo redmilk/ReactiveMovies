@@ -20,9 +20,9 @@ final class HomeViewModel {
     }()
     
     lazy var updateScrollPosition: AnyPublisher<IndexPath, Never> = {
-        movieService.$selectedMovieIndex
+        movieService.selectedMovieIndex
             .compactMap { $0 }
-            .map { IndexPath(row: $0, section: Section.movie.rawValue) }
+            .map { IndexPath(row: $0, section: HomeMoviesSection.movie.rawValue) }
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
     }()
@@ -66,7 +66,7 @@ final class HomeViewModel {
         /// hiding nav bar
         $currentScroll
             .filter { [unowned self] _ in searchText.isEmpty }
-            .map { $0.section == Section.movie.rawValue && $0.row > 20 || movieService.selectedGenreIndex != 0 }
+            .map { $0.section == HomeMoviesSection.movie.rawValue && $0.row > 20 || movieService.selectedGenreIndex != 0 }
             .prepend(false)
             .removeDuplicates()
             .receive(on: DispatchQueue.main)
@@ -91,7 +91,7 @@ final class HomeViewModel {
         $currentScroll.filter { $0.section >= 0 && $0.row >= 0 }
             .removeDuplicates()
             .receive(on: DispatchQueue.main)
-            .assign(to: \.currentScroll, on: movieService)
+            .subscribe(movieService.currentScroll)
             .store(in: &subscriptions)
         
         $searchText.removeDuplicates()
@@ -112,8 +112,9 @@ final class HomeViewModel {
     }
     
     public func showDetailWithMovieIndex(_ index: Int) {
-        //movieService.selectedMovieIndex = index
-        movieService.currentScroll = IndexPath(row: index, section: 1)
-        coordinator.openMovieDetails()
+        coordinator.openMovieDetails(completion: { [unowned self] in
+            //movieService.selectedMovieIndex = index
+            movieService.currentScroll.send(IndexPath(row: index, section: 1))
+        })
     }
 }

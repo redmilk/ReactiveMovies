@@ -8,7 +8,7 @@
 import UIKit
 import Combine
 
-// MARK: - Publisher VC
+// MARK: - Publisher VC 
 
 extension HomeViewController {
     typealias Output = Action
@@ -16,6 +16,9 @@ extension HomeViewController {
     
     enum Action {
         case searchQuery(String)
+        case currentScroll(IndexPath)
+        case genreSelectedIndex(Int)
+        case movieSelectedIndex(Int)
     }
     
     func receive<S>(subscriber: S)
@@ -42,15 +45,15 @@ final class HomeViewController: UIViewController, Publisher {
     
     private var publisher = PassthroughSubject<Action, Never>()
     
-    private lazy var collectionDataManager: CollectionDataManager = {
-        CollectionDataManager(
+    private lazy var collectionDataManager: HomeCollectionDataManager = {
+        HomeCollectionDataManager(
             collectionView: collectionView,
-            onDidSelect: { indexPath in
-                switch Section(rawValue: indexPath.section)! {
+            onDidSelect: { [unowned self] indexPath in
+                switch HomeMoviesSection(rawValue: indexPath.section)! {
                 case .genre: self.viewModel.selectedGenreIndex = indexPath.row
                 case .movie: self.viewModel.showDetailWithMovieIndex(indexPath.row)
                 }
-            }, onWillDisplay: { indexPath in
+            }, onWillDisplay: { [unowned self] indexPath in
                 self.viewModel.currentScroll = indexPath
             })
     }()
@@ -74,8 +77,7 @@ final class HomeViewController: UIViewController, Publisher {
         
         viewModel.movies
             .sink { [unowned self] movies in
-                collectionDataManager.applySnapshot(collectionData: movies, type: .movie)
-            }
+                collectionDataManager.applySnapshot(collectionData: movies, type: .movie) }
             .store(in: &subscriptions)
     
         viewModel.hideNavigationBar
@@ -85,7 +87,6 @@ final class HomeViewController: UIViewController, Publisher {
                 }
             })
             .store(in: &subscriptions)
-        
         viewModel.updateScrollPosition
             .sink { [unowned self] index in
                 DispatchQueue.main.async {
@@ -102,7 +103,6 @@ private extension HomeViewController {
     func configureView() {
         title = "Movies"
         applyStyling()
-      
     }
     
     func applyStyling() {

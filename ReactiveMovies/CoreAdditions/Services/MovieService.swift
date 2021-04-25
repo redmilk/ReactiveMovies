@@ -48,11 +48,11 @@ final class MovieService {
     static let shared = MovieService()
         
     // MARK: - Input
-    @Published var currentScroll: IndexPath = IndexPath(row: 0, section: 0)
-    @Published var selectedGenreIndex: Int = 0
-    @Published var selectedMovieIndex: Int?
+    var currentScroll = CurrentValueSubject<IndexPath, Never>(IndexPath(row: 0, section: 0))
+    var selectedMovieIndex = CurrentValueSubject<Int, Never>(0)
     @Published var searchText: String = ""
-    
+    @Published var selectedGenreIndex: Int = 0
+
     // MARK: - Output
     @Published private(set) var moviesFiltered: [Movie] = []
     @Published private(set) var genres: [Genre] = []
@@ -70,7 +70,7 @@ final class MovieService {
     // MARK: - Bindings
     private init() {
         /// infinite scroll
-        $currentScroll
+        currentScroll
             .filter { [unowned self] in (moviesFiltered.count - 1) == $0.row && $0.section == 1 && searchText.isEmpty && selectedGenreIndex == 0 }
             .handleEvents(receiveOutput: { [unowned self] _ in
                 fetchMovies()

@@ -34,15 +34,19 @@ final class MovieDetailsViewController: UIViewController {
                 applySnapshot(with: movies)
             })
             .store(in: &subscriptions)
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-
-        let initialIndex = IndexPath(row: viewModel.itemScrollIndex!, section: Section.main.rawValue)
-        DispatchQueue.main.async {
-            self.collectionView.scrollToItem(at: initialIndex, at: .top, animated: true)
-        }
+        
+        viewModel.itemScrollIndex
+            .dropFirst()
+            .print()
+            .map { IndexPath(row: $0, section: 0) }
+            .eraseToAnyPublisher()
+            .receive(on: DispatchQueue.main)
+            .sink(receiveValue: { [unowned self] value in
+                print("🎛🎛🎛🎛🎛🎛")
+                print(value.row)
+                collectionView.scrollToItem(at: value, at: .top, animated: false)
+            })
+            .store(in: &subscriptions)
     }
     
     private func layoutCollection() {
@@ -69,6 +73,7 @@ final class MovieDetailsViewController: UIViewController {
         collectionView.isPagingEnabled = true
         collectionView.delegate = self
         dataSource = buildDataSource()
+        
         var snapshot = Snapshot()
         snapshot.appendSections([.main])
         dataSource.apply(snapshot, animatingDifferences: false)
@@ -76,6 +81,8 @@ final class MovieDetailsViewController: UIViewController {
     
     private func buildDataSource() -> DataSource {
         return DataSource(collectionView: collectionView) { (collectionView, indexPath, movie) -> UICollectionViewCell? in
+            print("Movie")
+            print(movie.title)
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "MovieDetailCell", for: indexPath) as! MovieDetailCell
             cell.configureWithMovie(movie)
             return cell
@@ -95,7 +102,7 @@ extension MovieDetailsViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         let cell = collectionView.visibleCells.first
         if let _ = cell {
-            viewModel.updateScrollIndex(indexPath.row + 1)
+            viewModel.updateScrollIndex(indexPath.row)
         }
     }
 }

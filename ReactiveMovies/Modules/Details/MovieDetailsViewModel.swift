@@ -18,17 +18,17 @@ final class MoviewDetailsViewModel {
             .eraseToAnyPublisher()
     }()
     
-    var itemScrollIndex: Int? {
-        return movieService.currentScroll.row
+    var itemScrollIndex: AnyPublisher<Int, Never> {
+        movieService.currentScroll
+            .map { $0.row }
+            .eraseToAnyPublisher()
     }
  
-    /// Dependencies
     private let movieService: MovieService
     private let coordinator: MovieDetailsCoordinator
-    /// Combine internal
+
     private let errors = PassthroughSubject<RequestError, Never>()
     private var subscriptions = Set<AnyCancellable>()
-    //private var movieItemIndex: Int?
     
     init(movieService: MovieService,
          coordinator: MovieDetailsCoordinator
@@ -45,15 +45,9 @@ final class MoviewDetailsViewModel {
             .store(in: &subscriptions)
     }
     
-    deinit {
-        /// update current movie item index before dismiss
-        //movieService.selectedMovieIndex = movieItemIndex
-    }
-    
     func updateScrollIndex(_ index: Int) {
-        //movieItemIndex = index
-        movieService.selectedMovieIndex = index//movieItemIndex
-        movieService.currentScroll = IndexPath(row: index, section: Section.movie.rawValue)
+        movieService.selectedMovieIndex.send(index)
+        movieService.currentScroll.send(IndexPath(row: index, section: 1))
     }
 }
 
