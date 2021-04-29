@@ -7,66 +7,9 @@
 
 import Foundation
 import Combine
-/**
- 
- case .searchQuery(let query):
-     guard !query.isEmpty else { return }
-     movieService.searchText = query
-//                query.removeDuplicates()
-//                    .assign(to: \.searchText, on: movieService)
-//                    .store(in: &subscriptions)
-     //MoviesSearchService.shared.searchMovies(query)
-//                query.filter { !$0.isEmpty }
-//                    .debounce(for: .milliseconds(200), scheduler: DispatchQueue.main)
-//                    .removeDuplicates()
-//                    .sink(receiveValue: { query in
-//                        //print("REQUEST WITH " + query)
-//                        MoviesSearchService.shared.searchMovies(query)
-//                    })
-//                    .store(in: &subscriptions)
- 
- enum Action {
-     case hideNavigationBar(AnyPublisher<Bool, Never>)
-     case updateScrollPosition(AnyPublisher<IndexPath, Never>)
-     case genres(AnyPublisher<[MoviesListCollectionDataType], Never>)
-     case movies(AnyPublisher<[MoviesListCollectionDataType], Never>)
- }
- 
- 
- // MARK: - Output for Home VC
- 
-//    lazy var hideNavigationBar: AnyPublisher<Bool, Never> = {
-//        _hideNavigationBar
-//            .receive(on: DispatchQueue.main)
-//            .eraseToAnyPublisher()
-//    }()
- 
-//    lazy var updateScrollPosition: AnyPublisher<IndexPath, Never> = {
-//
-//    }()
- 
-//    lazy var genres: AnyPublisher<[MoviesListCollectionDataType], Never> = {
-//        movieService.$genres
-//            .map { MoviesCollectionDataAdapter.adaptGenres($0) }
-//            .receive(on: Scheduler.mainScheduler)
-//            .eraseToAnyPublisher()
-//    }()
- 
-//    var movies: AnyPublisher<[MoviesListCollectionDataType], Never> {
-//        movieService.$moviesFiltered
-//            .map { MoviesCollectionDataAdapter.adaptMovies($0) }
-//            .receive(on: DispatchQueue.main)
-//            .eraseToAnyPublisher()
-//    }
- 
- // MARK: - Input from Home VC
- 
- //@Published var searchText: String = ""
- //@Published var currentScroll = IndexPath(row: 0, section: 0)
- //@Published var selectedGenreIndex: Int = 0
- //var selectedMovieIndex: Int?
- 
- */
+
+// MARK: - View Model as Publisher
+
 extension HomeViewModel: Publisher {
     typealias Output = Action
     typealias Failure = Never
@@ -89,6 +32,8 @@ extension HomeViewModel: Publisher {
     }
 }
 
+// MARK: - HomeViewModel
+
 final class HomeViewModel {
 
     public let inputFromVC = PassthroughSubject<HomeViewController.Action, Never>()
@@ -110,9 +55,19 @@ final class HomeViewModel {
             })
             .sink(receiveValue: { _ in })
             .store(in: &subscriptions)
+        
+        bindViewModelOutputToVC()
+        bindViewControllerActionsToViewModel()
+        
+        movieService.fetchGenres()
+        movieService.fetchMovies()
     }
-    
-    public func bindViewModelOutputToVC() {
+}
+
+// MARK: - Private
+
+private extension HomeViewModel {
+    func bindViewModelOutputToVC() {
         movieService.selectedMovieIndex
             .compactMap { $0 }
             .map { Action.updateScrollPosition(IndexPath(row: $0, section: HomeMoviesSection.movie.rawValue)) }
@@ -128,15 +83,10 @@ final class HomeViewModel {
             .map { Action.movies(MoviesCollectionDataAdapter.adaptMovies($0)) }
             .subscribe(outputToVC)
             .store(in: &subscriptions)
-        
-        movieService.fetchGenres()
-        movieService.fetchMovies()
     }
     
-    public func bindViewControllerActionsToViewModel() {
-        inputFromVC
-            .receive(on: DispatchQueue.main)
-            .sink(receiveValue: { [unowned self] action in
+    func bindViewControllerActionsToViewModel() {
+        inputFromVC.sink(receiveValue: { [unowned self] action in
             switch action {
             
             case .genreSelectedIndex(let index):
@@ -151,22 +101,10 @@ final class HomeViewModel {
 
             case .currentScroll(let indexPath, let isSearchTextEmpty):
                 /// hiding nav bar
-                Just(indexPath)
-                    .filter { _ in isSearchTextEmpty }
-                    .map { $0.section == HomeMoviesSection.movie.rawValue && $0.row > 20 || movieService.selectedGenreIndex != 0 }
-                    .prepend(false)
-                    .removeDuplicates()
-                    .map { Action.hideNavigationBar($0) }
-                    .eraseToAnyPublisher()
-                    .subscribe(outputToVC)
-                    .store(in: &subscriptions)
-                
+                if isSearchTextEmpty && indexPath.section == HomeMoviesSection.movie.rawValue && indexPath.row > 10 || movieService.selectedGenreIndex != 0 {
+                    outputToVC.send(.hideNavigationBar(true))
+                }
                 /// update current scroll in movies service
-//                Just(indexPath)
-//                    .filter { $0.section >= 0 && $0.row >= 0 }
-//                    .removeDuplicates()
-//                    .assign(to: \.currentScroll.value, on: movieService)
-//                    .store(in: &subscriptions)
                 if indexPath.section > 0 && indexPath.row > 0 {
                     movieService.currentScroll.send(indexPath)
                 }
@@ -175,7 +113,7 @@ final class HomeViewModel {
         .store(in: &subscriptions)
     }
     
-    public func showDetailWithMovieIndex(_ index: Int) {
+    func showDetailWithMovieIndex(_ index: Int) {
         coordinator.displayMovieDetails(completion: { [unowned self] in
             //movieService.selectedMovieIndex = index
             movieService.currentScroll.send(IndexPath(row: index, section: 1))

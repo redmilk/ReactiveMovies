@@ -43,9 +43,7 @@ final class HomeCollectionDataManager: NSObject {
         self.collectionView = collectionView
         self.onWillDisplay = onWillDisplay
         self.onDidSelect = onDidSelect
-        super.init()
-        
-        //configure()
+        super.init()        
     }
     
     func applySnapshot(collectionData: [MoviesListCollectionDataType], type: HomeMoviesSection) {
@@ -61,7 +59,7 @@ final class HomeCollectionDataManager: NSObject {
         dataSource.apply(snapshot, animatingDifferences: true)
     }
     
-    func configure() {
+    func initialSetup() {
         dataSource = buildDataSource()
         collectionView.delegate = self
         layoutCollection()
@@ -75,16 +73,6 @@ final class HomeCollectionDataManager: NSObject {
 // MARK: - Private
 
 private extension HomeCollectionDataManager {
-//    func configure() {
-//        dataSource = buildDataSource()
-//        collectionView.delegate = self
-//        layoutCollection()
-//        
-//        var snapshot = dataSource.snapshot()
-//        snapshot.appendSections([.genre, .movie])
-//        dataSource.apply(snapshot)
-//    }
-    
     func buildDataSource() -> DataSource {
         DataSource(
             collectionView: collectionView,

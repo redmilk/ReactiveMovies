@@ -61,18 +61,26 @@ final class MovieService {
     }
     
     // MARK: - Private
-    private var pagination: Int = 1
-    private var moviesOriginal: [Movie] = []
+    private var pagination: Int = 1 {
+        didSet {
+            print("PAGINATION: " + pagination.description)
+        }
+    }
+    private var moviesOriginal: [Movie] = [] {
+        didSet {
+            if moviesOriginal.count % 20 == 0 {
+                pagination += 1
+            }
+        }
+    }
     private let errors_ = PassthroughSubject<Error, Never>()
     private var subscriptions = Set<AnyCancellable>()
     private let moviesApi = MoviesApi()
     
-    // MARK: - Bindings
     private init() {
         /// infinite scroll
         currentScroll
-            .print("⏺")
-            .filter { [unowned self] in (moviesFiltered.count - 1) == $0.row && $0.section == 1 && /*searchText.isEmpty && */ selectedGenreIndex == 0 }
+            .filter { [unowned self] in (moviesFiltered.count - 1) == $0.row && $0.section == 1 && searchText.isEmpty && selectedGenreIndex == 0 }
             .print("🔁🔁🔁")
             .handleEvents(receiveOutput: { [unowned self] _ in
                 fetchMovies()
@@ -156,7 +164,6 @@ final class MovieService {
             }, receiveValue: { [unowned self] fullMovie in
                 moviesOriginal.append(fullMovie)
                 moviesFiltered = moviesOriginal
-                pagination += 1
             })
             .store(in: &subscriptions)
     }

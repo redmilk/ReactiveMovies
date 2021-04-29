@@ -62,20 +62,18 @@ final class HomeViewController: UIViewController, Publisher {
         
         configureView()
 
-        viewModel.bindViewControllerActionsToViewModel()
-        viewModel.bindViewModelOutputToVC()
-        
         outputToVM
             .subscribe(viewModel.inputFromVC)
             .store(in: &subscriptions)
         
-        viewModel
-            .outputToVC
+        viewModel.outputToVC
             .receive(on: DispatchQueue.main)
             .subscribe(inputFromVM)
             .store(in: &subscriptions)
         
-        inputFromVM.sink(receiveValue: { [weak self] action in
+        inputFromVM
+            .receive(on: DispatchQueue.main)
+            .sink(receiveValue: { [weak self] action in
             switch action {
             case .genres(let genres): self?.collectionDataManager.applySnapshot(collectionData: genres, type: .genre)
             case .movies(let movies): self?.collectionDataManager.applySnapshot(collectionData: movies, type: .movie)
@@ -84,9 +82,6 @@ final class HomeViewController: UIViewController, Publisher {
             }
         })
         .store(in: &subscriptions)
-        
-        collectionDataManager.configure()
-        
     }
 }
 
@@ -125,6 +120,7 @@ private extension HomeViewController {
                 }, onWillDisplay: { [weak self] indexPath in
                     self?.outputToVM.send(.currentScroll(indexPath, isSearchTextEmpty: self?.isSearchTextEmpty ?? true))
                 })
+            collectionDataManager.initialSetup()
         }
         
         title = "Movies"
@@ -141,7 +137,7 @@ extension HomeViewController: UISearchResultsUpdating {
         outputToVM.send(Action.searchQuery(searchController.searchBar.text ?? ""))
     }
     
-    var isSearchTextEmpty: Bool {
+    private var isSearchTextEmpty: Bool {
         return (searchController.searchBar.text ?? "").isEmpty
     }
 }
