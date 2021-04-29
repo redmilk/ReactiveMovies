@@ -9,7 +9,12 @@ import Foundation
 import UIKit
 import Combine
 
-class BaseCoordinator {
+protocol CoordinatorProtocol: AnyObject {
+    func start()
+    func end()
+}
+
+class BaseCoordinator: CoordinatorProtocol {
     
     weak var viewController: UIViewController!
     weak var navigationController: UINavigationController?
@@ -23,4 +28,12 @@ class BaseCoordinator {
         return viewController.alert(title: title, text: message)
     }
     
+    func start() {
+        
+    }
+    
+    func end() {
+        
+    }
+
 }

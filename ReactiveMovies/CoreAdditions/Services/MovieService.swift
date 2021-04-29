@@ -71,7 +71,9 @@ final class MovieService {
     private init() {
         /// infinite scroll
         currentScroll
-            .filter { [unowned self] in (moviesFiltered.count - 1) == $0.row && $0.section == 1 && searchText.isEmpty && selectedGenreIndex == 0 }
+            .print("⏺")
+            .filter { [unowned self] in (moviesFiltered.count - 1) == $0.row && $0.section == 1 && /*searchText.isEmpty && */ selectedGenreIndex == 0 }
+            .print("🔁🔁🔁")
             .handleEvents(receiveOutput: { [unowned self] _ in
                 fetchMovies()
             })

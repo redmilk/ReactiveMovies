@@ -1,13 +1,13 @@
 //
-//  GenreCollectionCell.swift
+//  HomeGenreCell.swift
 //  ReactiveMovies
 //
-//  Created by Danyl Timofeyev on 11.04.2021.
+//  Created by Danyl Timofeyev on 29.04.2021.
 //
 
 import UIKit
 
-final class GenreCell: UICollectionViewCell {
+class HomeGenreCell: UICollectionViewCell {
     
     @IBOutlet private weak var oneLabel: UILabel!
     
@@ -28,5 +28,4 @@ final class GenreCell: UICollectionViewCell {
         oneLabel.textColor = isSelected ? .black : .white
         contentView.backgroundColor = isSelected ? .white : .black
     }
-
 }

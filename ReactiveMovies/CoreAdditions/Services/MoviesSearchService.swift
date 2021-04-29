@@ -18,7 +18,7 @@ final class MoviesSearchService {
     private var page: Int = 1
     
     init() {
-        
+         
     }
     
     func searchMovies(_ query: String, year: String? = nil, recycle: Bool = false) {

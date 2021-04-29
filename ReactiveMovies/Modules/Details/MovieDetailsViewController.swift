@@ -37,13 +37,13 @@ final class MovieDetailsViewController: UIViewController {
         
         viewModel.itemScrollIndex
             .dropFirst()
-            .print()
+            //.print()
             .map { IndexPath(row: $0, section: 0) }
             .eraseToAnyPublisher()
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [unowned self] value in
-                print("🎛🎛🎛🎛🎛🎛")
-                print(value.row)
+                //print("🎛🎛🎛🎛🎛🎛")
+                //print(value.row)
                 collectionView.scrollToItem(at: value, at: .top, animated: false)
             })
             .store(in: &subscriptions)

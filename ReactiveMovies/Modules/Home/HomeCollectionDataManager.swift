@@ -11,7 +11,6 @@ import UIKit
 typealias DataSource = UICollectionViewDiffableDataSource<HomeMoviesSection, MoviesListCollectionDataType>
 typealias Snapshot = NSDiffableDataSourceSnapshot<HomeMoviesSection, MoviesListCollectionDataType>
 
-
 enum HomeMoviesSection: Int {
     case genre = 0
     case movie = 1
@@ -44,20 +43,11 @@ final class HomeCollectionDataManager: NSObject {
         self.collectionView = collectionView
         self.onWillDisplay = onWillDisplay
         self.onDidSelect = onDidSelect
+        super.init()
+        
+        //configure()
     }
     
-    // MARK: - API
-    
-    func configure() {
-        dataSource = buildDataSource()
-        collectionView.delegate = self
-        layoutCollection()
-        
-        var snapshot = dataSource.snapshot()
-        snapshot.appendSections([.genre, .movie])
-        dataSource.apply(snapshot)
-    }
-        
     func applySnapshot(collectionData: [MoviesListCollectionDataType], type: HomeMoviesSection) {
         var snapshot = dataSource.snapshot()
         switch type {
@@ -71,9 +61,31 @@ final class HomeCollectionDataManager: NSObject {
         dataSource.apply(snapshot, animatingDifferences: true)
     }
     
-    // MARK: - Private
+    func configure() {
+        dataSource = buildDataSource()
+        collectionView.delegate = self
+        layoutCollection()
+        
+        var snapshot = dataSource.snapshot()
+        snapshot.appendSections([.genre, .movie])
+        dataSource.apply(snapshot)
+    }
+}
+
+// MARK: - Private
+
+private extension HomeCollectionDataManager {
+//    func configure() {
+//        dataSource = buildDataSource()
+//        collectionView.delegate = self
+//        layoutCollection()
+//        
+//        var snapshot = dataSource.snapshot()
+//        snapshot.appendSections([.genre, .movie])
+//        dataSource.apply(snapshot)
+//    }
     
-    private func buildDataSource() -> DataSource {
+    func buildDataSource() -> DataSource {
         DataSource(
             collectionView: collectionView,
             cellProvider: { (collectionView, indexPath, collectionData) -> UICollectionViewCell? in
@@ -81,21 +93,21 @@ final class HomeCollectionDataManager: NSObject {
                 switch collectionData {
                 case .genre(let genre) where indexPath.section == HomeMoviesSection.genre.rawValue:
                     cell = collectionView.dequeueReusableCell(
-                        withReuseIdentifier: "GenreCell",
-                        for: indexPath) as? GenreCell
-                    (cell as? GenreCell)?.configure(with: genre)
+                        withReuseIdentifier: String(describing: HomeGenreCell.self),
+                        for: indexPath) as? HomeGenreCell
+                    (cell as! HomeGenreCell).configure(with: genre)
                 case .movie(let movie) where indexPath.section == HomeMoviesSection.movie.rawValue:
                     cell = collectionView.dequeueReusableCell(
-                        withReuseIdentifier: "MovieQueryCell",
-                        for: indexPath) as? MovieQueryCell
-                    (cell as? MovieQueryCell)?.configureWithMovie(movie)
+                        withReuseIdentifier: String(describing: HomeMovieCell.self),
+                        for: indexPath) as? HomeMovieCell
+                    (cell as? HomeMovieCell)?.configureWithMovie(movie)
                 case _: fatalError()
                 }
                 return cell
             })
     }
     
-    private func layoutCollection() {
+    func layoutCollection() {
         let layout = UICollectionViewCompositionalLayout(sectionProvider: { (sectionIndex, layoutEnvironment) -> NSCollectionLayoutSection? in
             let isPhone = layoutEnvironment.traitCollection.userInterfaceIdiom == UIUserInterfaceIdiom.phone
             
@@ -105,7 +117,7 @@ final class HomeCollectionDataManager: NSObject {
                     widthDimension: NSCollectionLayoutDimension.fractionalWidth(1),
                     heightDimension: NSCollectionLayoutDimension.absolute(isPhone ? 30 : 50)
                 )
-                let itemCount = isPhone ? 4 : 6
+                let itemCount = isPhone ? 1 : 6
                 let item = NSCollectionLayoutItem(layoutSize: size)
                 item.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 10)
                 let group = NSCollectionLayoutGroup.horizontal(layoutSize: size, subitem: item, count: itemCount)
@@ -118,7 +130,7 @@ final class HomeCollectionDataManager: NSObject {
                     widthDimension: NSCollectionLayoutDimension.fractionalWidth(1),
                     heightDimension: NSCollectionLayoutDimension.absolute(200)
                 )
-                let itemCount = isPhone ? 4 : 5
+                let itemCount = isPhone ? 1 : 5
                 let item = NSCollectionLayoutItem(layoutSize: size)
                 let group = NSCollectionLayoutGroup.horizontal(layoutSize: size, subitem: item, count: itemCount)
                 let section = NSCollectionLayoutSection(group: group)

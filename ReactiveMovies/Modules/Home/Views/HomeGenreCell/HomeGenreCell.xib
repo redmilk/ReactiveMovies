@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="HomeGenreCell" id="gTV-IL-0wX" customClass="HomeGenreCell" customModule="ReactiveMovies" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="181" height="134"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                <rect key="frame" x="0.0" y="0.0" width="181" height="134"/>
+                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                <subviews>
+                    <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="SnO-NW-CoR">
+                        <rect key="frame" x="0.0" y="0.0" width="181" height="134"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="ji4-Fo-YCf">
+                                <rect key="frame" x="0.0" y="0.0" width="181" height="134"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="H4W-g0-DpD">
+                                        <rect key="frame" x="0.0" y="0.0" width="181" height="134"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="11"/>
+                                        <color key="textColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                            </stackView>
+                        </subviews>
+                        <constraints>
+                            <constraint firstAttribute="trailing" secondItem="ji4-Fo-YCf" secondAttribute="trailing" id="5bx-Da-SHb"/>
+                            <constraint firstItem="ji4-Fo-YCf" firstAttribute="top" secondItem="SnO-NW-CoR" secondAttribute="top" id="5fb-jb-A8A"/>
+                            <constraint firstItem="ji4-Fo-YCf" firstAttribute="leading" secondItem="SnO-NW-CoR" secondAttribute="leading" id="iEU-JX-6Mv"/>
+                            <constraint firstAttribute="bottom" secondItem="ji4-Fo-YCf" secondAttribute="bottom" id="lrd-aW-RvX"/>
+                        </constraints>
+                    </view>
+                </subviews>
+            </view>
+            <viewLayoutGuide key="safeArea" id="ZTg-uK-7eu"/>
+            <constraints>
+                <constraint firstAttribute="bottom" secondItem="SnO-NW-CoR" secondAttribute="bottom" id="FNU-er-awk"/>
+                <constraint firstItem="SnO-NW-CoR" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="M9O-G8-ZwK"/>
+                <constraint firstAttribute="trailing" secondItem="SnO-NW-CoR" secondAttribute="trailing" id="ieD-ur-7qp"/>
+                <constraint firstItem="SnO-NW-CoR" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="sht-9Y-47v"/>
+            </constraints>
+            <size key="customSize" width="181" height="134"/>
+            <connections>
+                <outlet property="oneLabel" destination="H4W-g0-DpD" id="Jg5-p5-51K"/>
+            </connections>
+            <point key="canvasLocation" x="42.753623188405797" y="170.75892857142856"/>
+        </collectionViewCell>
+    </objects>
+</document>
