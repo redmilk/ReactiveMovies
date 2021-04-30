@@ -26,6 +26,7 @@
 		7948F651263B287C00417777 /* ApplicationFlowCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7948F650263B287C00417777 /* ApplicationFlowCoordinator.swift */; };
 		7948F65A263B3E0C00417777 /* HomeViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7948F658263B3E0C00417777 /* HomeViewController.xib */; };
 		7948F662263B44EF00417777 /* BindableType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7948F661263B44EF00417777 /* BindableType.swift */; };
+		79521AEA263B7E2F00510FBE /* CustomSubject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79521AE9263B7E2F00510FBE /* CustomSubject.swift */; };
 		795DA93226227CA000C10373 /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 795DA93126227CA000C10373 /* HomeViewModel.swift */; };
 		7976AC0A262262E5008C3DA8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7976AC09262262E5008C3DA8 /* AppDelegate.swift */; };
 		7976AC0E262262E5008C3DA8 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7976AC0D262262E5008C3DA8 /* HomeViewController.swift */; };
@@ -75,6 +76,7 @@
 		7948F650263B287C00417777 /* ApplicationFlowCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationFlowCoordinator.swift; sourceTree = "<group>"; };
 		7948F658263B3E0C00417777 /* HomeViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = HomeViewController.xib; sourceTree = "<group>"; };
 		7948F661263B44EF00417777 /* BindableType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BindableType.swift; sourceTree = "<group>"; };
+		79521AE9263B7E2F00510FBE /* CustomSubject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomSubject.swift; sourceTree = "<group>"; };
 		795DA93126227CA000C10373 /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
 		7976AC06262262E5008C3DA8 /* ReactiveMovies.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ReactiveMovies.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7976AC09262262E5008C3DA8 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -180,6 +182,14 @@
 			path = Protocols;
 			sourceTree = "<group>";
 		};
+		79521AE8263B7E1000510FBE /* CustomCombineEntities */ = {
+			isa = PBXGroup;
+			children = (
+				79521AE9263B7E2F00510FBE /* CustomSubject.swift */,
+			);
+			path = CustomCombineEntities;
+			sourceTree = "<group>";
+		};
 		795DA93026227C8700C10373 /* Home */ = {
 			isa = PBXGroup;
 			children = (
@@ -240,6 +250,7 @@
 		7976AC33262274F9008C3DA8 /* CoreAdditions */ = {
 			isa = PBXGroup;
 			children = (
+				79521AE8263B7E1000510FBE /* CustomCombineEntities */,
 				797FE6A0262A14CA007A7E4D /* Model */,
 				797FE6982629C2DE007A7E4D /* Services */,
 				79FEB9502622F203001A1DD2 /* Debug */,
@@ -496,6 +507,7 @@
 				7948F63B263B23A700417777 /* HomeModuleBuilder.swift in Sources */,
 				7976AC30262274D4008C3DA8 /* Movie.swift in Sources */,
 				7976AC3626227521008C3DA8 /* Constants.swift in Sources */,
+				79521AEA263B7E2F00510FBE /* CustomSubject.swift in Sources */,
 				792BCF76263B56B8005F6333 /* HomeMovieCell.swift in Sources */,
 				79FEB92F2622827C001A1DD2 /* BaseCoordinator.swift in Sources */,
 				79A1CB9826320127001C24EF /* Publisher+Extensions.swift in Sources */,
