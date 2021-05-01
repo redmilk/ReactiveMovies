@@ -35,11 +35,14 @@ final class ImageCacher {
     private let lock = NSLock()
     private let config: Config
     
+    init(config: Config = Config.defaultConfig) {
+        self.config = config
+    }
+    
     // MARK: - API
     
     func image(for url: URL) -> UIImage? {
-        lock.lock()
-        defer { lock.unlock() }
+        lock.lock(); defer { lock.unlock() }
         if let decodedImage = decodedImageCache.object(forKey: url as AnyObject) as? UIImage {
             return decodedImage
         }
@@ -54,8 +57,7 @@ final class ImageCacher {
     func insertImage(_ image: UIImage?, for url: URL) {
         guard let image = image else { return removeImage(for: url) }
         let decodedImage = image.decodedImage
-        lock.lock()
-        defer { lock.unlock() }
+        lock.lock(); defer { lock.unlock() }
         imageCache.setObject(decodedImage, forKey: url as AnyObject)
         decodedImageCache.setObject(
             image as AnyObject,
@@ -73,12 +75,6 @@ final class ImageCacher {
     subscript(_ key: URL) -> UIImage? {
         get { return image(for: key) }
         set { return insertImage(newValue, for: key) }
-    }
-
-    // MARK: - Init
-    
-    init(config: Config = Config.defaultConfig) {
-        self.config = config
     }
 }
 

@@ -75,8 +75,9 @@ final class MovieService {
     }
     private let errors_ = PassthroughSubject<Error, Never>()
     private var subscriptions = Set<AnyCancellable>()
-    private let moviesApi = MoviesApi(httpClient: HTTPClient())
-    private let imageApi = MovieImageApi()
+    // TODO: - DI, remove shared
+    private let moviesApi: MoviesApiType = MoviesApi(httpClient: HTTPClient())
+    private let imageApi: MovieImageApiType = MovieImageApi()
     
     private init() {
         /// infinite scroll
@@ -142,7 +143,7 @@ final class MovieService {
                 moviesApi.requestMovieDetails(movieId: movie.id!) /// get movies full details
                     .flatMap({ [unowned self] movie -> AnyPublisher<Movie, Error> in
                         Future<Movie, Never> { promise in /// return the movie filled with image
-                            imageApi.loadImage(movie.posterPath!) /// load movie poster image
+                            imageApi.loadImage(movie.posterPath!, size: .large) /// load movie poster image
                                 .subscribe(on: Scheduler.backgroundWorkScheduler)
                                 .setFailureType(to: Never.self)
                                 .eraseToAnyPublisher()

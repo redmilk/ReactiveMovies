@@ -27,20 +27,28 @@ fileprivate enum Values {
 }
 /// Request endpoints
 fileprivate enum Endpoints {
-    static let baseUrlString = "https://api.themoviedb.org/3"
+    static let baseUrlString = "https://api.themoviedb.org/3" // TODO: refactor to URL and components
     static let genres = "/genre/movie/list"
     static let discover = "/discover/movie"
     static let movieDetails = "/movie/"
-    static let images = "https://image.tmdb.org/t/p/w500/"  // TODO: refactor to url
-    static let smallImageUrl = "https://image.tmdb.org/t/p/w154/"
     static let search = "/search/movie"
     static var baseUrl: URL {
         return URL(string: Endpoints.baseUrlString)!
     }
 }
 
-struct MoviesApi {
-    
+// MARK: - MoviesApi Protocol
+
+protocol MoviesApiType {
+    func searchMovies(_ query: String, page: Int?, year: String?) -> AnyPublisher<MovieQuery, Error>
+    func requestMoviesGenres() -> AnyPublisher<Genres, Error>
+    func requestMoviesWithQuery(page: Int, genres: String?) -> AnyPublisher<MovieQuery, Error>
+    func requestMovieDetails(movieId: Int) -> AnyPublisher<Movie, Error>
+}
+
+// MARK: - MoviesApi
+
+struct MoviesApi: MoviesApiType {
     private let httpClient: HTTPClientType
     
     init(httpClient: HTTPClientType) {
@@ -51,10 +59,10 @@ struct MoviesApi {
         let params = RequestParametersAdapter(
             withBody: false,
             parameters: [
-                Params(title: Keys.apiKey, value: Values.apiKey),
-                Params(title: Keys.language, value: Values.languageEn),
-                Params(title: Keys.page, value: page?.description),
-                Params(title: Keys.query, value: query),
+                Param(Keys.apiKey, Values.apiKey),
+                Param(Keys.language, Values.languageEn),
+                Param(Keys.page, page?.description),
+                Param(Keys.query, query),
             ])
         let headers = RequestHeaderAdapter()
         let requestBuilder = RequestBuilder(
@@ -72,8 +80,8 @@ struct MoviesApi {
         let params = RequestParametersAdapter(
             withBody: false,
             parameters: [
-                Params(title: Keys.apiKey, value: Values.apiKey),
-                Params(title: Keys.language, value: Values.languageEn),
+                Param(Keys.apiKey, Values.apiKey),
+                Param(Keys.language, Values.languageEn),
             ])
         let headers = RequestHeaderAdapter()
         let requestBuilder = RequestBuilder(baseUrl: Endpoints.baseUrl,
@@ -86,19 +94,14 @@ struct MoviesApi {
             .eraseToAnyPublisher()
     }
     
-    /// Get movies by genre
-    func requestMoviesWithQuery(
-        page: Int,
-        genres: String?
-    ) -> AnyPublisher<MovieQuery, Error> {
-        
+    func requestMoviesWithQuery(page: Int, genres: String?) -> AnyPublisher<MovieQuery, Error> {
         let params = RequestParametersAdapter(
             withBody: false,
             parameters: [
-                Params(title: Keys.apiKey, value: Values.apiKey),
-                Params(title: Keys.language, value: Values.languageEn),
-                Params(title: Keys.page, value: page.description),
-                Params(title: Keys.sortBy, value: Values.sortByPopularityDesc),
+                Param(Keys.apiKey, Values.apiKey),
+                Param(Keys.language, Values.languageEn),
+                Param(Keys.page, page.description),
+                Param(Keys.sortBy, Values.sortByPopularityDesc),
             ])
         let headers = RequestHeaderAdapter()
         let requestBuilder = RequestBuilder(
@@ -113,15 +116,12 @@ struct MoviesApi {
             .eraseToAnyPublisher()
     }
     
-    /// Get details of movie with id
-    func requestMovieDetails(
-        movieId: Int
-    ) -> AnyPublisher<Movie, Error> {
+    func requestMovieDetails(movieId: Int) -> AnyPublisher<Movie, Error> {
         let params = RequestParametersAdapter(
             withBody: false,
             parameters: [
-                Params(title: Keys.apiKey, value: Values.apiKey),
-                Params(title: Keys.language, value: Values.languageEn),
+                Param(Keys.apiKey, Values.apiKey),
+                Param(Keys.language, Values.languageEn),
             ])
         let headers = RequestHeaderAdapter()
         let requestBuilder = RequestBuilder(
