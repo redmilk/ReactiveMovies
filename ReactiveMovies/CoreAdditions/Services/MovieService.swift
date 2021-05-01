@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import UIKit
+import UIKit.UIImage
 import Combine
 // think about it
 
@@ -44,7 +44,7 @@ import Combine
 // MARK: - MovieService
 
 final class MovieService {
-    
+    // TODO: refactor singlton
     static let shared = MovieService()
         
     // MARK: - Input
@@ -75,7 +75,8 @@ final class MovieService {
     }
     private let errors_ = PassthroughSubject<Error, Never>()
     private var subscriptions = Set<AnyCancellable>()
-    private let moviesApi = MoviesApi()
+    private let moviesApi = MoviesApi(httpClient: HTTPClient())
+    private let imageApi = MovieImageApi()
     
     private init() {
         /// infinite scroll
@@ -141,7 +142,7 @@ final class MovieService {
                 moviesApi.requestMovieDetails(movieId: movie.id!) /// get movies full details
                     .flatMap({ [unowned self] movie -> AnyPublisher<Movie, Error> in
                         Future<Movie, Never> { promise in /// return the movie filled with image
-                            loadImage(movie.posterPath) /// load movie poster image
+                            imageApi.loadImage(movie.posterPath!) /// load movie poster image
                                 .subscribe(on: Scheduler.backgroundWorkScheduler)
                                 .setFailureType(to: Never.self)
                                 .eraseToAnyPublisher()
@@ -172,15 +173,6 @@ final class MovieService {
 // MARK: - Private
 
 private extension MovieService {
-    
-    private func loadImage(_ path: String?) -> AnyPublisher<UIImage?, Never> {
-        guard let imageUrl = URL(string: Endpoints.images + (path ?? "")) else {
-            return Just(nil).setFailureType(to: Never.self).eraseToAnyPublisher()
-        }
-        return NetworkService.shared
-            .loadImage(from: imageUrl)
-            .eraseToAnyPublisher()
-    }
     
     func fetchMovieDetailsWithMovieId(_ id: Int) -> AnyPublisher<Movie, Error> {
         return moviesApi

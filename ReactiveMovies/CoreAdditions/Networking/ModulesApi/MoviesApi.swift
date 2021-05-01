@@ -8,13 +8,30 @@
 import Foundation
 import Combine
 
-
-struct Endpoints {
+/// Request parameter keys
+fileprivate enum Keys {
+    static let language = "language"
+    static let page = "page"
+    static let withGenres = "with_genres"
+    static let sortBy = "sort_by"
+    static let apiKey = "api_key"
+    static let query = "query"
+}
+/// Request parameter values
+fileprivate enum Values {
+    static let apiKey = "ed13542fcfbf6b6bd02fb2723a0495ff" // TODO: put in keychain
+    static let languageEn = "en-US" ///"ru-RU"
+    static let languageRu = "ru-RU" ///"ru-RU"
+    static let sortByAverageVoteDesc = "vote_average.desc"
+    static let sortByPopularityDesc = "popularity.desc"
+}
+/// Request endpoints
+fileprivate enum Endpoints {
     static let baseUrlString = "https://api.themoviedb.org/3"
     static let genres = "/genre/movie/list"
     static let discover = "/discover/movie"
     static let movieDetails = "/movie/"
-    static let images = "https://image.tmdb.org/t/p/w500/"
+    static let images = "https://image.tmdb.org/t/p/w500/"  // TODO: refactor to url
     static let smallImageUrl = "https://image.tmdb.org/t/p/w154/"
     static let search = "/search/movie"
     static var baseUrl: URL {
@@ -22,31 +39,22 @@ struct Endpoints {
     }
 }
 
-
-final class MoviesApi: NetworkService {
-    private let apiKeyValue = "ed13542fcfbf6b6bd02fb2723a0495ff" /// TODO: put in keychain
+struct MoviesApi {
     
-    /// Parameters keys
-    private let kLanguage = "language"
-    private let kPage = "page"
-    private let kGenres = "with_genres"
-    private let kSortBy = "sort_by"
-    private let kApiKey = "api_key"
-    private let kQuery = "query"
+    private let httpClient: HTTPClientType
     
-    /// Default parameters
-    private let languageSetting = "en-US"//"ru-RU" "en-US"
-    private let averageVoteDesc = "vote_average.desc"
-    private let popularityDesc = "popularity.desc"
+    init(httpClient: HTTPClientType) {
+        self.httpClient = httpClient
+    }
     
-    public func searchMovies(_ query: String, page: Int?, year: String?) -> AnyPublisher<MovieQuery, Error> {
+    func searchMovies(_ query: String, page: Int?, year: String?) -> AnyPublisher<MovieQuery, Error> {
         let params = RequestParametersAdapter(
             withBody: false,
             parameters: [
-                Params(title: kApiKey, value: apiKeyValue),
-                Params(title: kLanguage, value: languageSetting),
-                Params(title: kPage, value: page?.description),
-                Params(title: kQuery, value: query),
+                Params(title: Keys.apiKey, value: Values.apiKey),
+                Params(title: Keys.language, value: Values.languageEn),
+                Params(title: Keys.page, value: page?.description),
+                Params(title: Keys.query, value: query),
             ])
         let headers = RequestHeaderAdapter()
         let requestBuilder = RequestBuilder(
@@ -55,16 +63,17 @@ final class MoviesApi: NetworkService {
             adapters: [headers, params],
             method: .get
         )
-        return request(with: requestBuilder.request)
+        return httpClient
+            .request(with: requestBuilder.request)
             .eraseToAnyPublisher()
     }
     
-    public func requestMoviesGenres() -> AnyPublisher<Genres, Error> {
+    func requestMoviesGenres() -> AnyPublisher<Genres, Error> {
         let params = RequestParametersAdapter(
             withBody: false,
             parameters: [
-                Params(title: kApiKey, value: apiKeyValue),
-                Params(title: kLanguage, value: languageSetting),
+                Params(title: Keys.apiKey, value: Values.apiKey),
+                Params(title: Keys.language, value: Values.languageEn),
             ])
         let headers = RequestHeaderAdapter()
         let requestBuilder = RequestBuilder(baseUrl: Endpoints.baseUrl,
@@ -72,7 +81,8 @@ final class MoviesApi: NetworkService {
                                             adapters: [headers, params],
                                             method: .get)
         
-        return request(with: requestBuilder.request)
+        return httpClient
+            .request(with: requestBuilder.request)
             .eraseToAnyPublisher()
     }
     
@@ -85,10 +95,10 @@ final class MoviesApi: NetworkService {
         let params = RequestParametersAdapter(
             withBody: false,
             parameters: [
-                Params(title: kApiKey, value: apiKeyValue),
-                Params(title: kLanguage, value: languageSetting),
-                Params(title: kPage, value: page.description),
-                Params(title: kSortBy, value: popularityDesc),
+                Params(title: Keys.apiKey, value: Values.apiKey),
+                Params(title: Keys.language, value: Values.languageEn),
+                Params(title: Keys.page, value: page.description),
+                Params(title: Keys.sortBy, value: Values.sortByPopularityDesc),
             ])
         let headers = RequestHeaderAdapter()
         let requestBuilder = RequestBuilder(
@@ -98,7 +108,8 @@ final class MoviesApi: NetworkService {
             method: .get
         )
         
-        return request(with: requestBuilder.request)
+        return httpClient
+            .request(with: requestBuilder.request)
             .eraseToAnyPublisher()
     }
     
@@ -109,8 +120,8 @@ final class MoviesApi: NetworkService {
         let params = RequestParametersAdapter(
             withBody: false,
             parameters: [
-                Params(title: kApiKey, value: apiKeyValue),
-                Params(title: kLanguage, value: languageSetting),
+                Params(title: Keys.apiKey, value: Values.apiKey),
+                Params(title: Keys.language, value: Values.languageEn),
             ])
         let headers = RequestHeaderAdapter()
         let requestBuilder = RequestBuilder(
@@ -120,8 +131,8 @@ final class MoviesApi: NetworkService {
             method: .get
         )
         
-        return request(with: requestBuilder.request)
+        return httpClient
+            .request(with: requestBuilder.request)
             .eraseToAnyPublisher()
     }
-    
 }

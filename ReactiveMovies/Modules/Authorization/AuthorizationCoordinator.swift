@@ -9,15 +9,20 @@ import UIKit
 
 final class AuthorizationCoordinator: CoordinatorProtocol {
     private let moduleTitle: String
+    private let moduleBuilder: ApplicationModulesBuilder
     unowned let window: UIWindow
     
-    init(window: UIWindow, moduleTitle: String) {
+    init(window: UIWindow,
+         moduleBuilder: ApplicationModulesBuilder = ApplicationModulesBuilder(),
+         moduleTitle: String
+    ) {
         self.window = window
         self.moduleTitle = moduleTitle
+        self.moduleBuilder = moduleBuilder
     }
     
     func start() {
-        let auth = AuthorizationBuilder.buildAuthorizationController(coordinator: self, moduleTitle: moduleTitle)
+        let auth = moduleBuilder.buildAuthorizationNavigationController(coordinator: self, moduleTitle: moduleTitle)
         window.rootViewController = auth
         window.makeKeyAndVisible()
     }

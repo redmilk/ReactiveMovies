@@ -9,11 +9,21 @@ import Combine
 import Foundation
 import UIKit
 
-class NetworkService {
-    static let shared = NetworkService()
-    private let cache = ImageCacher()
-    private let session = URLSession(configuration: .ephemeral)
+protocol HTTPClientType {
+    func request<D: Decodable>(with request: URLRequest) -> AnyPublisher<D, Error>
+}
+
+class HTTPClient: HTTPClientType {
+    private let session: URLSession
+    private let authenticator: Authenticator?
     
+    init(session: URLSession = URLSession(configuration: .ephemeral),
+         authenticator: Authenticator? = nil
+    ) {
+        self.session = session
+        self.authenticator = authenticator
+    }
+
     func request<D: Decodable>(with request: URLRequest) -> AnyPublisher<D, Error> {
         return URLSession.shared
             .dataTaskPublisher(for: request)
@@ -42,20 +52,6 @@ class NetworkService {
                     RequestError.unknown
                 }
             }
-            .eraseToAnyPublisher()
-    }
-    
-    func loadImage(from url: URL) -> AnyPublisher<UIImage?, Never> {
-        if let image = cache[url] {
-            return Just(image).eraseToAnyPublisher()
-        }
-        return URLSession.shared.dataTaskPublisher(for: url)
-            .map { data, response in UIImage(data: data) }
-            .catch { _ in Just(nil) }
-            .handleEvents(receiveOutput: { [unowned self] image in
-                guard let image = image else { return }
-                cache[url] = image
-            })
             .eraseToAnyPublisher()
     }
 }

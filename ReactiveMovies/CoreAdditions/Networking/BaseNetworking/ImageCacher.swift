@@ -44,7 +44,7 @@ final class ImageCacher {
             return decodedImage
         }
         if let image = imageCache.object(forKey: url as AnyObject) as? UIImage {
-            let decodedImage = image.decodedImage()
+            let decodedImage = image.decodedImage
             decodedImageCache.setObject(image as AnyObject, forKey: url as AnyObject, cost: decodedImage.diskSize)
             return decodedImage
         }
@@ -53,7 +53,7 @@ final class ImageCacher {
     
     func insertImage(_ image: UIImage?, for url: URL) {
         guard let image = image else { return removeImage(for: url) }
-        let decodedImage = image.decodedImage()
+        let decodedImage = image.decodedImage
         lock.lock()
         defer { lock.unlock() }
         imageCache.setObject(decodedImage, forKey: url as AnyObject)
@@ -92,7 +92,7 @@ fileprivate extension UIImage {
     /// This function consumes a regular UIImage and returns a decompressed and rendered version
     /// It makes sense to have a cache of decompressed images
     /// This should improve drawing performance, but with the cost of extra storage
-    func decodedImage() -> UIImage {
+    var decodedImage: UIImage {
         guard let cgImage = cgImage else { return self }
         let size = CGSize(
             width: cgImage.width,

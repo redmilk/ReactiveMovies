@@ -7,9 +7,9 @@
 
 import UIKit
 
-struct AuthorizationBuilder {
+struct ApplicationModulesBuilder {
     
-    static func buildAuthorizationController(
+    func buildAuthorizationNavigationController(
         coordinator: AuthorizationCoordinator,
         moduleTitle: String
     ) -> UINavigationController {
