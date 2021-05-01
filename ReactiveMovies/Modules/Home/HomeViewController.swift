@@ -45,8 +45,6 @@ final class HomeViewController: UIViewController, Publisher {
     
     /// Output to view model
     private var outputToVM = PassthroughSubject<Action, Never>()
-    /// Input from view model
-    private var inputFromVM = PassthroughSubject<HomeViewModel.Action, Never>()
     
     init(viewModel: HomeViewModel) {
         self.viewModel = viewModel
@@ -65,20 +63,16 @@ final class HomeViewController: UIViewController, Publisher {
         outputToVM
             .subscribe(viewModel.inputFromVC)
             .store(in: &subscriptions)
-        
+
         viewModel.outputToVC
             .receive(on: DispatchQueue.main)
-            .subscribe(inputFromVM)
-            .store(in: &subscriptions)
-        
-        inputFromVM
-            .receive(on: DispatchQueue.main)
-            .sink(receiveValue: { [weak self] action in
+            .sink(receiveValue: { [unowned self] action in
             switch action {
-            case .genres(let genres): self?.collectionDataManager.applySnapshot(collectionData: genres, type: .genre)
-            case .movies(let movies): self?.collectionDataManager.applySnapshot(collectionData: movies, type: .movie)
-            case .hideNavigationBar(let shouldHide): self?.navigationController?.setNavigationBarHidden(shouldHide, animated: true)
-            case .updateScrollPosition(let indexPath): self?.collectionView.scrollToItem(at: indexPath, at: .centeredVertically, animated: true)
+            case .genres(let genres): self.collectionDataManager.applySnapshot(collectionData: genres, type: .genre)
+            case .movies(let movies): self.collectionDataManager.applySnapshot(collectionData: movies, type: .movie)
+            case .hideNavigationBar(let shouldHide): self.navigationController?.setNavigationBarHidden(shouldHide, animated: true)
+            case .updateScrollPosition(let indexPath):
+                self.collectionView.scrollToItem(at: indexPath, at: .centeredVertically, animated: true)
             }
         })
         .store(in: &subscriptions)

@@ -8,14 +8,14 @@
 import Foundation
 import UIKit
 
-final class ApplicationFlowCoordinator {
-    
+final class ApplicationFlowCoordinator: CoordinatorType {
     private let window: UIWindow
-    private let authModuleTitle: String
+    private let sceneBuilder: ApplicationSceneBuilder
+    private var childCoordinators: [CoordinatorType] = []
     
-    init(window: UIWindow, authModuleTitle: String) {
+    init(window: UIWindow, sceneBuilder: ApplicationSceneBuilder) {
         self.window = window
-        self.authModuleTitle = authModuleTitle
+        self.sceneBuilder = sceneBuilder
     }
     
     func start() {
@@ -23,10 +23,15 @@ final class ApplicationFlowCoordinator {
         authStatus ? displayContent() : displayAuth()
     }
     
-    private func displayContent() {}
+    private func displayContent() { }
     
     private func displayAuth() {
-        let authCoordinator = AuthorizationCoordinator(window: window, moduleTitle: authModuleTitle)
+        let authCoordinator = AuthorizationCoordinator(
+            window: window,
+            sceneBuilder: sceneBuilder,
+            moduleTitle: "Log in ➡️"
+        )
+        childCoordinators.append(authCoordinator)
         authCoordinator.start()
     }
 }

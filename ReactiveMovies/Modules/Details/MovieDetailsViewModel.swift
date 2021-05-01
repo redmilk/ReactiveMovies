@@ -18,11 +18,7 @@ final class MoviewDetailsViewModel {
             .eraseToAnyPublisher()
     }()
     
-    var itemScrollIndex: AnyPublisher<Int, Never> {
-        movieService.currentScroll
-            .map { $0.row }
-            .eraseToAnyPublisher()
-    }
+    var itemScrollIndex: IndexPath
  
     private let movieService: MovieService
     private let coordinator: MovieDetailsCoordinator
@@ -35,6 +31,7 @@ final class MoviewDetailsViewModel {
     ) {
         self.movieService = movieService
         self.coordinator = coordinator
+        self.itemScrollIndex = IndexPath(row: movieService.currentScroll.value.row, section: 0)
         
         errors
             .receive(on: DispatchQueue.main)
@@ -46,7 +43,7 @@ final class MoviewDetailsViewModel {
     }
     
     func updateScrollIndex(_ index: Int) {
-        movieService.selectedMovieIndex.send(index)
+        //movieService.selectedMovieIndex.send(index)
         movieService.currentScroll.send(IndexPath(row: index, section: 1))
     }
 }

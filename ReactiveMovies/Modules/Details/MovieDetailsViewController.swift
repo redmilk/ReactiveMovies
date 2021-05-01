@@ -34,19 +34,12 @@ final class MovieDetailsViewController: UIViewController {
                 applySnapshot(with: movies)
             })
             .store(in: &subscriptions)
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         
-        viewModel.itemScrollIndex
-            .dropFirst()
-            //.print()
-            .map { IndexPath(row: $0, section: 0) }
-            .eraseToAnyPublisher()
-            .receive(on: DispatchQueue.main)
-            .sink(receiveValue: { [unowned self] value in
-                //print("🎛🎛🎛🎛🎛🎛")
-                //print(value.row)
-                collectionView.scrollToItem(at: value, at: .top, animated: false)
-            })
-            .store(in: &subscriptions)
+        collectionView.scrollToItem(at: viewModel.itemScrollIndex, at: .top, animated: false)
     }
     
     private func layoutCollection() {
@@ -81,8 +74,8 @@ final class MovieDetailsViewController: UIViewController {
     
     private func buildDataSource() -> DataSource {
         return DataSource(collectionView: collectionView) { (collectionView, indexPath, movie) -> UICollectionViewCell? in
-            print("Movie")
-            print(movie.title)
+//            print("Movie")
+//            print(movie.title)
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "MovieDetailCell", for: indexPath) as! MovieDetailCell
             cell.configureWithMovie(movie)
             return cell

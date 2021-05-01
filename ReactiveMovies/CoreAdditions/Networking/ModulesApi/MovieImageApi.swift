@@ -31,9 +31,8 @@ struct MovieImageApi: MovieImageApiType {
     
     // MARK: - API
     
-    func loadImage(
-        _ path: String,
-        size: ImageSize = ImageSize.large
+    func loadImage(_ path: String,
+                   size: ImageSize = ImageSize.large
     ) -> AnyPublisher<UIImage?, Never> {
         let imageSizeUrl = size == .large ? ImageEndpointURL.large : ImageEndpointURL.small
         let imageUrl = imageSizeUrl.appendingPathComponent(path)

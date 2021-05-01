@@ -19,22 +19,19 @@ fileprivate enum Keys {
 }
 /// Request parameter values
 fileprivate enum Values {
-    static let apiKey = "ed13542fcfbf6b6bd02fb2723a0495ff" // TODO: put in keychain
-    static let languageEn = "en-US" ///"ru-RU"
-    static let languageRu = "ru-RU" ///"ru-RU"
+    static let languageEn = "en-US"
+    static let languageRu = "ru-RU"
     static let sortByAverageVoteDesc = "vote_average.desc"
     static let sortByPopularityDesc = "popularity.desc"
+    static var apiKey: String { Constants.apiKey }
 }
 /// Request endpoints
 fileprivate enum Endpoints {
-    static let baseUrlString = "https://api.themoviedb.org/3" // TODO: refactor to URL and components
     static let genres = "/genre/movie/list"
     static let discover = "/discover/movie"
     static let movieDetails = "/movie/"
     static let search = "/search/movie"
-    static var baseUrl: URL {
-        return URL(string: Endpoints.baseUrlString)!
-    }
+    static var baseUrl: URL { Constants.baseUrl }
 }
 
 // MARK: - MoviesApi Protocol
@@ -55,7 +52,10 @@ struct MoviesApi: MoviesApiType {
         self.httpClient = httpClient
     }
     
-    func searchMovies(_ query: String, page: Int?, year: String?) -> AnyPublisher<MovieQuery, Error> {
+    func searchMovies(_ query: String,
+                      page: Int?,
+                      year: String?
+    ) -> AnyPublisher<MovieQuery, Error> {
         let params = RequestParametersAdapter(
             withBody: false,
             parameters: [
@@ -94,7 +94,9 @@ struct MoviesApi: MoviesApiType {
             .eraseToAnyPublisher()
     }
     
-    func requestMoviesWithQuery(page: Int, genres: String?) -> AnyPublisher<MovieQuery, Error> {
+    func requestMoviesWithQuery(page: Int,
+                                genres: String?
+    ) -> AnyPublisher<MovieQuery, Error> {
         let params = RequestParametersAdapter(
             withBody: false,
             parameters: [

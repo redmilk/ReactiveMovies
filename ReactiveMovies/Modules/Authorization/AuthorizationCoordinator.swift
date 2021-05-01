@@ -7,30 +7,36 @@
 
 import UIKit
 
-final class AuthorizationCoordinator: CoordinatorProtocol {
+final class AuthorizationCoordinator: CoordinatorType {
+    private let window: UIWindow
+    private let sceneBuilder: ApplicationSceneBuilder
     private let moduleTitle: String
-    private let moduleBuilder: ApplicationModulesBuilder
-    unowned let window: UIWindow
-    
+
     init(window: UIWindow,
-         moduleBuilder: ApplicationModulesBuilder = ApplicationModulesBuilder(),
+         sceneBuilder: ApplicationSceneBuilder,
          moduleTitle: String
     ) {
         self.window = window
+        self.sceneBuilder = sceneBuilder
         self.moduleTitle = moduleTitle
-        self.moduleBuilder = moduleBuilder
     }
     
     func start() {
-        let auth = moduleBuilder.buildAuthorizationNavigationController(coordinator: self, moduleTitle: moduleTitle)
+        let auth = sceneBuilder.buildAuthorizationNavigationController(
+            coordinator: self,
+            moduleTitle: moduleTitle
+        )
         window.rootViewController = auth
         window.makeKeyAndVisible()
     }
     
-    func end() { }
-        
     func displayHomeModule(completion: (() -> Void)?) {
-        let homeCoordinator = HomeCoordinator(viewController: window.rootViewController!, homeModuleTitle: "Home movies")
+        let homeCoordinator = HomeCoordinator(
+            viewController: window.rootViewController!,
+            sceneBuilder: sceneBuilder,
+            homeModuleTitle: "Home Movies",
+            detailModuleTitle: "Details"
+        )
         homeCoordinator.start()
     }
 }

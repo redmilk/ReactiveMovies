@@ -44,12 +44,9 @@ import Combine
 // MARK: - MovieService
 
 final class MovieService {
-    // TODO: refactor singlton
-    static let shared = MovieService()
         
     // MARK: - Input
     var currentScroll = CurrentValueSubject<IndexPath, Never>(IndexPath(row: 0, section: 0))
-    var selectedMovieIndex = CurrentValueSubject<Int, Never>(0)
     @Published var searchText: String = ""
     @Published var selectedGenreIndex: Int = 0
 
@@ -75,11 +72,13 @@ final class MovieService {
     }
     private let errors_ = PassthroughSubject<Error, Never>()
     private var subscriptions = Set<AnyCancellable>()
-    // TODO: - DI, remove shared
-    private let moviesApi: MoviesApiType = MoviesApi(httpClient: HTTPClient())
-    private let imageApi: MovieImageApiType = MovieImageApi()
+    private let moviesApi: MoviesApiType
+    private let imageApi: MovieImageApiType
     
-    private init() {
+    init(moviesApi: MoviesApiType, imageApi: MovieImageApiType) {
+        self.moviesApi = moviesApi
+        self.imageApi = imageApi
+        
         /// infinite scroll
         currentScroll
             .filter { [unowned self] in (moviesFiltered.count - 1) == $0.row && $0.section == 1 && searchText.isEmpty && selectedGenreIndex == 0 }

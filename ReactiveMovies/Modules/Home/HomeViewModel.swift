@@ -68,8 +68,8 @@ final class HomeViewModel {
 
 private extension HomeViewModel {
     func bindViewModelOutputToVC() {
-        movieService.selectedMovieIndex
-            .compactMap { $0 }
+        movieService.currentScroll
+            .compactMap { $0.row }
             .map { Action.updateScrollPosition(IndexPath(row: $0, section: HomeMoviesSection.movie.rawValue)) }
             .subscribe(outputToVC)
             .store(in: &subscriptions)
@@ -115,7 +115,7 @@ private extension HomeViewModel {
     
     func showDetailWithMovieIndex(_ index: Int) {
         coordinator.displayMovieDetails(completion: { [unowned self] in
-            //movieService.selectedMovieIndex = index
+            //movieService.selectedMovieIndex.value = index
             movieService.currentScroll.send(IndexPath(row: index, section: 1))
         })
     }
