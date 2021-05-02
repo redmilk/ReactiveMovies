@@ -14,13 +14,13 @@ protocol HTTPClientType {
 }
 
 class HTTPClient: HTTPClientType {
-    private let session: URLSession
+    private let urlSession: URLSession
     private let authenticator: Authenticator?
     
     init(session: URLSession = URLSession(configuration: .ephemeral),
          authenticator: Authenticator? = nil
     ) {
-        self.session = session
+        self.urlSession = session
         self.authenticator = authenticator
     }
 

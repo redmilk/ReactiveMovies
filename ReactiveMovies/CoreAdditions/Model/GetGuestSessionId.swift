@@ -1,20 +1,21 @@
 //
-//  GetRequestToken.swift
+//  GetGuestSessionId.swift
 //  ReactiveMovies
 //
-//  Created by Danyl Timofeyev on 01.05.2021.
+//  Created by Danyl Timofeyev on 02.05.2021.
 //
 
 import Foundation
 
-struct GetRequestToken: Decodable {
+struct GetGuestSessionId: Decodable {
+
     let success: Bool
-    let requestToken: String?
+    let guestSessionId: String?
     let expiresAt: String?
     
     enum CodingKeys: String, CodingKey {
         case success
-        case requestToken = "request_token"
+        case guestSessionId = "guest_session_id"
         case expiresAt = "expires_at"
     }
 }

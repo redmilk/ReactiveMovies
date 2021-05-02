@@ -13,6 +13,7 @@ final class ApplicationSceneBuilder { }
 // MARK: - Dependency Providers
 
 extension ApplicationSceneBuilder: MovieServiceDependencyProvidable { }
+extension ApplicationSceneBuilder: SessionServiceDependencyProvidable { }
 
 // MARK: - Authorization
 
@@ -25,7 +26,7 @@ extension ApplicationSceneBuilder {
         
         let navigation = UINavigationController()
         navigation.setNavigationBarHidden(true, animated: false)
-        let viewModel = AuthorizationViewModel(moduleTitle: moduleTitle, coordinator: coordinator)
+        let viewModel = AuthorizationViewModel(moduleTitle: moduleTitle, coordinator: coordinator, sessionService: sessionService)
         var controller = AuthorizationViewController(viewModel: viewModel)
         controller.bindViewModel(to: viewModel)
         navigation.pushViewController(controller, animated: false)

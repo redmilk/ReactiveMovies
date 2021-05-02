@@ -11,17 +11,24 @@ fileprivate let services = ServicesContainer()
 
 final class ServicesContainer {
     
+    private let httpClient = HTTPClient(session: URLSession(configuration: .ephemeral), authenticator: nil)
+    
     lazy var movieService: MovieService = {
-        let httpClient = HTTPClient(session: URLSession(configuration: .ephemeral), authenticator: nil)
         let moviesApi = MoviesApi(httpClient: httpClient)
         let imageCacher = ImageCacher()
         let imagesApi = MovieImageApi(cache: imageCacher)
         return MovieService(moviesApi: moviesApi, imageApi: imagesApi)
     }()
+    
+    lazy var sessionService: SessionService = {
+        let authApi = AuthorizationApi(httpClient: httpClient)
+        return SessionService(authApi: authApi)
+    }()
 }
 
 // MARK: - add all services to file
 
+/// All service
 protocol ServicesProvidable { }
 extension ServicesProvidable {
     var allServices: ServicesContainer { services }
@@ -29,8 +36,14 @@ extension ServicesProvidable {
 
 // MARK: - add specific service dependency
 
+/// MovieService
 protocol MovieServiceDependencyProvidable { }
 extension MovieServiceDependencyProvidable {
     var movieService: MovieService { services.movieService }
+}
+/// SessionService
+protocol SessionServiceDependencyProvidable { }
+extension SessionServiceDependencyProvidable {
+    var sessionService: SessionService { services.sessionService }
 }
 

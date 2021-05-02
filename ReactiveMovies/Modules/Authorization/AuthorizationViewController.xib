@@ -11,7 +11,11 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="AuthorizationViewController" customModule="ReactiveMovies" customModuleProvider="target">
             <connections>
+                <outlet property="guestSessionButton" destination="Y9n-UO-d15" id="Ws4-tH-AwQ"/>
                 <outlet property="loginButton" destination="Llc-Bh-9X1" id="JdL-1h-mdE"/>
+                <outlet property="passwordTextfield" destination="mAL-Sv-K7a" id="3YM-7A-ztO"/>
+                <outlet property="realAuthButton" destination="sLJ-2x-usa" id="Nez-3N-yPZ"/>
+                <outlet property="usernameTextfield" destination="U9Q-iy-xCq" id="ecv-2O-L5M"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>
@@ -27,12 +31,48 @@
                         <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </state>
                 </button>
+                <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" translatesAutoresizingMaskIntoConstraints="NO" id="Xbq-CX-2LJ">
+                    <rect key="frame" x="107" y="94" width="200" height="200"/>
+                    <subviews>
+                        <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="username" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="U9Q-iy-xCq">
+                            <rect key="frame" x="0.0" y="0.0" width="200" height="55.5"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                            <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" returnKeyType="done" enablesReturnKeyAutomatically="YES" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no"/>
+                        </textField>
+                        <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="password" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="mAL-Sv-K7a">
+                            <rect key="frame" x="0.0" y="55.5" width="200" height="56"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                            <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" returnKeyType="done" enablesReturnKeyAutomatically="YES" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no"/>
+                        </textField>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sLJ-2x-usa">
+                            <rect key="frame" x="0.0" y="111.5" width="200" height="63.5"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                            <state key="normal" title="Login"/>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Y9n-UO-d15">
+                            <rect key="frame" x="0.0" y="175" width="200" height="25"/>
+                            <color key="backgroundColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="25" id="OZJ-AD-rvz"/>
+                            </constraints>
+                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                            <state key="normal" title="Guest Session"/>
+                        </button>
+                    </subviews>
+                    <color key="backgroundColor" red="0.92143100499999997" green="0.92145264149999995" blue="0.92144101860000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="200" id="IcS-Qq-cAS"/>
+                        <constraint firstAttribute="width" constant="200" id="QL1-bB-gel"/>
+                    </constraints>
+                </stackView>
             </subviews>
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
             <constraints>
                 <constraint firstItem="Llc-Bh-9X1" firstAttribute="centerX" secondItem="fnl-2z-Ty3" secondAttribute="centerX" id="JsP-In-kfN"/>
+                <constraint firstItem="Xbq-CX-2LJ" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" constant="50" id="Lxi-FY-eDp"/>
                 <constraint firstItem="Llc-Bh-9X1" firstAttribute="centerY" secondItem="fnl-2z-Ty3" secondAttribute="centerY" id="Q51-yJ-Vh2"/>
+                <constraint firstItem="Xbq-CX-2LJ" firstAttribute="centerX" secondItem="fnl-2z-Ty3" secondAttribute="centerX" id="SG2-mA-0NI"/>
             </constraints>
             <point key="canvasLocation" x="-212" y="143"/>
         </view>

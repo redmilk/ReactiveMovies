@@ -55,6 +55,12 @@
 		79A1CB9E26324922001C24EF /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79A1CB9C26324922001C24EF /* SearchViewController.swift */; };
 		79A1CB9F26324922001C24EF /* SearchViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 79A1CB9D26324922001C24EF /* SearchViewController.xib */; };
 		79A1CBA326324983001C24EF /* MoviesSearchService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79A1CBA226324982001C24EF /* MoviesSearchService.swift */; };
+		79C5E6AA263DAD8B0055F794 /* WebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79C5E6A9263DAD8B0055F794 /* WebViewController.swift */; };
+		79C5E6AE263DB0C40055F794 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79C5E6AD263DB0C40055F794 /* Logger.swift */; };
+		79C5E6BB263DCBD90055F794 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79C5E6BA263DCBD90055F794 /* SceneDelegate.swift */; };
+		79DB9703263DE523004A38F9 /* ResultPublishable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79DB9702263DE523004A38F9 /* ResultPublishable.swift */; };
+		79DB9706263DEAE7004A38F9 /* GetSessionId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79DB9705263DEAE7004A38F9 /* GetSessionId.swift */; };
+		79DB9709263E2392004A38F9 /* GetGuestSessionId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79DB9708263E2392004A38F9 /* GetGuestSessionId.swift */; };
 		79E47F79262E022B00BA661F /* ErrorTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79E47F78262E022B00BA661F /* ErrorTypes.swift */; };
 		79E6BBFE262F0CB500CC1C38 /* MoviesCollectionDataAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79E6BBFD262F0CB500CC1C38 /* MoviesCollectionDataAdapter.swift */; };
 		79E6BC02262F0E0C00CC1C38 /* MoviesCollectionDataType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79E6BC01262F0E0C00CC1C38 /* MoviesCollectionDataType.swift */; };
@@ -117,6 +123,12 @@
 		79A1CB9C26324922001C24EF /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		79A1CB9D26324922001C24EF /* SearchViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SearchViewController.xib; sourceTree = "<group>"; };
 		79A1CBA226324982001C24EF /* MoviesSearchService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoviesSearchService.swift; sourceTree = "<group>"; };
+		79C5E6A9263DAD8B0055F794 /* WebViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewController.swift; sourceTree = "<group>"; };
+		79C5E6AD263DB0C40055F794 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
+		79C5E6BA263DCBD90055F794 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
+		79DB9702263DE523004A38F9 /* ResultPublishable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultPublishable.swift; sourceTree = "<group>"; };
+		79DB9705263DEAE7004A38F9 /* GetSessionId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetSessionId.swift; sourceTree = "<group>"; };
+		79DB9708263E2392004A38F9 /* GetGuestSessionId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetGuestSessionId.swift; sourceTree = "<group>"; };
 		79E47F78262E022B00BA661F /* ErrorTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorTypes.swift; sourceTree = "<group>"; };
 		79E6BBFD262F0CB500CC1C38 /* MoviesCollectionDataAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoviesCollectionDataAdapter.swift; sourceTree = "<group>"; };
 		79E6BC01262F0E0C00CC1C38 /* MoviesCollectionDataType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoviesCollectionDataType.swift; sourceTree = "<group>"; };
@@ -139,14 +151,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		79106E21263CC7A0007D6ED7 /* RefreshToken */ = {
-			isa = PBXGroup;
-			children = (
-				79106E22263CC7B8007D6ED7 /* RefreshToken.swift */,
-			);
-			path = RefreshToken;
-			sourceTree = "<group>";
-		};
 		79288FA1262F4B7C00C22CC2 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
@@ -188,6 +192,7 @@
 			children = (
 				7948F661263B44EF00417777 /* BindableType.swift */,
 				79106E3D263D790C007D6ED7 /* CoordinatorType.swift */,
+				79DB9702263DE523004A38F9 /* ResultPublishable.swift */,
 			);
 			path = Protocols;
 			sourceTree = "<group>";
@@ -236,6 +241,7 @@
 				7976AC3926227579008C3DA8 /* Modules */,
 				7976AC33262274F9008C3DA8 /* CoreAdditions */,
 				7976AC09262262E5008C3DA8 /* AppDelegate.swift */,
+				79C5E6BA263DCBD90055F794 /* SceneDelegate.swift */,
 				7976AC12262262E7008C3DA8 /* Assets.xcassets */,
 				7976AC14262262E7008C3DA8 /* LaunchScreen.storyboard */,
 				7976AC17262262E7008C3DA8 /* Info.plist */,
@@ -258,6 +264,7 @@
 		7976AC33262274F9008C3DA8 /* CoreAdditions */ = {
 			isa = PBXGroup;
 			children = (
+				79C5E6A8263DAD740055F794 /* Controllers */,
 				7948F649263B25CB00417777 /* ApplicationModulesBuilder.swift */,
 				7948F650263B287C00417777 /* ApplicationFlowCoordinator.swift */,
 				79521AE8263B7E1000510FBE /* CustomCombineEntities */,
@@ -299,7 +306,7 @@
 			isa = PBXGroup;
 			children = (
 				79E47F78262E022B00BA661F /* ErrorTypes.swift */,
-				79106E21263CC7A0007D6ED7 /* RefreshToken */,
+				79106E22263CC7B8007D6ED7 /* RefreshToken.swift */,
 				7976AC3B262275B4008C3DA8 /* ModulesApi */,
 				7976AC1F2622630D008C3DA8 /* BaseNetworking */,
 			);
@@ -309,10 +316,10 @@
 		797FE6982629C2DE007A7E4D /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				79106E36263D72D0007D6ED7 /* ServicesContainer.swift */,
 				797FE6992629C2EF007A7E4D /* MovieService.swift */,
 				79A1CBA226324982001C24EF /* MoviesSearchService.swift */,
 				79106E30263D6FAB007D6ED7 /* SessionService.swift */,
-				79106E36263D72D0007D6ED7 /* ServicesContainer.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -337,6 +344,8 @@
 				7976AC4226227756008C3DA8 /* Genres.swift */,
 				79FEB9552622FBD3001A1DD2 /* MovieQuery.swift */,
 				79106E2D263D6D83007D6ED7 /* GetRequestToken.swift */,
+				79DB9705263DEAE7004A38F9 /* GetSessionId.swift */,
+				79DB9708263E2392004A38F9 /* GetGuestSessionId.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -357,6 +366,14 @@
 				79A1CB9D26324922001C24EF /* SearchViewController.xib */,
 			);
 			path = Search;
+			sourceTree = "<group>";
+		};
+		79C5E6A8263DAD740055F794 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				79C5E6A9263DAD8B0055F794 /* WebViewController.swift */,
+			);
+			path = Controllers;
 			sourceTree = "<group>";
 		};
 		79E6BBF0262EF55700CC1C38 /* Utils */ = {
@@ -400,6 +417,7 @@
 			isa = PBXGroup;
 			children = (
 				79FEB9512622F21F001A1DD2 /* PublishTimeLogger.swift */,
+				79C5E6AD263DB0C40055F794 /* Logger.swift */,
 			);
 			path = Debug;
 			sourceTree = "<group>";
@@ -493,6 +511,7 @@
 				7948F651263B287C00417777 /* ApplicationFlowCoordinator.swift in Sources */,
 				7976AC3E262275DE008C3DA8 /* MoviesApi.swift in Sources */,
 				7948F647263B25BF00417777 /* AuthorizationCoordinator.swift in Sources */,
+				79DB9706263DEAE7004A38F9 /* GetSessionId.swift in Sources */,
 				79FEB932262283C3001A1DD2 /* BaseViewModel.swift in Sources */,
 				7948F662263B44EF00417777 /* BindableType.swift in Sources */,
 				79106E2B263D56E2007D6ED7 /* MovieImageApi.swift in Sources */,
@@ -506,11 +525,14 @@
 				79A1CB9E26324922001C24EF /* SearchViewController.swift in Sources */,
 				79E47F79262E022B00BA661F /* ErrorTypes.swift in Sources */,
 				799091D2262DEC5C008CEDB0 /* ImageCacher.swift in Sources */,
+				79C5E6BB263DCBD90055F794 /* SceneDelegate.swift in Sources */,
 				79FEB92B26228259001A1DD2 /* HomeCoordinator.swift in Sources */,
 				7976AC2126226341008C3DA8 /* HTTPClient.swift in Sources */,
 				7976AC4326227756008C3DA8 /* Genres.swift in Sources */,
+				79DB9709263E2392004A38F9 /* GetGuestSessionId.swift in Sources */,
 				79FEB9562622FBD3001A1DD2 /* MovieQuery.swift in Sources */,
 				7976AC0E262262E5008C3DA8 /* HomeViewController.swift in Sources */,
+				79DB9703263DE523004A38F9 /* ResultPublishable.swift in Sources */,
 				7976AC2626226D6D008C3DA8 /* HeaderAdapter.swift in Sources */,
 				79288F9E262F491D00C22CC2 /* MovieDetailsViewController.swift in Sources */,
 				79106E26263D4714007D6ED7 /* AuthorizationApi.swift in Sources */,
@@ -529,7 +551,9 @@
 				79106E37263D72D0007D6ED7 /* ServicesContainer.swift in Sources */,
 				792BCF76263B56B8005F6333 /* HomeMovieCell.swift in Sources */,
 				79106E2E263D6D83007D6ED7 /* GetRequestToken.swift in Sources */,
+				79C5E6AE263DB0C40055F794 /* Logger.swift in Sources */,
 				79A1CB9826320127001C24EF /* Publisher+Extensions.swift in Sources */,
+				79C5E6AA263DAD8B0055F794 /* WebViewController.swift in Sources */,
 				79A10BAB26345B9900E108E3 /* HomeCollectionDataManager.swift in Sources */,
 				79106E31263D6FAB007D6ED7 /* SessionService.swift in Sources */,
 			);
