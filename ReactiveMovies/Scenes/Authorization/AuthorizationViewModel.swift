@@ -22,7 +22,6 @@ import Combine
 
 // TODO: - Catch errors from publishers
 
-
 final class AuthorizationViewModel {
     private let coordinator: AuthorizationCoordinator
     private let sessionService: SessionService

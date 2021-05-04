@@ -240,10 +240,8 @@
 			children = (
 				7976AC3926227579008C3DA8 /* Scenes */,
 				7976AC33262274F9008C3DA8 /* CoreAdditions */,
-				7976AC09262262E5008C3DA8 /* AppDelegate.swift */,
-				79C5E6BA263DCBD90055F794 /* SceneDelegate.swift */,
-				7976AC12262262E7008C3DA8 /* Assets.xcassets */,
-				7976AC14262262E7008C3DA8 /* LaunchScreen.storyboard */,
+				79E600DB2641D31900265E42 /* Application */,
+				79E600DD2641D32B00265E42 /* Resources */,
 				7976AC17262262E7008C3DA8 /* Info.plist */,
 			);
 			path = ReactiveMovies;
@@ -374,6 +372,24 @@
 				79C5E6A9263DAD8B0055F794 /* WebViewController.swift */,
 			);
 			path = Controllers;
+			sourceTree = "<group>";
+		};
+		79E600DB2641D31900265E42 /* Application */ = {
+			isa = PBXGroup;
+			children = (
+				7976AC09262262E5008C3DA8 /* AppDelegate.swift */,
+				79C5E6BA263DCBD90055F794 /* SceneDelegate.swift */,
+			);
+			path = Application;
+			sourceTree = "<group>";
+		};
+		79E600DD2641D32B00265E42 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				7976AC12262262E7008C3DA8 /* Assets.xcassets */,
+				7976AC14262262E7008C3DA8 /* LaunchScreen.storyboard */,
+			);
+			path = Resources;
 			sourceTree = "<group>";
 		};
 		79E6BBF0262EF55700CC1C38 /* Utils */ = {
