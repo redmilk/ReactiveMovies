@@ -51,8 +51,7 @@ private extension MovieImageApi {
         return URLSession.shared.dataTaskPublisher(for: url)
             .map { data, response in UIImage(data: data) }
             .catch { _ in Just(nil) }
-            .handleEvents(receiveOutput: { /*[unowned self]*/ image in
-                /*guard let image = image else { return }*/
+            .handleEvents(receiveOutput: { image in
                 cache[url] = image
             })
             .eraseToAnyPublisher()

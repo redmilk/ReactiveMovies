@@ -10,9 +10,9 @@ import Foundation
 
 final class SessionService {
     private let authApi: AuthorizationApiType
-    private(set) var token: String? = "e953722bde3da1bd30553056a7590b0c9776d2fd" {
+    private(set) var sessionId: String? {
         didSet {
-            Logger.log(token, type: .token)
+            Logger.log(sessionId, type: .token)
         }
     }
     
@@ -44,7 +44,7 @@ final class SessionService {
         authApi.requestGuestSessionId()
     }
     
-    func updateToken(token: String) {
-        self.token = token
+    func updateSessionId(_ sessionId: String) {
+        self.sessionId = sessionId
     }
 }

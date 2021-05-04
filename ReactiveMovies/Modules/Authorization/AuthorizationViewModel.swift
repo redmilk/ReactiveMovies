@@ -8,6 +8,21 @@
 import Foundation
 import Combine
 
+// TODO: - Move session logic to service
+
+// TODO: - Make VM as custom Subscriber
+
+// TODO: - Memory leak debug
+
+// TODO: - Session ID save
+
+// TODO: - Refactor MovieService
+
+// TODO: - Catch crash, unowned everywhere
+
+// TODO: - Catch errors from publishers
+
+
 final class AuthorizationViewModel {
     private let coordinator: AuthorizationCoordinator
     private let sessionService: SessionService
@@ -21,17 +36,19 @@ final class AuthorizationViewModel {
         self.coordinator = coordinator
         self.sessionService = sessionService
         bindControllerActions()
-        
     }
     
     private func bindControllerActions() {
         controllerActionsSubscriber
             .sink(receiveValue: { [unowned self] action in
                 switch action {
-                case .loginDidPress: coordinator.displayHomeModule(completion: nil)
+                case .loginDidPress:
+                    coordinator.displayHomeModule(completion: nil)
                 case .loginWithCredentials(let username, let password):
                     Logger.log("Action.loginWithCredentials: \(username) \(password)")
                     startLoginFlow(username: username, password: password)
+                case .guestSession:
+                    requestGuestSessionId()
                 }
             })
             .store(in: &subscriptions)
@@ -61,7 +78,6 @@ final class AuthorizationViewModel {
             .flatMap({ [unowned self] token -> AnyPublisher<GetRequestToken, Error> in
                 sessionService.getRequestTokenWithCredentials(requestToken: token, userName: username, password: password)
             })
-            //.first()
             .handleEvents(receiveCompletion: { completion in
                 switch completion {
                 case .failure(let error): Logger.log(error)
@@ -72,39 +88,21 @@ final class AuthorizationViewModel {
             .flatMap({ [unowned self] requestToken -> AnyPublisher<String, Error> in
                 requestNewSessionIdWithRequestToken(requestToken)
             })
-            //.first()
             .sink(receiveCompletion: { completion in
                 switch completion {
                 case .failure(let error): Logger.log(error)
                 case .finished: Logger.log("requestNewSessionIdWithRequestToken", type: .subscriptionFinished)
                 }
-            }, receiveValue: { sessionId in
+            }, receiveValue: { [unowned self] sessionId in
                 Logger.log("🎉🎉🎉 GOT SESSION ID: " + sessionId, type: .token)
+                sessionService.updateSessionId(sessionId)
+                coordinator.displayHomeModule(completion: nil)
             })
             .store(in: &subscriptions)
-        /**
-         , receiveValue: { [unowned self] requestToken in
-             guard requestToken.success else { return Logger.log("requestToken.success: FALSE") }
-             guard let token = requestToken.requestToken else { return Logger.log("requestToken.requestToken: NIL TOKEN") }
-             var loginURL = sessionService.webLoginURL
-             loginURL.appendPathComponent(token)
-             Logger.log(loginURL.absoluteString)
-             coordinator.displayWebLogin(urlString: loginURL.absoluteString)
-         }
-         */
     }
-    
-//    private func loginWithCredentials(username: String, password: String) {
-//        coordinator.resultPublisher
-//            .handleEvents(receiveOutput: { [unowned self] token in
-//                sessionService.updateToken(token: token)
-//            })
-//
-//    }
-    
+
     private func requestNewSessionIdWithRequestToken(_ token: String) -> AnyPublisher<String, Error> {
         sessionService.requestNewSessionId(with: token)
-            //.prefix(1)
             .handleEvents(receiveOutput: { newSessionId in
                 Logger.log("SESSION ID: " + newSessionId.sessionId!, type: .token)
             }, receiveCompletion: { completion in
@@ -119,13 +117,15 @@ final class AuthorizationViewModel {
     
     private func requestGuestSessionId() {
         sessionService.requestGuestSessionId()
+            .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: { completion in
                 switch completion {
                 case .failure(let error): Logger.log(error)
                 case .finished: Logger.log("requestGuestSessionId", type: .subscriptionFinished)
                 }
-            }, receiveValue: { guestSession in
+            }, receiveValue: { [unowned self] guestSession in
                 Logger.log("GUEST SESSION: " + guestSession.guestSessionId!, type: .token)
+                coordinator.displayHomeModule(completion: nil)
             })
             .store(in: &subscriptions)
     }

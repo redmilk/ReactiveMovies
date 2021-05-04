@@ -12,9 +12,9 @@ import Combine
 
 extension AuthorizationViewController {
     enum Action {
-        case loginDidPress
-        /// test
+        case loginDidPress /// pseudo
         case loginWithCredentials(username: String, password: String)
+        case guestSession
     }
 }
 
@@ -52,11 +52,11 @@ extension AuthorizationViewController: BindableType {
             .subscribe(viewModel.controllerActionsSubscriber)
             .store(in: &subscriptions)
         
-//        realAuthButton.publisher(for: .touchUpInside)
-//            .map { _ in return Action.realAuth }
-//            .subscribe(viewModel.controllerActionsSubscriber)
-//            .store(in: &subscriptions)
-//        
+        guestSessionButton.publisher(for: .touchUpInside)
+            .map { _ in Action.guestSession }
+            .subscribe(viewModel.controllerActionsSubscriber)
+            .store(in: &subscriptions)
+
         let username: AnyPublisher<String, Never> = usernameTextfield
             .publisher(for: .editingChanged)
             .compactMap { $0.text }
@@ -78,9 +78,7 @@ extension AuthorizationViewController: BindableType {
             .prepend(false)
             .share()
             .eraseToAnyPublisher()
-        
-        isValid.assign(to: \.loginButton.isEnabled, on: self)
-            .store(in: &subscriptions)
+   
         isValid.assign(to: \.realAuthButton.isEnabled, on: self)
             .store(in: &subscriptions)
         

@@ -8,21 +8,6 @@
 import Foundation
 import UIKit.UIImage
 import Combine
-// think about it
-
-//class MovieGenre {
-//    var info: Genre
-//    var movies: [Movie]
-//
-//    init(genre: Genre, movies: [Movie]) {
-//        self.info = genre
-//        self.movies = movies
-//    }
-//}
-//
-//class MoviesStorage {
-//    var genres: [MovieGenre]
-//}
 
 /**
  head // [Entity]
@@ -46,11 +31,13 @@ import Combine
 final class MovieService {
         
     // MARK: - Input
+    
     var currentScroll = CurrentValueSubject<IndexPath, Never>(IndexPath(row: 0, section: 0))
     @Published var searchText: String = ""
     @Published var selectedGenreIndex: Int = 0
 
     // MARK: - Output
+    
     @Published private(set) var moviesFiltered: [Movie] = []
     @Published private(set) var genres: [Genre] = []
     var errors: AnyPublisher<Error, Never> {
@@ -58,18 +45,20 @@ final class MovieService {
     }
     
     // MARK: - Private
+    
     private var pagination: Int = 1 {
         didSet {
             print("PAGINATION: " + pagination.description)
         }
     }
-    private var moviesOriginal: [Movie] = [] {
-        didSet {
-            if moviesOriginal.count % 20 == 0 {
-                pagination += 1
-            }
-        }
-    }
+    private var moviesOriginal: [Movie] = []
+//    {
+//        didSet {
+//            if moviesOriginal.count % 20 == 0 {
+//                pagination += 1
+//            }
+//        }
+//    }
     private let errors_ = PassthroughSubject<Error, Never>()
     private var subscriptions = Set<AnyCancellable>()
     private let moviesApi: MoviesApiType
@@ -134,6 +123,7 @@ final class MovieService {
         moviesApi.requestMoviesWithQuery(page: pagination, genres: nil) /// request movies by page
             .compactMap { $0.results }
             .subscribe(on: Scheduler.backgroundWorkScheduler)
+            .handleEvents(receiveOutput: { [unowned self] _ in pagination += 1 })
             .flatMap({ movies -> AnyPublisher<MovieQueryElement, Error> in /// make publishers sequence
                 Publishers.Sequence(sequence: movies)
                     .eraseToAnyPublisher()
@@ -240,3 +230,18 @@ private extension MovieService {
             .store(in: &subscriptions)
     }
 }
+
+// think about it
+//class MovieGenre {
+//    var info: Genre
+//    var movies: [Movie]
+//
+//    init(genre: Genre, movies: [Movie]) {
+//        self.info = genre
+//        self.movies = movies
+//    }
+//}
+//
+//class MoviesStorage {
+//    var genres: [MovieGenre]
+//}

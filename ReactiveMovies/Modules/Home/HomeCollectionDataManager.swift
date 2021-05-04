@@ -105,7 +105,7 @@ private extension HomeCollectionDataManager {
                     widthDimension: NSCollectionLayoutDimension.fractionalWidth(1),
                     heightDimension: NSCollectionLayoutDimension.absolute(isPhone ? 30 : 50)
                 )
-                let itemCount = isPhone ? 1 : 6
+                let itemCount = isPhone ? 3 : 6
                 let item = NSCollectionLayoutItem(layoutSize: size)
                 item.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 10)
                 let group = NSCollectionLayoutGroup.horizontal(layoutSize: size, subitem: item, count: itemCount)
@@ -118,7 +118,7 @@ private extension HomeCollectionDataManager {
                     widthDimension: NSCollectionLayoutDimension.fractionalWidth(1),
                     heightDimension: NSCollectionLayoutDimension.absolute(200)
                 )
-                let itemCount = isPhone ? 1 : 5
+                let itemCount = isPhone ? 3 : 5
                 let item = NSCollectionLayoutItem(layoutSize: size)
                 let group = NSCollectionLayoutGroup.horizontal(layoutSize: size, subitem: item, count: itemCount)
                 let section = NSCollectionLayoutSection(group: group)

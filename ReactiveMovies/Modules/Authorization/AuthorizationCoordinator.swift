@@ -56,20 +56,4 @@ final class AuthorizationCoordinator: CoordinatorType {
             })
             .eraseToAnyPublisher()
     }
-    
-//    func displayWebLogin(urlString: String) {  // TODO: refactor WebViewController to base class
-//        let url = URL(string: urlString)!
-//        let webViewVC = WebViewController(initialUrlString: urlString, allowedHost: url.host!)
-//
-//        subscription = webViewVC.resultPublisher
-//            .prefix(1)
-//            .handleEvents(receiveCompletion: { [weak self] _ in
-//                self?.subscription?.cancel()
-//            })
-//            .subscribe(result)
-//
-//        DispatchQueue.main.async {
-//            self.controller.present(webViewVC, animated: true)
-//        }
-//    }
 }

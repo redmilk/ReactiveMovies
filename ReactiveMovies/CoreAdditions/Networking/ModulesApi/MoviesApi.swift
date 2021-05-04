@@ -57,8 +57,7 @@ struct MoviesApi: MoviesApiType {
                       year: String?
     ) -> AnyPublisher<MovieQuery, Error> {
         let params = RequestParametersAdapter(
-            isBodyMain: false,
-            parameters: [
+            query: [
                 Param(Keys.apiKey, Values.apiKey),
                 Param(Keys.language, Values.languageEn),
                 Param(Keys.page, page?.description),
@@ -78,8 +77,7 @@ struct MoviesApi: MoviesApiType {
     
     func requestMoviesGenres() -> AnyPublisher<Genres, Error> {
         let params = RequestParametersAdapter(
-            isBodyMain: false,
-            parameters: [
+            query: [
                 Param(Keys.apiKey, Values.apiKey),
                 Param(Keys.language, Values.languageEn),
             ])
@@ -98,8 +96,7 @@ struct MoviesApi: MoviesApiType {
                                 genres: String?
     ) -> AnyPublisher<MovieQuery, Error> {
         let params = RequestParametersAdapter(
-            isBodyMain: false,
-            parameters: [
+            query: [
                 Param(Keys.apiKey, Values.apiKey),
                 Param(Keys.language, Values.languageEn),
                 Param(Keys.page, page.description),
@@ -120,8 +117,7 @@ struct MoviesApi: MoviesApiType {
     
     func requestMovieDetails(movieId: Int) -> AnyPublisher<Movie, Error> {
         let params = RequestParametersAdapter(
-            isBodyMain: false,
-            parameters: [
+            query: [
                 Param(Keys.apiKey, Values.apiKey),
                 Param(Keys.language, Values.languageEn),
             ])

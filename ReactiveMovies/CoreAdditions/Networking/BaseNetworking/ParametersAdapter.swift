@@ -9,52 +9,33 @@ import Foundation
 
 struct Param {
     let key: String
-    let value: String?
+    let value: CustomStringConvertible?
 
-    init(_ key: String, _ value: String?) {
+    init(_ key: String, _ value: CustomStringConvertible?) {
         self.key = key
         self.value = value
     }
 }
 
-// TODO: refactor params, avoid isBodyMain
-
 struct RequestParametersAdapter: URLRequestAdaptable {
-    private let parameters: [Param]
-    private let extraQuery: [Param]
-    private let isBodyMain: Bool
-    private var jsonParameters: [String: String] {
-        var jsonParameters: [String: String] = [:]
-        parameters.forEach { jsonParameters[$0.key] = $0.value }
+    private let query: [Param]
+    private let body: [Param]
+    private var bodyJson: [String: CustomStringConvertible] {
+        var jsonParameters: [String: CustomStringConvertible] = [:]
+        body.forEach { jsonParameters[$0.key] = $0.value }
         return jsonParameters
     }
+
+    // MARK: - API
     
-    init(isBodyMain: Bool,
-         parameters: [Param],
-         extraQuery: [Param] = []
-    ) {
-        self.parameters = parameters
-        self.isBodyMain = isBodyMain
-        self.extraQuery = extraQuery
+    init(query: [Param] = [], body: [Param] = []) {
+        self.query = query
+        self.body = body
     }
-    
+
     func adapt(_ urlRequest: inout URLRequest) {
-        isBodyMain ?
-            adaptRequestWithBody(&urlRequest) :
-            adaptRequestWithQuery(&urlRequest, params: parameters)
-        print("BEFORE: " + urlRequest.url!.absoluteString)
-        guard extraQuery.count > 0 else { return }
-        adaptRequestWithQuery(&urlRequest, params: extraQuery)
-        print("AFTER: " + urlRequest.url!.absoluteString)
-//        let queryItems = extraQuery
-//            .filter { $0.value != nil }
-//            .map { URLQueryItem(name: $0.key, value: $0.value) }
-//
-//        var urlComponents = URLComponents(string: urlRequest.url!.absoluteString)
-//        //urlComponents?.queryItems?.append(<#T##newElement: URLQueryItem##URLQueryItem#>)
-//        urlComponents?.queryItems = queryItems
-//        urlRequest.url = urlComponents?.url
-//
+        adaptRequestWithBody(&urlRequest)
+        adaptRequestWithQuery(&urlRequest)
     }
 }
 
@@ -62,8 +43,9 @@ struct RequestParametersAdapter: URLRequestAdaptable {
 
 private extension RequestParametersAdapter {
     func adaptRequestWithBody(_ urlRequest: inout URLRequest) {
+        guard !bodyJson.isEmpty else { return }
         guard let jsonData = try? JSONSerialization.data(
-                withJSONObject: jsonParameters,
+                withJSONObject: bodyJson,
                 options: .prettyPrinted) else {
             fatalError("RequestParametersAdapter: JSONSerialization fail")
         }
@@ -71,14 +53,14 @@ private extension RequestParametersAdapter {
         urlRequest.httpBody = jsonData
     }
     
-    func adaptRequestWithQuery(_ urlRequest: inout URLRequest, params: [Param]) {
+    func adaptRequestWithQuery(_ urlRequest: inout URLRequest) {
         guard let url = urlRequest.url,
               var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: true)
         else { return }
         
-        let queryItems = params
+        let queryItems = query
             .filter { $0.value != nil }
-            .map { URLQueryItem(name: $0.key, value: $0.value) }
+            .map { URLQueryItem(name: $0.key, value: $0.value?.description) }
         urlComponents.queryItems = urlComponents.queryItems ?? [] + queryItems
         urlRequest.url = urlComponents.url
     }

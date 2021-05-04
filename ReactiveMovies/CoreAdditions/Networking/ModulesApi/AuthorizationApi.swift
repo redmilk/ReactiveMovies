@@ -48,10 +48,8 @@ struct AuthorizationApi: AuthorizationApiType {
     
     func getRequestToken() -> AnyPublisher<GetRequestToken, Error> {
         let params = RequestParametersAdapter(
-            isBodyMain: false,
-            parameters: [
-                Param(Keys.apiKey, Values.apiKey),
-            ])
+            query: [Param(Keys.apiKey, Values.apiKey)]
+        )
         let headers = RequestHeaderAdapter()
         let requestBuilder = RequestBuilder(
             baseUrl: Endpoints.baseUrl,
@@ -70,11 +68,10 @@ struct AuthorizationApi: AuthorizationApiType {
                                         password: String
     ) -> AnyPublisher<GetRequestToken, Error> {
         let params = RequestParametersAdapter(
-            isBodyMain: true,
-            parameters: [Param(Keys.requestToken, requestToken),
-                         Param(Keys.username, userName),
-                         Param(Keys.password, password)],
-            extraQuery: [Param(Keys.apiKey, Values.apiKey)]
+            query: [Param(Keys.apiKey, Values.apiKey)],
+            body: [Param(Keys.requestToken, requestToken),
+                   Param(Keys.username, userName),
+                   Param(Keys.password, password)]
         )
         let headers = RequestHeaderAdapter()
         let requestBuilder = RequestBuilder(
@@ -91,9 +88,8 @@ struct AuthorizationApi: AuthorizationApiType {
     
     func requestNewSessionId(with requestToken: String) -> AnyPublisher<GetSessionId, Error> {
         let params = RequestParametersAdapter(
-            isBodyMain: true,
-            parameters: [Param(Keys.requestToken, requestToken)],
-            extraQuery: [Param(Keys.apiKey, Values.apiKey)]
+            query: [Param(Keys.apiKey, Values.apiKey)],
+            body: [Param(Keys.requestToken, requestToken)]
         )
         let headers = RequestHeaderAdapter()
         let requestBuilder = RequestBuilder(
@@ -110,8 +106,7 @@ struct AuthorizationApi: AuthorizationApiType {
     
     func requestGuestSessionId() -> AnyPublisher<GetGuestSessionId, Error> {
         let params = RequestParametersAdapter(
-            isBodyMain: false,
-            parameters: [Param(Keys.apiKey, Values.apiKey)]
+            query: [Param(Keys.apiKey, Values.apiKey)]
         )
         let headers = RequestHeaderAdapter()
         let requestBuilder = RequestBuilder(

@@ -68,11 +68,11 @@ final class HomeViewController: UIViewController, Publisher {
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [unowned self] action in
             switch action {
-            case .genres(let genres): self.collectionDataManager.applySnapshot(collectionData: genres, type: .genre)
-            case .movies(let movies): self.collectionDataManager.applySnapshot(collectionData: movies, type: .movie)
-            case .hideNavigationBar(let shouldHide): self.navigationController?.setNavigationBarHidden(shouldHide, animated: true)
-            case .updateScrollPosition(let indexPath):
-                self.collectionView.scrollToItem(at: indexPath, at: .centeredVertically, animated: true)
+            case .genres(let genres): collectionDataManager.applySnapshot(collectionData: genres, type: .genre)
+            case .movies(let movies): collectionDataManager.applySnapshot(collectionData: movies, type: .movie)
+            case .hideNavigationBar(let shouldHide): navigationController?.setNavigationBarHidden(shouldHide, animated: true)
+            case .updateScrollPosition(let indexPath): break
+                /// self.collectionView.scrollToItem(at: indexPath, at: .centeredVertically, animated: true)
             }
         })
         .store(in: &subscriptions)
@@ -85,7 +85,7 @@ private extension HomeViewController {
     /// Initial setup
     func configureView() {
         func applyStyling() {
-            navigationController?.navigationBar.prefersLargeTitles = false
+            navigationController?.navigationBar.prefersLargeTitles = true
             navigationController?.navigationItem.hidesSearchBarWhenScrolling = false
             collectionView.backgroundColor = .black
             view.backgroundColor = .black
@@ -118,9 +118,9 @@ private extension HomeViewController {
         }
         
         title = "Movies"
-        applyStyling()
         configureSearchController()
         configureCollectionView()
+        applyStyling()
     }
 }
 
