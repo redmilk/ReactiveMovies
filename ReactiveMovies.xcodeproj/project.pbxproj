@@ -238,7 +238,7 @@
 		7976AC08262262E5008C3DA8 /* ReactiveMovies */ = {
 			isa = PBXGroup;
 			children = (
-				7976AC3926227579008C3DA8 /* Modules */,
+				7976AC3926227579008C3DA8 /* Scenes */,
 				7976AC33262274F9008C3DA8 /* CoreAdditions */,
 				7976AC09262262E5008C3DA8 /* AppDelegate.swift */,
 				79C5E6BA263DCBD90055F794 /* SceneDelegate.swift */,
@@ -280,7 +280,7 @@
 			path = CoreAdditions;
 			sourceTree = "<group>";
 		};
-		7976AC3926227579008C3DA8 /* Modules */ = {
+		7976AC3926227579008C3DA8 /* Scenes */ = {
 			isa = PBXGroup;
 			children = (
 				7948F649263B25CB00417777 /* ApplicationSceneBuilder.swift */,
@@ -289,7 +289,7 @@
 				79A1CB9B263248FB001C24EF /* Search */,
 				797FE69E262A1209007A7E4D /* Details */,
 			);
-			path = Modules;
+			path = Scenes;
 			sourceTree = "<group>";
 		};
 		7976AC3B262275B4008C3DA8 /* ModulesApi */ = {
