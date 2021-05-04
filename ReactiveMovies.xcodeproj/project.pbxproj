@@ -27,7 +27,7 @@
 		7948F642263B249C00417777 /* AuthorizationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7948F640263B249C00417777 /* AuthorizationViewController.swift */; };
 		7948F643263B249C00417777 /* AuthorizationViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7948F641263B249C00417777 /* AuthorizationViewController.xib */; };
 		7948F647263B25BF00417777 /* AuthorizationCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7948F646263B25BF00417777 /* AuthorizationCoordinator.swift */; };
-		7948F64A263B25CB00417777 /* ApplicationModulesBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7948F649263B25CB00417777 /* ApplicationModulesBuilder.swift */; };
+		7948F64A263B25CB00417777 /* ApplicationSceneBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7948F649263B25CB00417777 /* ApplicationSceneBuilder.swift */; };
 		7948F64D263B25FB00417777 /* AuthorizationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7948F64C263B25FB00417777 /* AuthorizationViewModel.swift */; };
 		7948F651263B287C00417777 /* ApplicationFlowCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7948F650263B287C00417777 /* ApplicationFlowCoordinator.swift */; };
 		7948F65A263B3E0C00417777 /* HomeViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7948F658263B3E0C00417777 /* HomeViewController.xib */; };
@@ -88,7 +88,7 @@
 		7948F640263B249C00417777 /* AuthorizationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthorizationViewController.swift; sourceTree = "<group>"; };
 		7948F641263B249C00417777 /* AuthorizationViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AuthorizationViewController.xib; sourceTree = "<group>"; };
 		7948F646263B25BF00417777 /* AuthorizationCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthorizationCoordinator.swift; sourceTree = "<group>"; };
-		7948F649263B25CB00417777 /* ApplicationModulesBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationModulesBuilder.swift; sourceTree = "<group>"; };
+		7948F649263B25CB00417777 /* ApplicationSceneBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationSceneBuilder.swift; sourceTree = "<group>"; };
 		7948F64C263B25FB00417777 /* AuthorizationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthorizationViewModel.swift; sourceTree = "<group>"; };
 		7948F650263B287C00417777 /* ApplicationFlowCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationFlowCoordinator.swift; sourceTree = "<group>"; };
 		7948F658263B3E0C00417777 /* HomeViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = HomeViewController.xib; sourceTree = "<group>"; };
@@ -265,7 +265,6 @@
 			isa = PBXGroup;
 			children = (
 				79C5E6A8263DAD740055F794 /* Controllers */,
-				7948F649263B25CB00417777 /* ApplicationModulesBuilder.swift */,
 				7948F650263B287C00417777 /* ApplicationFlowCoordinator.swift */,
 				79521AE8263B7E1000510FBE /* CustomCombineEntities */,
 				797FE6A0262A14CA007A7E4D /* Model */,
@@ -284,6 +283,7 @@
 		7976AC3926227579008C3DA8 /* Modules */ = {
 			isa = PBXGroup;
 			children = (
+				7948F649263B25CB00417777 /* ApplicationSceneBuilder.swift */,
 				7948F63F263B246000417777 /* Authorization */,
 				795DA93026227C8700C10373 /* Home */,
 				79A1CB9B263248FB001C24EF /* Search */,
@@ -541,7 +541,7 @@
 				792BCF6F263B559C005F6333 /* HomeGenreCell.swift in Sources */,
 				7948F642263B249C00417777 /* AuthorizationViewController.swift in Sources */,
 				7976AC2926226DAE008C3DA8 /* RequestBuilder.swift in Sources */,
-				7948F64A263B25CB00417777 /* ApplicationModulesBuilder.swift in Sources */,
+				7948F64A263B25CB00417777 /* ApplicationSceneBuilder.swift in Sources */,
 				7976AC0A262262E5008C3DA8 /* AppDelegate.swift in Sources */,
 				79FEB927262281EA001A1DD2 /* UIViewController+Extensions.swift in Sources */,
 				79106E3E263D790C007D6ED7 /* CoordinatorType.swift in Sources */,
