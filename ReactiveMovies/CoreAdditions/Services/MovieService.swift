@@ -33,7 +33,11 @@ final class MovieService {
     // MARK: - Input
     
     var currentScroll = CurrentValueSubject<IndexPath, Never>(IndexPath(row: 0, section: 0))
-    @Published var searchText: String = ""
+    @Published var searchText: String = "" {
+        didSet {
+            Logger.log(searchText)
+        }
+    }
     @Published var selectedGenreIndex: Int = 0
 
     // MARK: - Output

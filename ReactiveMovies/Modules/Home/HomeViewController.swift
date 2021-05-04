@@ -85,18 +85,20 @@ private extension HomeViewController {
     /// Initial setup
     func configureView() {
         func applyStyling() {
-            navigationController?.navigationBar.prefersLargeTitles = true
+            navigationController?.navigationBar.prefersLargeTitles = false
             navigationController?.navigationItem.hidesSearchBarWhenScrolling = false
             collectionView.backgroundColor = .black
             view.backgroundColor = .black
             navigationController?.navigationBar.barTintColor = .black
             navigationController?.navigationBar.tintColor = .white
             searchController.searchBar.searchTextField.textColor = .white
+            searchController.searchBar.searchTextField.attributedPlaceholder = NSAttributedString(
+                string: "Find movie",
+                attributes: [NSAttributedString.Key.foregroundColor: UIColor.white])
         }
         func configureSearchController() {
             searchController.searchResultsUpdater = self
             searchController.obscuresBackgroundDuringPresentation = false
-            searchController.searchBar.placeholder = "Find movie"
             navigationItem.searchController = searchController
             definesPresentationContext = true
         }

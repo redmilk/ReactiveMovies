@@ -96,13 +96,12 @@ private extension HomeViewModel {
                 showDetailWithMovieIndex(index)
 
             case .searchQuery(let query):
-                guard !query.isEmpty else { return }
                 movieService.searchText = query
 
             case .currentScroll(let indexPath, let isSearchTextEmpty):
                 /// hiding nav bar
                 if isSearchTextEmpty && indexPath.section == HomeMoviesSection.movie.rawValue && indexPath.row > 10 || movieService.selectedGenreIndex != 0 {
-                    outputToVC.send(.hideNavigationBar(true))
+                    ///outputToVC.send(.hideNavigationBar(true))
                 }
                 /// update current scroll in movies service
                 if indexPath.section > 0 && indexPath.row > 0 {
