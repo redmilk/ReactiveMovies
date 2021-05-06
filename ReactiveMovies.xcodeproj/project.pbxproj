@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		79106E23263CC7B8007D6ED7 /* RefreshToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79106E22263CC7B8007D6ED7 /* RefreshToken.swift */; };
 		79106E26263D4714007D6ED7 /* AuthorizationApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79106E25263D4714007D6ED7 /* AuthorizationApi.swift */; };
 		79106E2B263D56E2007D6ED7 /* MovieImageApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79106E2A263D56E2007D6ED7 /* MovieImageApi.swift */; };
 		79106E2E263D6D83007D6ED7 /* GetRequestToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79106E2D263D6D83007D6ED7 /* GetRequestToken.swift */; };
@@ -55,6 +54,7 @@
 		79A1CB9E26324922001C24EF /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79A1CB9C26324922001C24EF /* SearchViewController.swift */; };
 		79A1CB9F26324922001C24EF /* SearchViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 79A1CB9D26324922001C24EF /* SearchViewController.xib */; };
 		79A1CBA326324983001C24EF /* MoviesSearchService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79A1CBA226324982001C24EF /* MoviesSearchService.swift */; };
+		79A93DE52644251C00945664 /* ClaweeAuthApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79A93DE42644251C00945664 /* ClaweeAuthApi.swift */; };
 		79C5E6AA263DAD8B0055F794 /* WebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79C5E6A9263DAD8B0055F794 /* WebViewController.swift */; };
 		79C5E6AE263DB0C40055F794 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79C5E6AD263DB0C40055F794 /* Logger.swift */; };
 		79C5E6BB263DCBD90055F794 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79C5E6BA263DCBD90055F794 /* SceneDelegate.swift */; };
@@ -64,6 +64,8 @@
 		79E47F79262E022B00BA661F /* ErrorTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79E47F78262E022B00BA661F /* ErrorTypes.swift */; };
 		79E6BBFE262F0CB500CC1C38 /* MoviesCollectionDataAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79E6BBFD262F0CB500CC1C38 /* MoviesCollectionDataAdapter.swift */; };
 		79E6BC02262F0E0C00CC1C38 /* MoviesCollectionDataType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79E6BC01262F0E0C00CC1C38 /* MoviesCollectionDataType.swift */; };
+		79F0AB99264445000006CC0D /* ClaweeModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79F0AB98264445000006CC0D /* ClaweeModels.swift */; };
+		79F0ABDA264476F20006CC0D /* Authenticator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79F0ABD9264476F20006CC0D /* Authenticator.swift */; };
 		79FEB927262281EA001A1DD2 /* UIViewController+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79FEB926262281EA001A1DD2 /* UIViewController+Extensions.swift */; };
 		79FEB92B26228259001A1DD2 /* HomeCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79FEB92A26228259001A1DD2 /* HomeCoordinator.swift */; };
 		79FEB932262283C3001A1DD2 /* BaseViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79FEB931262283C3001A1DD2 /* BaseViewModel.swift */; };
@@ -73,7 +75,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		79106E22263CC7B8007D6ED7 /* RefreshToken.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RefreshToken.swift; sourceTree = "<group>"; };
 		79106E25263D4714007D6ED7 /* AuthorizationApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthorizationApi.swift; sourceTree = "<group>"; };
 		79106E2A263D56E2007D6ED7 /* MovieImageApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieImageApi.swift; sourceTree = "<group>"; };
 		79106E2D263D6D83007D6ED7 /* GetRequestToken.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetRequestToken.swift; sourceTree = "<group>"; };
@@ -123,6 +124,7 @@
 		79A1CB9C26324922001C24EF /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		79A1CB9D26324922001C24EF /* SearchViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SearchViewController.xib; sourceTree = "<group>"; };
 		79A1CBA226324982001C24EF /* MoviesSearchService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoviesSearchService.swift; sourceTree = "<group>"; };
+		79A93DE42644251C00945664 /* ClaweeAuthApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaweeAuthApi.swift; sourceTree = "<group>"; };
 		79C5E6A9263DAD8B0055F794 /* WebViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewController.swift; sourceTree = "<group>"; };
 		79C5E6AD263DB0C40055F794 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		79C5E6BA263DCBD90055F794 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -132,6 +134,8 @@
 		79E47F78262E022B00BA661F /* ErrorTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorTypes.swift; sourceTree = "<group>"; };
 		79E6BBFD262F0CB500CC1C38 /* MoviesCollectionDataAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoviesCollectionDataAdapter.swift; sourceTree = "<group>"; };
 		79E6BC01262F0E0C00CC1C38 /* MoviesCollectionDataType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoviesCollectionDataType.swift; sourceTree = "<group>"; };
+		79F0AB98264445000006CC0D /* ClaweeModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaweeModels.swift; sourceTree = "<group>"; };
+		79F0ABD9264476F20006CC0D /* Authenticator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Authenticator.swift; sourceTree = "<group>"; };
 		79FEB926262281EA001A1DD2 /* UIViewController+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+Extensions.swift"; sourceTree = "<group>"; };
 		79FEB92A26228259001A1DD2 /* HomeCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeCoordinator.swift; sourceTree = "<group>"; };
 		79FEB931262283C3001A1DD2 /* BaseViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseViewModel.swift; sourceTree = "<group>"; };
@@ -296,6 +300,7 @@
 				7976AC3D262275DE008C3DA8 /* MoviesApi.swift */,
 				79106E25263D4714007D6ED7 /* AuthorizationApi.swift */,
 				79106E2A263D56E2007D6ED7 /* MovieImageApi.swift */,
+				79A93DE42644251C00945664 /* ClaweeAuthApi.swift */,
 			);
 			path = ModulesApi;
 			sourceTree = "<group>";
@@ -304,7 +309,7 @@
 			isa = PBXGroup;
 			children = (
 				79E47F78262E022B00BA661F /* ErrorTypes.swift */,
-				79106E22263CC7B8007D6ED7 /* RefreshToken.swift */,
+				79F0ABD9264476F20006CC0D /* Authenticator.swift */,
 				7976AC3B262275B4008C3DA8 /* ModulesApi */,
 				7976AC1F2622630D008C3DA8 /* BaseNetworking */,
 			);
@@ -344,6 +349,7 @@
 				79106E2D263D6D83007D6ED7 /* GetRequestToken.swift */,
 				79DB9705263DEAE7004A38F9 /* GetSessionId.swift */,
 				79DB9708263E2392004A38F9 /* GetGuestSessionId.swift */,
+				79F0AB98264445000006CC0D /* ClaweeModels.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -520,6 +526,7 @@
 			files = (
 				79288F9B262F491D00C22CC2 /* MovieDetailsViewModel.swift in Sources */,
 				79288F9C262F491D00C22CC2 /* MovieDetailCell.swift in Sources */,
+				79F0AB99264445000006CC0D /* ClaweeModels.swift in Sources */,
 				79FEB9522622F21F001A1DD2 /* PublishTimeLogger.swift in Sources */,
 				79E6BBFE262F0CB500CC1C38 /* MoviesCollectionDataAdapter.swift in Sources */,
 				79A1CBA326324983001C24EF /* MoviesSearchService.swift in Sources */,
@@ -537,6 +544,7 @@
 				797FE69A2629C2EF007A7E4D /* MovieService.swift in Sources */,
 				7948F64D263B25FB00417777 /* AuthorizationViewModel.swift in Sources */,
 				799091EC2632A8CC008CEDB0 /* UIControl+Extensions.swift in Sources */,
+				79F0ABDA264476F20006CC0D /* Authenticator.swift in Sources */,
 				79A1CB952631F23D001C24EF /* Schedulers.swift in Sources */,
 				79A1CB9E26324922001C24EF /* SearchViewController.swift in Sources */,
 				79E47F79262E022B00BA661F /* ErrorTypes.swift in Sources */,
@@ -553,13 +561,13 @@
 				79288F9E262F491D00C22CC2 /* MovieDetailsViewController.swift in Sources */,
 				79106E26263D4714007D6ED7 /* AuthorizationApi.swift in Sources */,
 				795DA93226227CA000C10373 /* HomeViewModel.swift in Sources */,
-				79106E23263CC7B8007D6ED7 /* RefreshToken.swift in Sources */,
 				792BCF6F263B559C005F6333 /* HomeGenreCell.swift in Sources */,
 				7948F642263B249C00417777 /* AuthorizationViewController.swift in Sources */,
 				7976AC2926226DAE008C3DA8 /* RequestBuilder.swift in Sources */,
 				7948F64A263B25CB00417777 /* ApplicationSceneBuilder.swift in Sources */,
 				7976AC0A262262E5008C3DA8 /* AppDelegate.swift in Sources */,
 				79FEB927262281EA001A1DD2 /* UIViewController+Extensions.swift in Sources */,
+				79A93DE52644251C00945664 /* ClaweeAuthApi.swift in Sources */,
 				79106E3E263D790C007D6ED7 /* CoordinatorType.swift in Sources */,
 				7976AC30262274D4008C3DA8 /* Movie.swift in Sources */,
 				7976AC3626227521008C3DA8 /* Constants.swift in Sources */,

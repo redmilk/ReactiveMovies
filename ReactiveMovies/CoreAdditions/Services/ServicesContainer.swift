@@ -11,7 +11,7 @@ fileprivate let services = ServicesContainer()
 
 final class ServicesContainer {
     
-    private let httpClient = HTTPClient(session: URLSession(configuration: .ephemeral), authenticator: nil)
+    private let httpClient = HTTPClient(session: URLSession(configuration: .ephemeral))
     
     lazy var movieService: MovieService = {
         let moviesApi = MoviesApi(httpClient: httpClient)

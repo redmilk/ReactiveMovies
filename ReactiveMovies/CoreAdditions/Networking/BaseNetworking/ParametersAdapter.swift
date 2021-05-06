@@ -20,6 +20,7 @@ struct Param {
 struct RequestParametersAdapter: URLRequestAdaptable {
     private let query: [Param]
     private let body: [Param]
+    private let isFormUrlEncoded: Bool
     private var bodyJson: [String: CustomStringConvertible] {
         var jsonParameters: [String: CustomStringConvertible] = [:]
         body.forEach { jsonParameters[$0.key] = $0.value }
@@ -28,14 +29,19 @@ struct RequestParametersAdapter: URLRequestAdaptable {
 
     // MARK: - API
     
-    init(query: [Param] = [], body: [Param] = []) {
+    init(query: [Param] = [], body: [Param] = [], isFormUrlEncoded: Bool = false) {
         self.query = query
         self.body = body
+        self.isFormUrlEncoded = isFormUrlEncoded
     }
 
     func adapt(_ urlRequest: inout URLRequest) {
-        adaptRequestWithBody(&urlRequest)
-        adaptRequestWithQuery(&urlRequest)
+        if body.count > 0 {
+            isFormUrlEncoded ? adaptRequestWithBodyURLEncoded(&urlRequest) : adaptRequestWithBody(&urlRequest)
+        }
+        if query.count > 0 {
+            adaptRequestWithQuery(&urlRequest)
+        }
     }
 }
 
@@ -51,6 +57,16 @@ private extension RequestParametersAdapter {
         }
         
         urlRequest.httpBody = jsonData
+    }
+    
+    func adaptRequestWithBodyURLEncoded(_ urlRequest: inout URLRequest) {
+        var urlFormDataComponents = URLComponents()
+        let queryItems = body
+            .filter { $0.value != nil }
+            .map { URLQueryItem(name: $0.key, value: $0.value?.description) }
+        urlFormDataComponents.queryItems = queryItems
+        let data = urlFormDataComponents.query?.data(using: .utf8)
+        urlRequest.httpBody = data
     }
     
     func adaptRequestWithQuery(_ urlRequest: inout URLRequest) {

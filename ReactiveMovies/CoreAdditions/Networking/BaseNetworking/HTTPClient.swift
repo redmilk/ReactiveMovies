@@ -13,31 +13,48 @@ protocol HTTPClientType {
     func request<D: Decodable>(with request: URLRequest) -> AnyPublisher<D, Error>
 }
 
-class HTTPClient: HTTPClientType {
-    private let urlSession: URLSession
-    private let authenticator: Authenticator?
-    
-    init(session: URLSession = URLSession(configuration: .ephemeral),
-         authenticator: Authenticator? = nil
-    ) {
-        self.urlSession = session
-        self.authenticator = authenticator
-    }
+protocol HTTPClientNoAuthRequestable {
+    func performRequest<D: Decodable>(with urlRequest: URLRequest) -> AnyPublisher<D, Error>
+}
 
-    func request<D: Decodable>(with request: URLRequest) -> AnyPublisher<D, Error> {
+class HTTPClient: HTTPClientType, HTTPClientNoAuthRequestable {
+    
+    private let urlSession: URLSession
+    private lazy var authenticator: Authenticator = {
+        let authApi = ClaweeAuthApi(httpClient: self)
+        return Authenticator(authApi: authApi)
+    }()
+    
+    init(session: URLSession = URLSession(configuration: .ephemeral)) {
+        self.urlSession = session
+    }
+    
+    func request<D: Decodable>(with urlRequest: URLRequest) -> AnyPublisher<D, Error> {
+        authenticator
+            .validToken()
+            .map { urlRequest.setAuthorizationHeader(withAccessToken: $0.accessToken) }
+            .flatMap({ [unowned self] in performRequest(with: $0) })
+            .tryCatch({ [unowned self] error -> AnyPublisher<D, Error> in
+                guard let requestError = error as? RequestError, requestError == .unauthorized else { throw error }
+                return authenticator
+                    .validToken(forceRefresh: true)
+                    .map { urlRequest.setAuthorizationHeader(withAccessToken: $0.accessToken) }
+                    .flatMap({ [unowned self] in performRequest(with: $0) })
+                    .eraseToAnyPublisher()
+            })
+            .eraseToAnyPublisher()
+    }
+    
+    func performRequest<D: Decodable>(with request: URLRequest) -> AnyPublisher<D, Error> {
         return URLSession.shared
             .dataTaskPublisher(for: request)
             .handleEvents(receiveOutput: { formatPrint(urlString: $0.response.url?.absoluteString,
                                                        keyWord: "discover") })
             .mapError { $0 }
             .flatMap ({ data, response -> AnyPublisher<Data, Error> in
-                guard let httpResponse = response as? HTTPURLResponse else {
-                    return .fail(RequestError.unknown)
-                }
+                guard let httpResponse = response as? HTTPURLResponse else { return .fail(RequestError.unknown) }
                 guard  200..<300 ~= httpResponse.statusCode else {
-                    return .fail(httpResponse.statusCode == 401 ?
-                                    RequestError.unauthorized :
-                                    RequestError.api(httpResponse.statusCode))
+                    return .fail(httpResponse.statusCode == 401 ? RequestError.unauthorized : RequestError.api(httpResponse.statusCode))
                 }
                 return Just(data).setFailureType(to: Error.self).eraseToAnyPublisher()
             })

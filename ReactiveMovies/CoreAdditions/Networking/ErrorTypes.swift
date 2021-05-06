@@ -8,12 +8,13 @@
 import Foundation
 import Combine
 
-enum RequestError: Error, LocalizedError {
+enum RequestError: Error, LocalizedError, Equatable {
     
     case api(Int)
     case network(String, URLError)
     case parsing(String, Error)
     case unauthorized
+    case signInRequired
     case timeout
     case unknown
     
@@ -28,8 +29,13 @@ enum RequestError: Error, LocalizedError {
         case .api(let code): return "Api error: \(code.description)"
         case .parsing(let description, _): return description
         case .unauthorized: return "Unauthorized"
+        case .signInRequired: return "Sign In required. Display authentication screen"
         case .unknown: return "Unknown error"
         }
+    }
+    
+    static func == (lhs: RequestError, rhs: RequestError) -> Bool {
+        lhs.errorDescription == rhs.errorDescription
     }
 }
 
