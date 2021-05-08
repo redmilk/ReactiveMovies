@@ -46,9 +46,9 @@ protocol MoviesApiType {
 // MARK: - MoviesApi
 
 struct MoviesApi: MoviesApiType {
-    private let httpClient: HTTPClientType
+    private let httpClient: HTTPClient
     
-    init(httpClient: HTTPClientType) {
+    init(httpClient: HTTPClient) {
         self.httpClient = httpClient
     }
     
@@ -64,7 +64,7 @@ struct MoviesApi: MoviesApiType {
                 Param(Keys.query, query),
             ])
         let headers = RequestHeaderAdapter()
-        let requestBuilder = RequestBuilder(
+        var requestBuilder = RequestBuilder(
             baseUrl: Endpoints.baseUrl,
             pathComponent: Endpoints.search,
             adapters: [headers, params],
@@ -82,7 +82,7 @@ struct MoviesApi: MoviesApiType {
                 Param(Keys.language, Values.languageEn),
             ])
         let headers = RequestHeaderAdapter()
-        let requestBuilder = RequestBuilder(baseUrl: Endpoints.baseUrl,
+        var requestBuilder = RequestBuilder(baseUrl: Endpoints.baseUrl,
                                             pathComponent: Endpoints.genres,
                                             adapters: [headers, params],
                                             method: .get)
@@ -103,7 +103,7 @@ struct MoviesApi: MoviesApiType {
                 Param(Keys.sortBy, Values.sortByPopularityDesc),
             ])
         let headers = RequestHeaderAdapter()
-        let requestBuilder = RequestBuilder(
+        var requestBuilder = RequestBuilder(
             baseUrl: Endpoints.baseUrl,
             pathComponent: Endpoints.discover,
             adapters: [headers, params],
@@ -122,7 +122,7 @@ struct MoviesApi: MoviesApiType {
                 Param(Keys.language, Values.languageEn),
             ])
         let headers = RequestHeaderAdapter()
-        let requestBuilder = RequestBuilder(
+        var requestBuilder = RequestBuilder(
             baseUrl: Endpoints.baseUrl,
             pathComponent: Endpoints.movieDetails + movieId.description,
             adapters: [headers, params],

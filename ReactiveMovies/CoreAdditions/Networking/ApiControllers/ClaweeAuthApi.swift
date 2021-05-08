@@ -30,15 +30,15 @@ final class ClaweeAuthApi {
         static var baseUrl: URL { URL(string: "https://us-central1-clawee-dev.cloudfunctions.net/api")! }
     }
     
-    private let httpClient: HTTPClientNoAuthRequestable & HTTPClientType
+    private let httpClient: HTTPClientType
     
-    init(httpClient: HTTPClientNoAuthRequestable & HTTPClientType) {
+    init(httpClient: HTTPClientType) {
         self.httpClient = httpClient
     }
     
     func requestMachineTypes(token: String) -> AnyPublisher<MachineTypes, Error> {
         let headers = RequestHeaderAdapter(headers: [("Authorization", "Bearer \(token)")])
-        let requestBuilder = RequestBuilder(
+        var requestBuilder = RequestBuilder(
             baseUrl: Endpoints.baseUrl,
             pathComponent: Endpoints.machineTypes,
             adapters: [headers],
@@ -54,38 +54,19 @@ final class ClaweeAuthApi {
             Param(Keys.refreshToken, refreshToken),
         ], isFormUrlEncoded: true)
         let headers = RequestHeaderAdapter(contentType: .urlEncoded)
-        let requestBuilder = RequestBuilder(
+        var requestBuilder = RequestBuilder(
             baseUrl: Endpoints.baseUrl,
             pathComponent: Endpoints.refreshToken,
             adapters: [headers, parameters],
             method: .put
         )
-
-        let request: URLRequest = requestBuilder.request
-
-        return httpClient
-            .performRequest(with: request)
+        return URLSession.shared
+            .dataTaskPublisher(for: requestBuilder.request)
+            .tryMap { data, response in
+                guard let _ = response as? HTTPURLResponse else { throw RequestError.nilResponse(requestBuilder.request) }
+                return data
+            }
+            .decode(type: TokenRefresh.self, decoder: JSONDecoder())
             .eraseToAnyPublisher()
     }
-    
-    func requestAuth(email: String = Values.email, password: String = Values.password) -> AnyPublisher<User, Error> {
-        let parameters = RequestParametersAdapter(body: [
-            Param(Keys.email, email),
-            Param(Keys.password, password),
-        ], isFormUrlEncoded: true)
-        let headers = RequestHeaderAdapter(contentType: .urlEncoded)
-        let requestBuilder = RequestBuilder(
-            baseUrl: Endpoints.baseUrl,
-            pathComponent: Endpoints.credentialsLogin,
-            adapters: [headers, parameters],
-            method: .put
-        )
-
-        let request: URLRequest = requestBuilder.request
-
-        return httpClient
-            .request(with: request)
-            .eraseToAnyPublisher()
-    }
-    
 }

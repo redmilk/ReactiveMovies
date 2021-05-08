@@ -294,7 +294,7 @@
 			path = Scenes;
 			sourceTree = "<group>";
 		};
-		7976AC3B262275B4008C3DA8 /* ModulesApi */ = {
+		7976AC3B262275B4008C3DA8 /* ApiControllers */ = {
 			isa = PBXGroup;
 			children = (
 				7976AC3D262275DE008C3DA8 /* MoviesApi.swift */,
@@ -302,7 +302,7 @@
 				79106E2A263D56E2007D6ED7 /* MovieImageApi.swift */,
 				79A93DE42644251C00945664 /* ClaweeAuthApi.swift */,
 			);
-			path = ModulesApi;
+			path = ApiControllers;
 			sourceTree = "<group>";
 		};
 		7976AC4026227619008C3DA8 /* Networking */ = {
@@ -310,7 +310,7 @@
 			children = (
 				79E47F78262E022B00BA661F /* ErrorTypes.swift */,
 				79F0ABD9264476F20006CC0D /* Authenticator.swift */,
-				7976AC3B262275B4008C3DA8 /* ModulesApi */,
+				7976AC3B262275B4008C3DA8 /* ApiControllers */,
 				7976AC1F2622630D008C3DA8 /* BaseNetworking */,
 			);
 			path = Networking;

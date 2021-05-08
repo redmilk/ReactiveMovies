@@ -24,14 +24,14 @@ struct RequestBuilder {
     private let method: HTTPMethod
     private let timeoutInterval: TimeInterval
     
-    var request: URLRequest {
+    lazy var request: URLRequest = {
         let url = baseUrl.appendingPathComponent(pathComponent)
         var request = URLRequest(url: url)
         adapters.forEach { $0.adapt(&request) }
         request.httpMethod = method.rawValue
         request.timeoutInterval = timeoutInterval
         return request
-    }
+    }()
     
     init(baseUrl: URL,
          pathComponent: String,

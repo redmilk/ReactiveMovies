@@ -87,6 +87,7 @@ final class AuthorizationViewModel {
             .flatMap({ [unowned self] requestToken -> AnyPublisher<String, Error> in
                 requestNewSessionIdWithRequestToken(requestToken)
             })
+            .receive(on: Scheduler.mainScheduler)
             .sink(receiveCompletion: { completion in
                 switch completion {
                 case .failure(let error): Logger.log(error)

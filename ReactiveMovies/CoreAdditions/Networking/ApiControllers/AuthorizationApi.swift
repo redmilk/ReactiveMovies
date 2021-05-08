@@ -40,9 +40,9 @@ protocol AuthorizationApiType {
 // MARK: - AuthorizationApi
 
 struct AuthorizationApi: AuthorizationApiType {
-    private let httpClient: HTTPClientType
+    private let httpClient: HTTPClient
     
-    init(httpClient: HTTPClientType) {
+    init(httpClient: HTTPClient) {
         self.httpClient = httpClient
     }
     
@@ -51,7 +51,7 @@ struct AuthorizationApi: AuthorizationApiType {
             query: [Param(Keys.apiKey, Values.apiKey)]
         )
         let headers = RequestHeaderAdapter()
-        let requestBuilder = RequestBuilder(
+        var requestBuilder = RequestBuilder(
             baseUrl: Endpoints.baseUrl,
             pathComponent: Endpoints.requestToken,
             adapters: [headers, params],
@@ -74,7 +74,7 @@ struct AuthorizationApi: AuthorizationApiType {
                    Param(Keys.password, password)]
         )
         let headers = RequestHeaderAdapter()
-        let requestBuilder = RequestBuilder(
+        var requestBuilder = RequestBuilder(
             baseUrl: Endpoints.baseUrl,
             pathComponent: Endpoints.credentialsLogin,
             adapters: [headers, params],
@@ -92,7 +92,7 @@ struct AuthorizationApi: AuthorizationApiType {
             body: [Param(Keys.requestToken, requestToken)]
         )
         let headers = RequestHeaderAdapter()
-        let requestBuilder = RequestBuilder(
+        var requestBuilder = RequestBuilder(
             baseUrl: Endpoints.baseUrl,
             pathComponent: Endpoints.newSession,
             adapters: [headers, params],
@@ -109,7 +109,7 @@ struct AuthorizationApi: AuthorizationApiType {
             query: [Param(Keys.apiKey, Values.apiKey)]
         )
         let headers = RequestHeaderAdapter()
-        let requestBuilder = RequestBuilder(
+        var requestBuilder = RequestBuilder(
             baseUrl: Endpoints.baseUrl,
             pathComponent: Endpoints.guestSession,
             adapters: [headers, params],
