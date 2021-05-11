@@ -1,58 +1,81 @@
 //
-//  AuthorizationViewModel.swift
+//  AuthorizationInteractor.swift
 //  ReactiveMovies
 //
-//  Created by Danyl Timofeyev on 29.04.2021.
+//  Created by Danyl Timofeyev on 04.05.2021.
 //
 
-import Foundation
 import Combine
+import Foundation
 
-// TODO: - Move session logic to service
+protocol AuthorizationInteractorInput {
+    var input: AnyPublisher<AuthorizationViewController.Action, Never> { get }
+}
 
-// TODO: - Make VM as custom Subscriber
+protocol AuthorizationInteractorOutput {
+    var output: AnyPublisher<AuthorizationInteractor.Response, Never> { get }
+}
 
-// TODO: - Memory leak debug
-
-// TODO: - Session ID save
-
-// TODO: - Refactor MovieService
-
-// TODO: - Catch crash, unowned everywhere
-
-// TODO: - Catch errors from publishers
-
-final class AuthorizationViewModel {
-    private let coordinator: AuthorizationCoordinator
-    private let sessionService: SessionService
-    private var subscriptions = Set<AnyCancellable>()
+final class AuthorizationInteractor: AuthorizationInteractorInput {
     
-    let moduleTitle: String
-    let controllerActionsSubscriber = PassthroughSubject<AuthorizationViewController.Action, Never>()
-    
-    init(moduleTitle: String, coordinator: AuthorizationCoordinator, sessionService: SessionService) {
-        self.moduleTitle = moduleTitle
-        self.coordinator = coordinator
-        self.sessionService = sessionService
-        bindControllerActions()
+    enum Response {
+        case validationResult(result: Bool)
+        case guestSession(guestSessionId: String)
+        case authenticationSuccess(userSessionId: String)
     }
     
-    private func bindControllerActions() {
-        controllerActionsSubscriber
-            .sink(receiveValue: { [unowned self] action in
-                switch action {
-                case .loginWithCredentials(let username, let password):
-                    Logger.log("Action.loginWithCredentials: \(username) \(password)")
-                    startLoginFlow(username: username, password: password)
-                case .guestSession: break
-                    //requestGuestSessionId()
-                case .validateCredentials(let username, let password):
-                    break
+    private(set) var input: AnyPublisher<AuthorizationViewController.Action, Never>
+    private let output = PassthroughSubject<Response, Never>()
+    
+    private var subscriptions = Set<AnyCancellable>()
+    private let sessionService: SessionService
+    
+    init(input: AnyPublisher<AuthorizationViewController.Action, Never>,
+         sessionService: SessionService
+    ) {
+        self.input = input
+        self.sessionService = sessionService
+
+        input.sink(receiveValue: { [weak self] action in
+            guard let self = self else { return }
+            switch action {
+
+            case .validateCredentials(let username, let password):
+                let isValid = self.validateCredentials(username: username, password: password)
+                self.output.send(.validationResult(result: isValid))
+
+            case .guestSession:
+                self.requestGuestSessionId()
+
+            case .loginWithCredentials(let username, let password):
+                break
+            }
+        })
+        .store(in: &subscriptions)
+    }
+    
+    private func validateCredentials(username: String, password: String) -> Bool {
+        return username.count > 3 && password.count > 3
+    }
+    
+    private func requestGuestSessionId() {
+        sessionService.requestGuestSessionId()
+            .receive(on: DispatchQueue.main)
+            .sink(receiveCompletion: { completion in
+                switch completion {
+                case .failure(let error): Logger.log(error)
+                case .finished: Logger.log("requestGuestSessionId", type: .subscriptionFinished)
                 }
+            }, receiveValue: { [weak self] guestSession in
+                guard let self = self, let guestSessionId = guestSession.guestSessionId else { return }
+                Logger.log("GUEST SESSION: " + guestSessionId, type: .token)
+                
+                self.output.send(.guestSession(guestSessionId: guestSessionId))
+                ///coordinator.displayHomeModule(completion: nil)
             })
             .store(in: &subscriptions)
     }
-    
+/*
     private func startLoginFlow(username: String, password: String) {
         sessionService.requestRequestToken()
             .receive(on: DispatchQueue.main)
@@ -87,7 +110,6 @@ final class AuthorizationViewModel {
             .flatMap({ [unowned self] requestToken -> AnyPublisher<String, Error> in
                 requestNewSessionIdWithRequestToken(requestToken)
             })
-            .receive(on: Scheduler.mainScheduler)
             .sink(receiveCompletion: { completion in
                 switch completion {
                 case .failure(let error): Logger.log(error)
@@ -100,7 +122,7 @@ final class AuthorizationViewModel {
             })
             .store(in: &subscriptions)
     }
-
+    
     private func requestNewSessionIdWithRequestToken(_ token: String) -> AnyPublisher<String, Error> {
         sessionService.requestNewSessionId(with: token)
             .handleEvents(receiveOutput: { newSessionId in
@@ -113,21 +135,6 @@ final class AuthorizationViewModel {
             })
             .compactMap { $0.sessionId }
             .eraseToAnyPublisher()
-    }
-/*
-    private func requestGuestSessionId() {
-        sessionService.requestGuestSessionId()
-            .receive(on: DispatchQueue.main)
-            .sink(receiveCompletion: { completion in
-                switch completion {
-                case .failure(let error): Logger.log(error)
-                case .finished: Logger.log("requestGuestSessionId", type: .subscriptionFinished)
-                }
-            }, receiveValue: { [unowned self] guestSession in
-                Logger.log("GUEST SESSION: " + guestSession.guestSessionId!, type: .token)
-                coordinator.displayHomeModule(completion: nil)
-            })
-            .store(in: &subscriptions)
     }
  */
 }

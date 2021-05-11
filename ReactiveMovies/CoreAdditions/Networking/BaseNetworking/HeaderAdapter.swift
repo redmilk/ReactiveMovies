@@ -11,7 +11,7 @@ protocol URLRequestAdaptable {
     func adapt(_ urlRequest: inout URLRequest)
 }
 
-final class RequestHeaderAdapter: URLRequestAdaptable {
+struct RequestHeaderAdapter: URLRequestAdaptable {
     
     enum ContentType: String {
         case json = "application/json"

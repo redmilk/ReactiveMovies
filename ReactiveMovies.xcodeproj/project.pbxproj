@@ -55,6 +55,8 @@
 		79A1CB9F26324922001C24EF /* SearchViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 79A1CB9D26324922001C24EF /* SearchViewController.xib */; };
 		79A1CBA326324983001C24EF /* MoviesSearchService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79A1CBA226324982001C24EF /* MoviesSearchService.swift */; };
 		79A93DE52644251C00945664 /* ClaweeAuthApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79A93DE42644251C00945664 /* ClaweeAuthApi.swift */; };
+		79A93B9F2641DE5100945664 /* AuthorizationInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79A93B9E2641DE5100945664 /* AuthorizationInteractor.swift */; };
+		79A93BA32641DE6F00945664 /* AuthorizationPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79A93BA22641DE6F00945664 /* AuthorizationPresenter.swift */; };
 		79C5E6AA263DAD8B0055F794 /* WebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79C5E6A9263DAD8B0055F794 /* WebViewController.swift */; };
 		79C5E6AE263DB0C40055F794 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79C5E6AD263DB0C40055F794 /* Logger.swift */; };
 		79C5E6BB263DCBD90055F794 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79C5E6BA263DCBD90055F794 /* SceneDelegate.swift */; };
@@ -125,6 +127,8 @@
 		79A1CB9D26324922001C24EF /* SearchViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SearchViewController.xib; sourceTree = "<group>"; };
 		79A1CBA226324982001C24EF /* MoviesSearchService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoviesSearchService.swift; sourceTree = "<group>"; };
 		79A93DE42644251C00945664 /* ClaweeAuthApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaweeAuthApi.swift; sourceTree = "<group>"; };
+		79A93B9E2641DE5100945664 /* AuthorizationInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthorizationInteractor.swift; sourceTree = "<group>"; };
+		79A93BA22641DE6F00945664 /* AuthorizationPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthorizationPresenter.swift; sourceTree = "<group>"; };
 		79C5E6A9263DAD8B0055F794 /* WebViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewController.swift; sourceTree = "<group>"; };
 		79C5E6AD263DB0C40055F794 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		79C5E6BA263DCBD90055F794 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -183,10 +187,12 @@
 		7948F63F263B246000417777 /* Authorization */ = {
 			isa = PBXGroup;
 			children = (
-				7948F640263B249C00417777 /* AuthorizationViewController.swift */,
 				7948F64C263B25FB00417777 /* AuthorizationViewModel.swift */,
 				7948F646263B25BF00417777 /* AuthorizationCoordinator.swift */,
 				7948F641263B249C00417777 /* AuthorizationViewController.xib */,
+				7948F640263B249C00417777 /* AuthorizationViewController.swift */,
+				79A93B9E2641DE5100945664 /* AuthorizationInteractor.swift */,
+				79A93BA22641DE6F00945664 /* AuthorizationPresenter.swift */,
 			);
 			path = Authorization;
 			sourceTree = "<group>";
@@ -533,6 +539,7 @@
 				7976AC2C26226DD7008C3DA8 /* ParametersAdapter.swift in Sources */,
 				7948F651263B287C00417777 /* ApplicationFlowCoordinator.swift in Sources */,
 				7976AC3E262275DE008C3DA8 /* MoviesApi.swift in Sources */,
+				79A93BA32641DE6F00945664 /* AuthorizationPresenter.swift in Sources */,
 				7948F647263B25BF00417777 /* AuthorizationCoordinator.swift in Sources */,
 				79DB9706263DEAE7004A38F9 /* GetSessionId.swift in Sources */,
 				79FEB932262283C3001A1DD2 /* BaseViewModel.swift in Sources */,
@@ -553,6 +560,7 @@
 				79FEB92B26228259001A1DD2 /* HomeCoordinator.swift in Sources */,
 				7976AC2126226341008C3DA8 /* HTTPClient.swift in Sources */,
 				7976AC4326227756008C3DA8 /* Genres.swift in Sources */,
+				79A93B9F2641DE5100945664 /* AuthorizationInteractor.swift in Sources */,
 				79DB9709263E2392004A38F9 /* GetGuestSessionId.swift in Sources */,
 				79FEB9562622FBD3001A1DD2 /* MovieQuery.swift in Sources */,
 				7976AC0E262262E5008C3DA8 /* HomeViewController.swift in Sources */,

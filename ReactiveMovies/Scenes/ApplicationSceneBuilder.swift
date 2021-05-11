@@ -24,11 +24,11 @@ extension ApplicationSceneBuilder {
         moduleTitle: String
     ) -> UINavigationController {
         
+        var controller = AuthorizationViewController(displaySomething: presenter, interactor: interactor)
+        let interactor = AuthorizationInteractor(input: <#T##AnyPublisher<AuthorizationViewController.Action, Never>#>, sessionService: sessionService)
+        let presenter = AuthorizationPresenter(input: interactor)
         let navigation = UINavigationController()
         navigation.setNavigationBarHidden(true, animated: false)
-        let viewModel = AuthorizationViewModel(moduleTitle: moduleTitle, coordinator: coordinator, sessionService: sessionService)
-        var controller = AuthorizationViewController(viewModel: viewModel)
-        controller.bindViewModel(to: viewModel)
         navigation.pushViewController(controller, animated: false)
         return navigation
     }
